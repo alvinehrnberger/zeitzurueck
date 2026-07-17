@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZeitZurück.at — Ihr digitales Front Office</title>
+<meta name="description" content="ZeitZurück.at ist Ihr digitales Front Office: Kundenanfragen aufnehmen, Termine koordinieren und Bestätigungen versenden – automatisch über Website und WhatsApp. Für kleine Handwerks- und Dienstleistungsbetriebe.">
+<link rel="canonical" href="https://zeitzurueck.at/">
+<meta name="theme-color" content="#1A3A2B">
+<!-- Open Graph (Facebook, WhatsApp, LinkedIn) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ZeitZurück.at">
+<meta property="og:title" content="ZeitZurück.at — Ihr digitales Front Office">
+<meta property="og:description" content="Mehr Zeit für Ihre Arbeit. Mehr Zeit für Sie. Anfragen, Termine und Bestätigungen laufen automatisch – über Website und WhatsApp.">
+<meta property="og:url" content="https://zeitzurueck.at/">
+<meta property="og:image" content="https://zeitzurueck.at/zeitzurueck-og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="de_AT">
+<!-- Twitter / X -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ZeitZurück.at — Ihr digitales Front Office">
+<meta name="twitter:description" content="Mehr Zeit für Ihre Arbeit. Mehr Zeit für Sie. Anfragen, Termine und Bestätigungen – automatisch.">
+<meta name="twitter:image" content="https://zeitzurueck.at/zeitzurueck-og.png">
+<!-- Schriftarten lokal eingebunden (siehe @font-face) — keine externen Font-Server -->
+<link rel="icon" type="image/svg+xml" href="zeitzurueck-favicon.svg">
+<style>
+  @font-face{font-family:'Poppins';font-weight:400;font-style:normal;font-display:swap;src:url('poppins-400.woff2') format('woff2')}
+  @font-face{font-family:'Poppins';font-weight:500;font-style:normal;font-display:swap;src:url('poppins-500.woff2') format('woff2')}
+  @font-face{font-family:'Poppins';font-weight:600;font-style:normal;font-display:swap;src:url('poppins-600.woff2') format('woff2')}
+  :root{
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --petrol:#1A3A2B;
+    --petrol-deep:#12281d;
+    --ivory:#F7F4EB;
+    --ivory-soft:#FBF9F3;
+    --beige:#d9cbb3;
+    --gold:#C9A054;
+    --ink:#14221b;
+    --muted:#5c6a63;
+    --line:rgba(31,61,52,.14);
+    --shadow:0 18px 50px rgba(22,46,39,.16);
+    --radius:18px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:var(--sans),system-ui,sans-serif;
+    background:var(--ivory);
+    color:var(--ink);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.brand{font-family:'Poppins',sans-serif;letter-spacing:-.01em}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+  section{padding:88px 0}
+  /* leave room below the sticky nav when jumping to an anchor */
+  #rechner,#how,#case,#pakete{scroll-margin-top:82px}
+  .gold-line{width:54px;height:3px;background:var(--gold);border-radius:2px;margin:18px 0}
+  .eyebrow{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:600}
+
+  /* NAV */
+  nav{position:sticky;top:0;z-index:20;background:rgba(244,240,231,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:66px;max-width:none;padding:0 clamp(24px,4vw,56px)}
+  nav .brand{display:flex;align-items:center}
+  nav .brand img{height:30px;display:block}
+  nav .links{display:flex;gap:28px;align-items:center}
+  nav .links a{color:var(--ink);text-decoration:none;font-size:15px;font-weight:500}
+  nav .links a:hover{color:var(--petrol)}
+  .nav-toggle{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px}
+  .nav-toggle span{display:block;width:24px;height:2px;background:var(--petrol);border-radius:2px}
+  .btn{display:inline-flex;align-items:center;gap:8px;border:none;cursor:pointer;font-family:var(--sans);font-weight:600;font-size:15px;padding:12px 22px;border-radius:999px;transition:transform .12s ease,background .15s ease}
+  .btn:hover{transform:translateY(-1px)}
+  .btn-primary{background:var(--gold);color:var(--petrol-deep)}
+  .btn-primary:hover{background:#d0b25f}
+  .btn-ghost{background:transparent;color:var(--ivory);border:1.5px solid rgba(244,240,231,.4)}
+  .btn-ghost:hover{background:rgba(244,240,231,.1)}
+  .btn-dark{background:var(--petrol);color:var(--ivory)}
+  .btn-dark:hover{background:var(--petrol-deep)}
+  @media(max-width:860px){
+    .nav-toggle{display:flex}
+    nav .links{position:absolute;top:66px;left:0;right:0;flex-direction:column;align-items:stretch;gap:0;background:rgba(244,240,231,.98);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);box-shadow:var(--shadow);padding:6px 0;transform:translateY(-135%);transition:transform .28s ease}
+    nav .links.open{transform:none}
+    nav .links a{padding:13px clamp(24px,5vw,56px);font-size:16px}
+    nav .links a.btn{margin:10px clamp(24px,5vw,56px);justify-content:center;padding:12px 22px}
+  }
+
+  /* HERO */
+  .hero{background:var(--petrol);color:var(--ivory);padding:70px 0 84px;position:relative;overflow:hidden}
+  .hero:after{content:"";position:absolute;right:-120px;top:-120px;width:420px;height:420px;border-radius:50%;background:rgba(217,203,179,.06)}
+  .hero .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;position:relative;z-index:2}
+  .hero h1{font-size:52px;line-height:1.05;font-weight:600}
+  .hero-logo{width:min(90%,470px);height:auto;display:block}
+  .hero .claim{margin-top:20px;font-size:26px;font-weight:400;color:var(--ivory);opacity:.96;font-family:'Poppins'}
+  .hero .claim strong{color:var(--gold);font-weight:600}
+  .hero .support{margin-top:22px;font-size:17px;line-height:1.65;color:rgba(244,240,231,.82);max-width:460px}
+  .hero .cta-row{margin-top:32px;display:flex;gap:14px;flex-wrap:wrap}
+  .hero .trust-mini{margin-top:26px;font-size:13.5px;color:rgba(244,240,231,.6);display:flex;gap:18px;flex-wrap:wrap}
+  .hero .trust-mini span{display:flex;align-items:center;gap:7px}
+  @media(max-width:900px){.hero .grid{grid-template-columns:1fr;gap:36px}.hero h1{font-size:40px}}
+
+  /* CHAT CARD */
+  .chat{background:var(--ivory-soft);border-radius:22px;box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;height:560px;max-height:78vh}
+  .chat-head{background:var(--petrol-deep);color:var(--ivory);padding:16px 20px;display:flex;align-items:center;gap:12px}
+  .chat-head .avatar{width:36px;height:36px;border-radius:50%;background:var(--petrol);display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .chat-head .avatar img{width:22px;height:26px;display:block}
+  .chat-head .who{font-size:15px;font-weight:600;font-family:'Poppins'}
+  .chat-head .status{font-size:12px;color:rgba(244,240,231,.65);display:flex;align-items:center;gap:6px}
+  .chat-head .status:before{content:"";width:7px;height:7px;border-radius:50%;background:#5fcf9e;display:inline-block}
+  .chat-body{flex:1;min-height:0;padding:22px 20px;display:flex;flex-direction:column;gap:14px;overflow-y:auto}
+  .msg{max-width:86%;padding:12px 16px;border-radius:16px;font-size:15px;line-height:1.5;animation:pop .28s ease}
+  .msg.bot{background:#fff;border:1px solid var(--line);border-bottom-left-radius:5px;align-self:flex-start;color:var(--ink)}
+  .msg.user{background:var(--petrol);color:var(--ivory);border-bottom-right-radius:5px;align-self:flex-end}
+  .msg.result{background:var(--beige);border:none;color:var(--petrol-deep);align-self:flex-start;max-width:96%}
+  .msg.result .big{font-family:'Poppins';font-size:19px;font-weight:600;display:block;margin:2px 0 6px}
+  .msg.result .tagline{font-family:'Poppins';font-style:normal;font-weight:500;color:var(--petrol);margin-top:10px;font-size:14.5px}
+  @keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;padding:0 20px 6px}
+  .chip{background:#fff;border:1px solid var(--line);color:var(--ink);padding:9px 15px;border-radius:999px;font-size:14px;font-weight:500;cursor:pointer;font-family:var(--sans);transition:all .12s ease}
+  .chip:hover{background:var(--petrol);color:var(--ivory);border-color:var(--petrol)}
+  .chat-input{border-top:1px solid var(--line);padding:14px 16px;display:flex;gap:10px;background:#fff}
+  .chat-input input{flex:1;border:1px solid var(--line);border-radius:999px;padding:11px 16px;font-size:15px;font-family:var(--sans);outline:none;color:var(--ink)}
+  .chat-input input:focus{border-color:var(--petrol)}
+  .chat-input button{background:var(--petrol);border:none;color:var(--ivory);width:42px;height:42px;border-radius:50%;cursor:pointer;font-size:17px;display:flex;align-items:center;justify-content:center}
+  .chat-input button:hover{background:var(--petrol-deep)}
+  .field-row{padding:0 20px 8px}
+  .field-row .inp{display:flex;gap:8px;align-items:center}
+  .field-row label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+
+  /* SECTION HEADINGS */
+  .sec-head{max-width:640px}
+  .sec-head h2{font-size:36px;font-weight:600;line-height:1.12;color:var(--petrol)}
+  .sec-head p{margin-top:14px;font-size:17px;color:var(--muted)}
+  @media(max-width:760px){.sec-head h2{font-size:28px}}
+
+  /* HOW IT WORKS */
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;margin-top:48px}
+  .step{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:28px 22px}
+  .step .num{width:38px;height:38px;border-radius:50%;background:var(--petrol);color:var(--ivory);font-family:'Poppins';font-weight:600;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+  .step h3{font-size:17px;font-weight:600;color:var(--ink);margin-bottom:8px}
+  .step p{font-size:14.5px;color:var(--muted)}
+  .how-note{margin-top:40px;text-align:center;font-family:'Poppins';font-size:22px;color:var(--petrol);font-weight:500}
+  @media(max-width:900px){.steps{grid-template-columns:1fr 1fr}}
+  @media(max-width:520px){.steps{grid-template-columns:1fr}}
+
+  /* CASE STUDY */
+  .case{background:var(--petrol);color:var(--ivory)}
+  .case .grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+  .case .badge{display:inline-block;background:rgba(217,203,179,.16);color:var(--beige);padding:6px 14px;border-radius:999px;font-size:13px;font-weight:600;margin-bottom:20px}
+  .case h2{font-size:32px;font-weight:600;margin-bottom:6px}
+  .case .role{color:var(--gold);font-weight:500;font-family:'Poppins';margin-bottom:18px}
+  .case p{color:rgba(244,240,231,.85);font-size:16.5px;line-height:1.7}
+  .case .proof{margin-top:26px;font-family:'Poppins';font-size:15px;color:var(--beige);border-left:3px solid var(--gold);padding-left:16px}
+  .case-card{background:var(--ivory-soft);border-radius:var(--radius);padding:30px;color:var(--ink)}
+  .case-card .stat{display:flex;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--line)}
+  .case-card .stat:last-child{border:none}
+  .case-card .stat .k{color:var(--muted);font-size:14.5px}
+  .case-card .stat .v{font-family:'Poppins';font-weight:600;color:var(--petrol)}
+  @media(max-width:820px){.case .grid{grid-template-columns:1fr;gap:30px}}
+
+  /* PACKAGES */
+  .pkgs{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:22px}
+  .pkg{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px 22px;position:relative;display:flex;flex-direction:column}
+  .pkg.featured{border:2px solid var(--gold);box-shadow:var(--shadow)}
+  .pkg .tag{position:absolute;top:-13px;left:26px;background:var(--gold);color:var(--petrol-deep);font-size:12px;font-weight:600;padding:5px 13px;border-radius:999px}
+  .pkg .name{font-family:'Poppins';font-weight:600;font-size:15px;letter-spacing:.06em;color:var(--muted)}
+  .pkg .price{font-family:'Poppins';font-size:40px;font-weight:600;color:var(--petrol);margin:10px 0 2px}
+  .pkg .price span{font-size:16px;font-weight:500;color:var(--muted)}
+  .pkg .setup-line{display:inline-block;font-size:13px;font-weight:500;color:var(--muted);margin:2px 0 12px;text-decoration:none;border-bottom:1px dashed rgba(92,106,99,.55)}
+  .pkg .setup-line:hover{color:var(--petrol);border-bottom-color:var(--petrol)}
+  .pkg .desc{font-size:14.5px;color:var(--muted);min-height:32px;margin-bottom:14px}
+  .pkg ul{list-style:none;margin-bottom:18px;flex:1}
+  .pkg li{font-size:14.5px;padding:6px 0;display:flex;gap:10px;align-items:flex-start;color:var(--ink)}
+  .pkg li:before{content:"✓";color:var(--gold);font-weight:700}
+  .pkg .setup{text-align:center;font-size:13px;color:var(--muted);margin-top:16px}
+  @media(max-width:820px){.pkgs{grid-template-columns:1fr}}
+  /* Pricing on petrol — premium dark section with white cards */
+  #pakete{background:var(--petrol);padding:24px 0 40px}
+  #pakete .sec-head h2{color:var(--ivory)}
+  #pakete .sec-head p{color:rgba(244,240,231,.8)}
+  #pakete .pkg-setup{color:rgba(244,240,231,.72)!important}
+
+  /* TRUST */
+  .trust{background:var(--ivory-soft)}
+  .trust .cols{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:44px}
+  .trust .col{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:30px}
+  .trust .col h3{font-family:'Poppins';font-size:18px;color:var(--petrol);margin-bottom:16px;display:flex;gap:10px;align-items:center}
+  .trust .col ul{list-style:none}
+  .trust .col li{padding:9px 0;font-size:15px;border-bottom:1px solid var(--line);color:var(--ink)}
+  .trust .col li:last-child{border:none}
+  .trust .note{margin-top:26px;text-align:center;color:var(--muted);font-size:15.5px;max-width:640px;margin-left:auto;margin-right:auto}
+  @media(max-width:700px){.trust .cols{grid-template-columns:1fr}}
+
+  /* FINAL CTA */
+  .final{background:var(--ivory-soft);color:var(--ink);text-align:center}
+  .final h2{font-size:38px;font-weight:600;margin-bottom:8px;color:var(--petrol)}
+  .final .claim{font-family:'Poppins';font-size:22px;color:var(--petrol);margin-bottom:26px}
+  .final .cta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+  .final .btn-ghost{color:var(--petrol);border-color:rgba(26,58,43,.35)}
+  .final .btn-ghost:hover{background:rgba(26,58,43,.06)}
+  @media(max-width:760px){.final h2{font-size:28px}}
+
+  /* FOOTER */
+  footer{background:var(--petrol-deep);color:rgba(244,240,231,.7);padding:40px 0;font-size:14px}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;align-items:center;max-width:none;padding:0 clamp(24px,4vw,56px)}
+  footer a{color:rgba(244,240,231,.7);text-decoration:none;margin-left:20px}
+  footer a:hover{color:var(--ivory)}
+  .how-top{display:grid;grid-template-columns:1fr 2fr;gap:40px;align-items:center}
+  @media(max-width:900px){.how-top{grid-template-columns:1fr;gap:30px}}
+  .video-embed{margin:0;position:relative;width:100%;aspect-ratio:16/9;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);background:var(--petrol)}
+  .video-embed iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+  /* back-to-top floating button */
+  #toTop{position:fixed;right:24px;bottom:24px;width:48px;height:48px;border-radius:50%;border:none;background:var(--petrol);color:var(--ivory);font-size:20px;line-height:1;cursor:pointer;box-shadow:var(--shadow);opacity:0;visibility:hidden;transform:translateY(12px);transition:opacity .22s ease,transform .22s ease,visibility .22s ease,background .15s ease;z-index:40;display:flex;align-items:center;justify-content:center}
+  #toTop:hover{background:var(--petrol-deep)}
+  #toTop.show{opacity:1;visibility:visible;transform:none}
+  @media(max-width:600px){#toTop{right:16px;bottom:16px;width:44px;height:44px}}
+</style>
+</head>
+<body>
+
+<nav id="top">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="ZeitZurück.at"><img src="zeitzurueck-logo-light.svg" alt="ZeitZurück.at"></a>
+    <button class="nav-toggle" id="navToggle" aria-label="Menü" aria-expanded="false"><span></span><span></span><span></span></button>
+    <div class="links" id="navLinks">
+      <a href="#how">So funktioniert's</a>
+      <a href="#pakete">Pakete</a>
+      <a href="#case">Referenz</a>
+      <a href="einrichtung.html">Setup-Pauschale</a>
+      <a href="#rechner" class="btn btn-primary">Potenzial berechnen</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="rechner">
+  <div class="wrap grid">
+    <div>
+      <img class="hero-logo" src="zeitzurueck-logo-dark.svg" alt="ZeitZurück.at">
+      <div class="claim">Mehr Zeit für Ihre <strong>Arbeit</strong>.<br>Mehr Zeit für <strong>Sie</strong>.</div>
+      <div class="gold-line"></div>
+      <p class="support">Kundenanfragen aufnehmen, Termine koordinieren und Bestätigungen versenden – automatisch über Website und WhatsApp. Ohne technisches Wissen. Rund um die Uhr.</p>
+      <div class="cta-row">
+        <a href="#pakete" class="btn btn-primary">Pakete ansehen</a>
+        <a href="#how" class="btn btn-ghost">So funktioniert's</a>
+      </div>
+      <div class="trust-mini">
+        <span>◍ Website &amp; WhatsApp</span>
+        <span>◍ Termine automatisch gebucht</span>
+        <span>◍ Für kleine Betriebe</span>
+      </div>
+    </div>
+
+    <div class="chat" id="chat">
+      <div class="chat-head">
+        <div class="avatar"><img src="zeitzurueck-icon.svg" alt=""></div>
+        <div>
+          <div class="who">ZeitZurück Assistent</div>
+          <div class="status">antwortet sofort</div>
+        </div>
+      </div>
+      <div class="chat-body" id="chatBody"></div>
+      <div id="chatControls"></div>
+    </div>
+  </div>
+</header>
+
+<section id="how">
+  <div class="wrap">
+    <div class="how-top">
+      <div class="sec-head">
+        <span class="eyebrow">So funktioniert's</span>
+        <h2>Während Sie arbeiten, kümmert sich ZeitZurück um die Anfrage.</h2>
+        <p>Einmal ansehen — oder in vier Schritten nachlesen.</p>
+      </div>
+      <div class="video-embed">
+        <iframe src="explainer.html" title="ZeitZurück – So funktioniert's" id="explainerFrame"></iframe>
+      </div>
+    </div>
+    <div class="steps" id="steps"></div>
+  </div>
+</section>
+
+<section id="pakete">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Pakete</span>
+      <h2>Ein Paket. Rundum-sorglos.</h2>
+      <p>Aufbau, Betrieb und Überwachung inklusive. Endgültige Nutzungsgrenzen werden nach realen Betriebsdaten festgelegt.</p>
+    </div>
+    <div class="pkgs" id="pkgs"></div>
+    <div class="pkg-setup" style="text-align:center;margin-top:18px;font-size:15px;max-width:640px;margin-left:auto;margin-right:auto">Marktüblich kostet ein individuelles Agenturprojekt oft 1.000–5.000 €. Bei ZeitZurück erhalten Sie Ihr komplettes digitales Front Office zum einmaligen <strong>Gründungspreis von 999 €</strong> – auf Wunsch in Raten. <a href="einrichtung.html" style="color:var(--gold);font-weight:600;white-space:nowrap">Alle Leistungen ansehen ›</a></div>
+  </div>
+</section>
+
+<section class="trust">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Vertrauen &amp; Eigentum</span>
+      <h2>Ihr Betrieb bleibt Ihrer.</h2>
+      <p>ZeitZurück betreibt die Technik. Ihre Identität, Ihre Daten und Ihre Konten gehören immer Ihnen.</p>
+    </div>
+    <div class="cols">
+      <div class="col">
+        <h3>Das gehört Ihnen</h3>
+        <ul>
+          <li>Domain</li>
+          <li>E-Mail-Konto</li>
+          <li>Kalender</li>
+          <li>Meta-Business-Konto</li>
+          <li>WhatsApp-Nummer</li>
+          <li>Google-Unternehmensprofil</li>
+        </ul>
+      </div>
+      <div class="col">
+        <h3>Das betreibt ZeitZurück</h3>
+        <ul>
+          <li>Automatisierung</li>
+          <li>KI-Logik</li>
+          <li>Hosting</li>
+          <li>Überwachung</li>
+          <li>Updates</li>
+          <li>Technische Infrastruktur</li>
+        </ul>
+      </div>
+    </div>
+    <p class="note">ZeitZurück erhält autorisierten Zugriff auf Ihre Konten – übernimmt sie aber nicht. Sie bleiben Eigentümer Ihrer Geschäftsidentität.</p>
+  </div>
+</section>
+
+<section class="case" id="case">
+  <div class="wrap grid">
+    <div>
+      <span class="badge">Client Zero · Erste vollständige Umsetzung</span>
+      <h2>Montageservice &amp; Mehr</h2>
+      <div class="role">Möbelmontage · Wien &amp; Niederösterreich</div>
+      <p>Kundenanfragen strukturiert aufnehmen, Dauer einschätzen, freie Termine finden und automatisch buchen – über Website und WhatsApp.</p>
+      <div class="proof">Eine Engine. Bald zwei verschiedene Betriebe.</div>
+      <a class="btn btn-primary" href="https://montageservice-mehr.at" target="_blank" rel="noopener" style="margin-top:26px">Website ansehen ↗</a>
+    </div>
+    <div class="case-card">
+      <div class="stat"><span class="k">Kanäle</span><span class="v">Website + WhatsApp</span></div>
+      <div class="stat"><span class="k">Anfrageaufnahme</span><span class="v">automatisch, 24/7</span></div>
+      <div class="stat"><span class="k">Terminbuchung</span><span class="v">direkt im Kalender</span></div>
+      <div class="stat"><span class="k">Bestätigung</span><span class="v">automatisch per E-Mail</span></div>
+      <div class="stat"><span class="k">Status</span><span class="v">live &amp; getestet</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="final">
+  <div class="wrap">
+    <span class="eyebrow">Zeit zurückgewinnen</span>
+    <h2>Bereit für Ihr digitales Front Office?</h2>
+    <div class="claim">Mehr Zeit für Ihre Arbeit. Mehr Zeit für Sie.</div>
+    <div class="cta-row">
+      <a href="#rechner" class="btn btn-primary">Potenzial berechnen</a>
+      <a href="mailto:office@zeitzurueck.at?subject=Kostenloses%20Erstgespr%C3%A4ch%20%E2%80%93%20ZeitZur%C3%BCck.at" class="btn btn-ghost">Kostenloses Erstgespräch</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>© 2026 ZeitZurück.at · Ihr digitales Front Office</div>
+    <div>
+      <a href="impressum.html">Impressum</a>
+      <a href="datenschutz.html">Datenschutz</a>
+      <a href="mailto:office@zeitzurueck.at">office@zeitzurueck.at</a>
+    </div>
+  </div>
+</footer>
+
+<button id="toTop" aria-label="Zurück nach oben" title="Nach oben">↑</button>
+
+<script>
+/* ============================================================
+   CONFIG — the editable "brain". Adding a trade = one entry.
+   Nothing marketing-editable is buried in the logic below.
+   ============================================================ */
+const CONFIG = {
+  leadWebhook: "https://alvvyn.app.n8n.cloud/webhook/zeitzurueck-lead",
+  setup: 999,          // einmalige Einrichtung (Aufbau des digitalen Front Office)
+  calc: {
+    workingDaysPerMonth: 21,
+    captureRate: 0.85,          // share of admin time ZeitZurück can plausibly offload
+    genericHourly: 70,          // default for freely-typed / unknown trades
+    genericAdmin: 90,
+    currency: "€",
+    fromPrice: 59,              // "ab X monatlich"
+    disclaimer: "Unverbindliche Schätzung. Alle Werte sind Potenziale, keine Garantie."
+  },
+  trades: [
+    { id:"montage",     label:"Montagebetrieb",   supported:true,  hourly:75,  adminMin:120 },
+    { id:"gaertner",    label:"Gärtner",          supported:true,  hourly:65,  adminMin:90  },
+    { id:"tattoo",      label:"Tattoo-Studio",    supported:true,  hourly:100, adminMin:90  },
+    { id:"friseur",     label:"Friseur / Barber", supported:true,  hourly:55,  adminMin:75  },
+    { id:"installateur",label:"Installateur",     supported:true, hourly:85, adminMin:120 },
+    { id:"baumeister",  label:"Baumeister",       supported:true, hourly:90, adminMin:120 },
+    { id:"maler",       label:"Maler",            supported:true, hourly:60, adminMin:90  },
+    { id:"reinigungskraft", label:"Reinigungskraft", supported:true, hourly:35, adminMin:60 },
+    { id:"sonstiges",   label:"Sonstiges",        supported:true, hourly:70, adminMin:90  }
+  ],
+  steps: [
+    { t:"Kunde schreibt", d:"Über Ihre Website oder WhatsApp – jederzeit." },
+    { t:"ZeitZurück fragt nach", d:"Sammelt alle nötigen Infos zur Anfrage." },
+    { t:"Termin wird gefunden", d:"Passender freier Termin, direkt gebucht." },
+    { t:"Bestätigung", d:"Kunde und Betrieb erhalten die Bestätigung." }
+  ],
+  packages: [
+    { name:"START", price:59,  desc:"Website-Chat, für geringere Nutzung.",
+      features:["Website-Chat","Terminbuchung","E-Mail-Bestätigung","Monitoring"] },
+    { name:"PLUS",  price:99,  desc:"Website-Chat, WhatsApp und der volle Standard-Workflow.", featured:true,
+      features:["Alles aus START","WhatsApp-Kanal","Voller Buchungs-Workflow","Inhaber-Benachrichtigung"] },
+    { name:"PRO",   price:149, desc:"Höhere Nutzung, mehr Support, erweiterter Funktionsumfang.",
+      features:["Alles aus PLUS","Höhere Nutzungsgrenzen","Erweiterter Support","Priorisierte Betreuung"] }
+  ]
+};
+
+/* ---------- render config-driven sections ---------- */
+const fmt = n => new Intl.NumberFormat('de-AT').format(Math.round(n));
+
+document.getElementById('steps').innerHTML = CONFIG.steps.map((s,i)=>`
+  <div class="step"><div class="num">${i+1}</div><h3>${s.t}</h3><p>${s.d}</p></div>`).join('');
+
+document.getElementById('pkgs').innerHTML = CONFIG.packages.map(p=>`
+  <div class="pkg ${p.featured?'featured':''}">
+    ${p.featured?'<div class="tag">Beliebt</div>':''}
+    <div class="name">${p.name}</div>
+    <div class="price">${p.price} €<span>/Monat</span></div>
+    <a class="setup-line" href="einrichtung.html">+ einmalig ${fmt(CONFIG.setup)} € Setup-Pauschale ›</a>
+    <div class="desc">${p.desc}</div>
+    <ul>${p.features.map(f=>`<li>${f}</li>`).join('')}</ul>
+    <a href="mailto:office@zeitzurueck.at?subject=${encodeURIComponent('Interesse am Paket '+p.name+' – ZeitZurück.at')}" class="btn ${p.featured?'btn-primary':'btn-dark'}" style="justify-content:center">Auswählen</a>
+  </div>`).join('');
+
+/* ============================================================
+   Deterministic chat calculator — NO AI. Pure config + math.
+   ============================================================ */
+const body = document.getElementById('chatBody');
+const controls = document.getElementById('chatControls');
+let state = { trade:null, hourly:null, adminMin:null };
+
+function bot(html, cls='bot'){ add(html, cls); }
+function user(text){ add(text, 'user'); }
+function add(html, cls){
+  const el = document.createElement('div');
+  el.className = 'msg '+cls; el.innerHTML = html;
+  body.appendChild(el); body.scrollTop = body.scrollHeight;
+}
+function clearControls(){ controls.innerHTML=''; }
+
+function chips(items, onPick, withInput=false, placeholder=''){
+  clearControls();
+  const box = document.createElement('div'); box.className='chips';
+  items.forEach(it=>{
+    const c=document.createElement('button'); c.className='chip'; c.textContent=it.label;
+    c.onclick=()=>onPick(it); box.appendChild(c);
+  });
+  controls.appendChild(box);
+  if(withInput) textInput(placeholder, val=>onPick({ id:'_free', label:val, free:true }));
+}
+
+function textInput(placeholder, onSend, type='text'){
+  const row=document.createElement('div'); row.className='chat-input';
+  const inp=document.createElement('input'); inp.placeholder=placeholder; inp.type=type;
+  const btn=document.createElement('button'); btn.innerHTML='→';
+  const go=()=>{ const v=inp.value.trim(); if(!v)return; onSend(v); };
+  btn.onclick=go; inp.addEventListener('keydown',e=>{if(e.key==='Enter')go();});
+  row.appendChild(inp); row.appendChild(btn); controls.appendChild(row);
+  setTimeout(()=>inp.focus(),50);
+}
+
+function numberField(label, def, onSend){
+  clearControls();
+  const wrap=document.createElement('div'); wrap.className='field-row';
+  wrap.innerHTML=`<label>${label}</label>`;
+  const row=document.createElement('div'); row.className='chat-input';
+  const inp=document.createElement('input'); inp.type='number'; inp.value=def; inp.min=0;
+  const btn=document.createElement('button'); btn.innerHTML='→';
+  const go=()=>{ const v=parseFloat(inp.value); if(isNaN(v)||v<0)return; onSend(v); };
+  btn.onclick=go; inp.addEventListener('keydown',e=>{if(e.key==='Enter')go();});
+  row.appendChild(inp); row.appendChild(btn); wrap.appendChild(row); controls.appendChild(wrap);
+  setTimeout(()=>inp.select(),50);
+}
+
+/* ---- flow ---- */
+function start(){
+  body.innerHTML=''; state={trade:null,hourly:null,adminMin:null};
+  bot("Willkommen bei ZeitZurück 👋<br>Welches Gewerbe haben Sie?");
+  chips(CONFIG.trades.map(t=>({label:t.label,ref:t})), pickTrade, true, "oder Gewerbe eingeben…");
+}
+
+function pickTrade(choice){
+  let t = choice.ref || CONFIG.trades.find(x=>x.label.toLowerCase()===String(choice.label).toLowerCase());
+  user(choice.label);
+  // Calculator is trade-agnostic (hours x their own rate) — everyone gets an estimate.
+  // Freely-typed / unknown trades fall back to generic defaults, still editable.
+  state.isConfigTrade = !!t;
+  if(!t){ t = { label:choice.label, supported:true, hourly:CONFIG.calc.genericHourly, adminMin:CONFIG.calc.genericAdmin }; }
+  state.trade=t; askHourly();
+}
+
+function askHourly(){
+  bot(`Sehr gut. Was ist Ihnen eine <strong>produktive Arbeitsstunde</strong> wert? (in ${CONFIG.calc.currency})`);
+  numberField("Betrieblicher Stundenwert", state.trade.hourly, v=>{ state.hourly=v; user(fmt(v)+" "+CONFIG.calc.currency); askAdmin(); });
+}
+
+function askAdmin(){
+  bot("Und wie viel Zeit verbringen Sie <strong>pro Tag</strong> mit Anfragen, Rückfragen, Terminkoordination und Bestätigungen? (in Minuten)");
+  numberField("Minuten pro Tag", state.trade.adminMin, v=>{ state.adminMin=v; user(fmt(v)+" Min/Tag"); showResult(); });
+}
+
+function showResult(){
+  const c=CONFIG.calc;
+  const hours = (state.adminMin/60) * c.workingDaysPerMonth * c.captureRate;
+  const value = hours * state.hourly;
+  bot(`<span class="big">ZeitZurück könnte Ihnen rund ${fmt(hours)} Stunden pro Monat zurückgeben.</span>
+       Bei einem betrieblichen Stundenwert von ${fmt(state.hourly)} ${c.currency} entspricht das einem möglichen Wert von <strong>${fmt(value)} ${c.currency} pro Monat</strong>.<br>
+       ZeitZurück ist ab ${c.fromPrice} ${c.currency} monatlich verfügbar.
+       <span class="tagline">Mehr Zeit für Ihre Arbeit. Mehr Zeit für Sie.</span>`, 'result');
+  state.hours = hours; state.value = value;
+  clearControls();
+  offerContact();
+}
+
+/* Optional contact capture → POSTs to n8n (leads_marktforschung) for market research. */
+function offerContact(){
+  bot("Möchten Sie, dass wir uns mit einem konkreten Vorschlag für Ihren Betrieb bei Ihnen melden? Hinterlassen Sie einfach Ihre E-Mail oder Telefonnummer – ganz unverbindlich.");
+  const wrap=document.createElement('div'); wrap.className='field-row';
+  const row=document.createElement('div'); row.className='chat-input';
+  const inp=document.createElement('input'); inp.type='text'; inp.placeholder='E-Mail oder Telefonnummer';
+  const btn=document.createElement('button'); btn.innerHTML='→';
+  const go=()=>{ const v=inp.value.trim(); if(!v)return; sendLead(v); };
+  btn.onclick=go; inp.addEventListener('keydown',e=>{if(e.key==='Enter')go();});
+  row.appendChild(inp); row.appendChild(btn); wrap.appendChild(row); controls.appendChild(wrap);
+  const box=document.createElement('div'); box.className='chips';
+  box.innerHTML=`<a href="#pakete" class="btn btn-primary" style="justify-content:center">Passendes Paket ansehen</a>
+                 <button class="chip" id="again">Neu berechnen</button>`;
+  controls.appendChild(box);
+  document.getElementById('again').onclick=start;
+  const note=document.createElement('div');
+  note.style.cssText='padding:4px 20px 16px;font-size:12px;color:var(--muted)';
+  note.textContent=CONFIG.calc.disclaimer;
+  controls.appendChild(note);
+}
+
+function sendLead(kontakt){
+  user(kontakt);
+  const c=CONFIG.calc;
+  const payload={
+    gewerbe: (state.trade && state.trade.label) || '',
+    kontakt: kontakt,
+    stundenwert: state.hourly!=null ? fmt(state.hourly)+' '+c.currency : '',
+    geschaetzter_wert: state.value!=null ? fmt(state.value)+' '+c.currency+'/Monat' : '',
+    unterstuetzt: state.isConfigTrade ? 'ja' : 'frei eingegeben',
+    seite: 'zeitzurueck'
+  };
+  if(CONFIG.leadWebhook){
+    fetch(CONFIG.leadWebhook,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).catch(()=>{});
+  }
+  bot("Vielen Dank! 🌿 Wir haben Ihre Anfrage notiert und melden uns persönlich bei Ihnen.");
+  clearControls();
+  const box=document.createElement('div'); box.className='chips';
+  box.innerHTML=`<a href="#pakete" class="btn btn-primary" style="justify-content:center">Passendes Paket ansehen</a>
+                 <button class="chip" id="againDone">Neu berechnen</button>`;
+  controls.appendChild(box);
+  document.getElementById('againDone').onclick=start;
+}
+
+start();
+
+/* ---- UI: smart anchor scroll, logo → top, video start, back-to-top ---- */
+(function(){
+  const NAV_H=66;
+  const frame=document.getElementById('explainerFrame');
+  function playExplainer(){ if(frame) frame.src='explainer.html?play='+Date.now(); }
+  function smartScrollTo(el){
+    const r=el.getBoundingClientRect();
+    const avail=window.innerHeight-NAV_H;
+    const pageTop=window.scrollY+r.top;
+    // center the section if it fits below the nav, otherwise align it snug under the nav
+    const target = r.height<=avail ? pageTop-NAV_H-(avail-r.height)/2 : pageTop-NAV_H-12;
+    window.scrollTo({top:Math.max(0,target),behavior:'smooth'});
+  }
+  // delegated so dynamically-added links (chat buttons) work too
+  document.addEventListener('click',e=>{
+    const a=e.target.closest('a[href^="#"]');
+    if(!a) return;
+    const id=a.getAttribute('href');
+    e.preventDefault();
+    if(id==='#top'||id==='#'){ window.scrollTo({top:0,behavior:'smooth'}); return; }
+    const el=document.querySelector(id);
+    if(!el) return;
+    smartScrollTo(el);
+    if(id==='#how') setTimeout(playExplainer,420);
+  });
+  const toTop=document.getElementById('toTop');
+  if(toTop){
+    toTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+    const onScroll=()=>{
+      const nearBottom=(window.innerHeight+window.scrollY)>=document.documentElement.scrollHeight-90;
+      toTop.classList.toggle('show', window.scrollY>420 && !nearBottom);
+    };
+    window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  }
+  // mobile hamburger menu
+  const navToggle=document.getElementById('navToggle');
+  const navLinks=document.getElementById('navLinks');
+  if(navToggle&&navLinks){
+    navToggle.addEventListener('click',()=>{
+      const open=navLinks.classList.toggle('open');
+      navToggle.setAttribute('aria-expanded', open?'true':'false');
+    });
+    navLinks.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{
+      navLinks.classList.remove('open'); navToggle.setAttribute('aria-expanded','false');
+    }));
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZeitZurück — Erklärvideo</title>
+<style>
+  @font-face{font-family:'Poppins';font-weight:400;font-style:normal;font-display:swap;src:url('poppins-400.woff2') format('woff2')}
+  @font-face{font-family:'Poppins';font-weight:500;font-style:normal;font-display:swap;src:url('poppins-500.woff2') format('woff2')}
+  @font-face{font-family:'Poppins';font-weight:600;font-style:normal;font-display:swap;src:url('poppins-600.woff2') format('woff2')}
+  :root{--petrol:#1A3A2B;--petrol-deep:#12281d;--ivory:#F7F4EB;--gold:#C9A054;--muted:rgba(247,244,235,.62)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{margin:0;background:var(--petrol);font-family:'Poppins',-apple-system,'Segoe UI',Roboto,sans-serif}
+  .stage{position:relative;width:100vw;height:100vh;background:var(--petrol);overflow:hidden}
+  .stage:after{content:"";position:absolute;right:-14%;top:-30%;width:55%;height:90%;border-radius:50%;background:rgba(217,203,179,.05);pointer-events:none}
+  .scene{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:30px;padding:7% 9%;text-align:center;opacity:0;transition:opacity .55s ease}
+  .scene.active{opacity:1}
+  .txt{font-weight:500;color:var(--ivory);font-size:clamp(18px,3.3vw,30px);line-height:1.3;max-width:16em}
+  .txt b{color:var(--gold);font-weight:600}
+  .sub{font-size:clamp(13px,1.9vw,17px);color:var(--muted);font-weight:400}
+  .icon{width:clamp(80px,15vw,132px);height:clamp(80px,15vw,132px)}
+  .pill{display:inline-block;margin-top:6px;padding:7px 16px;border:1.5px solid var(--gold);border-radius:999px;color:var(--gold);font-weight:600;font-size:clamp(14px,2vw,18px)}
+  .cta{margin-top:4px;background:var(--gold);color:var(--petrol-deep);font-weight:600;font-size:clamp(14px,2vw,17px);padding:11px 24px;border-radius:999px}
+  .logo{width:min(62%,420px);height:auto}
+  .row{display:flex;gap:26px;align-items:center;justify-content:center;flex-wrap:wrap}
+  /* entrances (play when scene becomes active) */
+  @keyframes up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+  @keyframes pop{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:none}}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  @keyframes buzz{0%,100%{transform:rotate(0)}20%{transform:rotate(-9deg)}40%{transform:rotate(8deg)}60%{transform:rotate(-6deg)}80%{transform:rotate(4deg)}}
+  @keyframes glow{0%,100%{opacity:.55}50%{opacity:1}}
+  .scene.active .up{animation:up .7s cubic-bezier(.2,.7,.2,1) both}
+  .scene.active .up.d1{animation-delay:.14s}
+  .scene.active .up.d2{animation-delay:.28s}
+  .scene.active .pop{animation:pop .6s cubic-bezier(.2,.85,.25,1) both}
+  .scene.active .pop.d1{animation-delay:.16s}
+  .scene.active .pop.d2{animation-delay:.32s}
+  .icon.sm{width:clamp(52px,9.5vw,84px);height:clamp(52px,9.5vw,84px)}
+  .scene.active .buzz{animation:pop .5s cubic-bezier(.2,.85,.25,1) both, buzz 1s .5s ease-in-out}
+  .scene.active .draw{stroke-dasharray:44;stroke-dashoffset:44;animation:draw .55s .45s ease forwards}
+  .scene.active .glow{animation:glow 1.6s .3s ease-in-out infinite}
+  /* thumbnail / play overlay (poster) */
+  #poster{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;background:var(--petrol);cursor:pointer;z-index:6;padding:7%;transition:opacity .35s ease}
+  #poster:after{content:"";position:absolute;right:-14%;top:-30%;width:55%;height:90%;border-radius:50%;background:rgba(217,203,179,.05);pointer-events:none}
+  #poster.hidden{opacity:0;visibility:hidden;pointer-events:none}
+  .poster-logo{width:min(54%,330px);height:auto;position:relative;z-index:1}
+  .poster-title{color:var(--ivory);font-weight:600;font-size:clamp(17px,2.9vw,26px);position:relative;z-index:1}
+  .playbtn{width:clamp(64px,12vw,88px);height:clamp(64px,12vw,88px);border-radius:50%;background:var(--gold);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 12px 34px rgba(0,0,0,.28);transition:transform .15s ease;position:relative;z-index:1}
+  #poster:hover .playbtn{transform:scale(1.07)}
+  .ptri{width:0;height:0;border-style:solid;border-width:14px 0 14px 24px;border-color:transparent transparent transparent #12281d;margin-left:5px}
+  .poster-cap{color:var(--muted);font-weight:500;font-size:clamp(13px,2vw,17px);position:relative;z-index:1}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+
+  <!-- 1: trades -->
+  <section class="scene" data-i="0">
+    <div class="row">
+      <svg class="icon sm pop" viewBox="0 0 120 120"><g transform="translate(11.14,-15.88) scale(0.965)"><g transform="rotate(-30 56 58)"><rect x="22" y="40" width="46" height="24" rx="8" fill="#C9A054"/><path d="M38,63 h13 l2,48 a8,8 0 0 1 -17,0 z" fill="#C9A054"/></g></g></svg>
+      <svg class="icon sm pop d1" viewBox="0 0 120 120" fill="none" stroke="#C9A054" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><g transform="translate(-2.55,-4.12) scale(1.045)"><path d="M46 28 L72 84"/><path d="M74 28 L48 84"/><circle cx="44" cy="86" r="9"/><circle cx="76" cy="86" r="9"/><circle cx="60" cy="58" r="3" fill="#C9A054"/></g></svg>
+      <svg class="icon sm pop d2" viewBox="0 0 120 120" fill="none" stroke="#C9A054" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><g transform="translate(-16.16,-27.61) scale(1.272)"><path d="M42 96 L78 96 L73 76 L47 76 Z"/><path d="M60 76 V48"/><path d="M60 60 C46 60 40 48 40 48 C54 48 60 54 60 60Z" fill="#C9A054"/><path d="M60 54 C74 54 80 42 80 42 C66 42 60 48 60 54Z" fill="#C9A054"/></g></svg>
+    </div>
+    <div class="txt up d1">Egal welches Handwerk — <b>Sie sind mitten in der Arbeit.</b></div>
+  </section>
+
+  <!-- 2 -->
+  <section class="scene" data-i="1">
+    <svg class="icon buzz" viewBox="0 0 120 120" fill="none" stroke="#C9A054" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><g transform="translate(-0.05,-0.05) scale(1.003)"><rect x="38" y="20" width="44" height="80" rx="11"/><line x1="52" y1="88" x2="68" y2="88"/><path d="M92 40 q10 20 0 40" opacity=".7"/><path d="M28 40 q-10 20 0 40" opacity=".7"/></g></svg>
+    <div class="txt up d1">Ein Kunde schreibt — <b>über Website oder WhatsApp.</b></div>
+  </section>
+
+  <!-- 3 -->
+  <section class="scene" data-i="2">
+    <svg class="icon pop" viewBox="0 0 120 120" fill="none" stroke="#C9A054" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><g transform="translate(2.46,-5.29) scale(0.969)"><rect x="18" y="30" width="58" height="30" rx="12"/><path d="M34 60 l-4 12 16 -12"/><rect x="46" y="66" width="58" height="30" rx="12" fill="#C9A054" stroke="none"/><path d="M88 96 l4 12 -16 -12" fill="#C9A054" stroke="none"/></g></svg>
+    <div class="txt up d1">ZeitZurück <b>fragt das Wichtigste ab.</b></div>
+  </section>
+
+  <!-- 4 -->
+  <section class="scene" data-i="3">
+    <svg class="icon pop" viewBox="0 0 120 120"><g transform="translate(27.37,17.00) scale(1.729)"><path d="M6,4.5 C11,17 27,33 32,45.5" fill="none" stroke="#C9A054" stroke-width="1.9" stroke-linecap="butt" opacity="0.4"/><path d="M32.5,1.3 C28,12.3 10,30.3 5.5,41.3 L5.5,48.7 C10,37.7 28,19.7 32.5,8.7 Z" fill="#C9A054"/><rect x="1" y="0" width="36" height="6.8" rx="3.4" fill="#C9A054"/><rect x="1" y="43.2" width="36" height="6.8" rx="3.4" fill="#C9A054"/><path d="M11,9 H27 L19,17 Z" fill="#C9A054"/><path d="M16.5,40.5 H21.5 L19,37.5 Z" fill="#C9A054"/></g></svg>
+    <div class="txt up d1">Schätzt die Dauer.</div>
+    <div class="pill up d2">≈ 2 Std.</div>
+  </section>
+
+  <!-- 5a -->
+  <section class="scene" data-i="4">
+    <svg class="icon pop" viewBox="0 0 120 120" fill="none" stroke="#C9A054" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><g transform="translate(0.64,1.63) scale(0.991)"><rect x="20" y="26" width="80" height="74" rx="10"/><line x1="20" y1="44" x2="100" y2="44"/><line x1="40" y1="18" x2="40" y2="32"/><line x1="80" y1="18" x2="80" y2="32"/><rect class="glow" x="64" y="58" width="26" height="26" rx="5" fill="#C9A054" stroke="none"/><circle cx="36" cy="60" r="2.6" fill="#C9A054" stroke="none"/><circle cx="50" cy="60" r="2.6" fill="#C9A054" stroke="none"/><circle cx="36" cy="76" r="2.6" fill="#C9A054" stroke="none"/><circle cx="50" cy="76" r="2.6" fill="#C9A054" stroke="none"/></g></svg>
+    <div class="txt up d1">Findet <b>automatisch</b> einen freien Termin in Ihrem Kalender.</div>
+  </section>
+
+  <!-- 5b -->
+  <section class="scene" data-i="5">
+    <svg class="icon pop" viewBox="0 0 120 120" fill="none" stroke="#C9A054" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><g transform="translate(0.64,1.63) scale(0.991)"><rect x="20" y="26" width="80" height="74" rx="10"/><line x1="20" y1="44" x2="100" y2="44"/><line x1="40" y1="18" x2="40" y2="32"/><line x1="80" y1="18" x2="80" y2="32"/><rect x="64" y="58" width="26" height="26" rx="5" fill="#C9A054" stroke="none"/><polyline class="draw" points="68,71 73,77 86,63" stroke="#12281d" stroke-width="5"/><circle cx="36" cy="60" r="2.6" fill="#C9A054" stroke="none"/><circle cx="50" cy="60" r="2.6" fill="#C9A054" stroke="none"/><circle cx="36" cy="76" r="2.6" fill="#C9A054" stroke="none"/><circle cx="50" cy="76" r="2.6" fill="#C9A054" stroke="none"/></g></svg>
+    <div class="txt up d1">… und <b>bucht ihn.</b></div>
+  </section>
+
+  <!-- 6 -->
+  <section class="scene" data-i="6">
+    <svg class="icon pop" viewBox="0 0 120 120" fill="none" stroke="#C9A054" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><g transform="translate(3.80,11.72) scale(0.880)"><rect x="18" y="34" width="84" height="56" rx="9"/><path d="M20 40 L60 68 L100 40"/><circle cx="96" cy="34" r="17" fill="#C9A054" stroke="none"/><polyline class="draw" points="89,34 94,40 104,29" stroke="#12281d" stroke-width="5"/></g></svg>
+    <div class="txt up d1">Der Kunde und Sie bekommen <b>eine Bestätigung.</b></div>
+  </section>
+
+  <!-- 7 -->
+  <section class="scene" data-i="7">
+    <svg class="icon pop" viewBox="0 0 120 120" fill="none" stroke="#C9A054" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><g transform="translate(-4.57,-3.49) scale(1.078)"><circle cx="60" cy="63" r="33"/><path d="M60 44 V63 L74 71"/><line x1="60" y1="22" x2="60" y2="30"/></g></svg>
+    <div class="txt up d1">Verpassen Sie <b>keinen Kunden</b> mehr.</div>
+    <div class="sub up d2">Rund um die Uhr — auch wenn Sie keine Zeit haben.</div>
+  </section>
+
+  <!-- 8: logo -->
+  <section class="scene" data-i="8">
+    <img class="logo pop" src="zeitzurueck-logo-dark.svg" alt="ZeitZurück.at">
+    <div class="txt up d1" style="font-size:clamp(15px,2.4vw,23px)">Mehr Zeit für Ihre <b>Arbeit</b>. Mehr Zeit für <b>Sie</b>.</div>
+    <div class="sub up d2">Während Sie arbeiten, erledigt ZeitZurück den Rest.</div>
+  </section>
+
+  <div id="poster">
+    <img class="poster-logo" src="zeitzurueck-logo-dark.svg" alt="ZeitZurück.at">
+    <div class="poster-title">So funktioniert ZeitZurück</div>
+    <button class="playbtn" aria-label="Video abspielen"><span class="ptri"></span></button>
+    <div class="poster-cap">In 30 Sekunden erklärt</div>
+  </div>
+</div>
+
+<script>
+  const dur=[3000,3400,3300,2900,3000,2600,3100,3200,4100];
+  const scenes=[...document.querySelectorAll('.scene')];
+  const poster=document.getElementById('poster');
+  let i=0, timer=null;
+
+  function activate(idx){
+    scenes.forEach(s=>s.classList.remove('active'));
+    void scenes[idx].offsetWidth;
+    scenes[idx].classList.add('active');
+  }
+  function step(){
+    activate(i);
+    timer=setTimeout(()=>{
+      if(i < scenes.length-1){ i++; step(); }
+      else { finish(); }
+    }, dur[i]);
+  }
+  function play(){
+    clearTimeout(timer);
+    i=0;
+    poster.classList.add('hidden');
+    step();
+  }
+  function finish(){
+    poster.classList.remove('hidden');   // end card doubles as the replay button
+  }
+
+  // show the thumbnail and wait for the user — unless autostart is requested via ?play
+  poster.addEventListener('click', play);
+  window.addEventListener('message', e=>{ if(e && e.data && e.data.type==='zz-play') play(); });
+  if(new URLSearchParams(location.search).get('play')) play();
+</script>
+</body>
+</html>
