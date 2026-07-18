@@ -110,6 +110,28 @@
   .checks{margin-top:16px;font-size:13px}
   .checks div{padding:5px 0;display:flex;gap:9px}
   .checks span{color:var(--ok);font-weight:700}
+
+  /* ---- Druck / PDF ---- */
+  #printArea{display:none}
+  @media print{
+    body{background:#fff}
+    .phone,.flag,.scrim{display:none !important}
+    #printArea{display:block !important}
+    .pdoc{font-family:var(--sans);color:#14221b;max-width:180mm;margin:0 auto;padding:12mm 6mm;font-size:11.5pt;line-height:1.5}
+    .phead{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #1A3A2B;padding-bottom:6mm;margin-bottom:8mm}
+    .pbetrieb{font-weight:700;font-size:15pt;color:#1A3A2B}
+    .pmeta{font-size:9.5pt;color:#5c6a63;margin-top:2mm}
+    .ptitle{font-size:19pt;font-weight:700;color:#1A3A2B;letter-spacing:3px}
+    .pto{margin-bottom:5mm}
+    .pnrline{display:flex;justify-content:space-between;font-size:10pt;color:#333;margin-bottom:7mm}
+    .ptab{width:100%;border-collapse:collapse;margin-bottom:5mm}
+    .ptab th{text-align:left;border-bottom:1px solid #cbc9c0;padding:3mm 2mm;color:#5c6a63;font-size:8.5pt;text-transform:uppercase;letter-spacing:1px}
+    .ptab td{padding:3mm 2mm;border-bottom:1px solid #eee}
+    .ptab th:nth-child(n+2),.ptab td:nth-child(n+2){text-align:right}
+    .psum{text-align:right;font-weight:700;font-size:13.5pt;color:#1A3A2B;border-top:2px solid #1A3A2B;padding-top:4mm}
+    .pnote{font-size:8.5pt;color:#666;margin-top:12mm;line-height:1.5}
+    .pfoot{margin-top:16mm;font-size:8.5pt;color:#999;border-top:1px solid #eee;padding-top:4mm}
+  }
 </style>
 </head>
 <body>
@@ -149,6 +171,7 @@
 </div>
 
 <div class="scrim" id="scrim"><div class="sheet" id="sheet"></div></div>
+<div id="printArea"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -310,10 +333,24 @@ function showJob(id){
     <p style="color:var(--muted);font-size:13px;margin-top:14px">Wenn du fertig bist: „Arbeit abgeschlossen" tippen, echte Stunden eintragen — den Rest erledigt ZeitZurück.</p></div>
   <div class="cta"><button class="btn btn-primary" onclick="openComplete('${j.id}')">✓ Arbeit abgeschlossen</button></div>`;
 }
+function printInvoice(id){
+  const i=rechnungen.find(x=>x.id===id); if(!i) return;
+  const satz=betrieb?Number(betrieb.stundensatz):50, klein=betrieb?betrieb.kleinunternehmer:true;
+  el('printArea').innerHTML=`<div class="pdoc">
+    <div class="phead"><div><div class="pbetrieb">${betrieb?betrieb.name:''}</div><div class="pmeta">${betrieb?(betrieb.inhaber||''):''}<br>${betrieb?(betrieb.ort||''):''}</div></div><div class="ptitle">RECHNUNG</div></div>
+    <div class="pto"><b>An:</b> ${i.kunde||''}</div>
+    <div class="pnrline"><span>Rechnungsnummer: <b>${i.nummer||'—'}</b></span><span>Datum: ${i.datum||''}</span></div>
+    <table class="ptab"><thead><tr><th>Position</th><th>Menge</th><th>Einzelpreis</th><th>Betrag</th></tr></thead>
+    <tbody><tr><td>${i.positionstext||''}</td><td>${(''+i.stunden).replace('.',',')} Std</td><td>${eur(satz)}</td><td>${eur(i.betrag)}</td></tr></tbody></table>
+    <div class="psum">Gesamt: ${eur(i.betrag)}</div>
+    ${klein?'<div class="pnote">Gemäß § 6 Abs. 1 Z 27 UStG (Kleinunternehmer) wird keine Umsatzsteuer ausgewiesen.</div>':''}
+    <div class="pfoot">${betrieb?betrieb.name:''} · Vielen Dank für Ihren Auftrag.</div></div>`;
+  window.print();
+}
 function showInvoice(id){
   const i=rechnungen.find(x=>x.id===id);
   backBtn.style.display='block'; el('tabs').style.display='none'; el('barSub').textContent=i.nummer?('Rechnung '+i.nummer):'Beleg';
-  screen.innerHTML=`<div style="padding:4px 2px">${invoiceHTML(i)}</div>`;
+  screen.innerHTML=`<div style="padding:4px 2px">${invoiceHTML(i)}</div>`+(i.art==='rechnung'?`<div class="cta"><button class="btn btn-dark" onclick="printInvoice('${i.id}')">🖨  Drucken / als PDF speichern</button></div>`:'');
 }
 function invoiceHTML(i){
   const satz=betrieb?Number(betrieb.stundensatz):50, klein=betrieb?betrieb.kleinunternehmer:true;
@@ -378,7 +415,7 @@ async function finish(id,art){
          <div><span>✓</span> Kopie in deine Buchhaltung gelegt</div>
          <div><span>✓</span> Auftrag auf „erledigt" gesetzt</div>
        </div></div>
-       <div class="cta"><button class="btn btn-dark" onclick="showList()">Zurück zu den Aufträgen</button></div>`;
+       <div class="cta"><button class="btn btn-ghost" onclick="printInvoice('${rec.id}')">🖨  Drucken</button><button class="btn btn-dark" onclick="showList()">Zurück</button></div>`;
     screen.scrollTop=0;
   }catch(e){
     scrim.classList.remove('show');
