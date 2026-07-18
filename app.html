@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>ZeitZurück — Mein Betrieb</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="zeitzurueck-favicon.svg">
+<style>
+  @font-face{font-family:'Poppins';font-weight:400;src:url('poppins-400.woff2') format('woff2')}
+  @font-face{font-family:'Poppins';font-weight:500;src:url('poppins-500.woff2') format('woff2')}
+  @font-face{font-family:'Poppins';font-weight:600;src:url('poppins-600.woff2') format('woff2')}
+  :root{--sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;--petrol:#1A3A2B;--petrol-deep:#12281d;--ivory:#F7F4EB;--ivory-soft:#FBF9F3;--gold:#C9A054;--ink:#14221b;--muted:#5c6a63;--line:rgba(26,58,43,.13);--ok:#2f9e6f}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  body{font-family:var(--sans);background:#e7e3d8;color:var(--ink);display:flex;justify-content:center;min-height:100vh}
+  .phone{width:100%;max-width:460px;background:var(--ivory);min-height:100vh;position:relative;overflow:hidden;box-shadow:0 30px 80px rgba(22,46,39,.2);display:flex;flex-direction:column}
+  .demo{position:fixed;top:8px;left:50%;transform:translateX(-50%);background:rgba(18,40,29,.85);color:#fff;font-size:10.5px;padding:3px 11px;border-radius:999px;z-index:80;letter-spacing:.04em}
+
+  /* ---------- LOGIN ---------- */
+  #login{flex:1;background:var(--petrol);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 26px;gap:6px;position:relative}
+  #login:after{content:"";position:absolute;right:-16%;top:-12%;width:60%;height:45%;border-radius:50%;background:rgba(217,203,179,.05)}
+  #login img.logo{width:min(78%,270px);margin-bottom:6px;position:relative;z-index:1}
+  #login .sub{color:rgba(247,244,235,.66);font-size:14px;margin-bottom:26px;position:relative;z-index:1}
+  .lcard{background:var(--ivory);border-radius:20px;padding:22px 20px 20px;width:100%;box-shadow:0 18px 50px rgba(0,0,0,.22);position:relative;z-index:1}
+  .lcard h2{font-family:'Poppins';font-weight:600;font-size:19px;color:var(--petrol);margin-bottom:16px}
+  .field{margin-bottom:12px}
+  .field label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:5px;font-weight:500}
+  .field input{width:100%;border:1px solid var(--line);border-radius:12px;padding:13px 14px;font-size:15px;font-family:var(--sans);outline:none;background:#fff;color:var(--ink)}
+  .field input:focus{border-color:var(--petrol)}
+  .btn{width:100%;border:none;border-radius:999px;padding:15px;font-family:'Poppins';font-weight:600;font-size:15.5px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+  .btn-primary{background:var(--gold);color:var(--petrol-deep)}
+  .btn-dark{background:var(--petrol);color:var(--ivory)}
+  .btn-ghost{background:#fff;border:1.5px solid var(--line);color:var(--ink)}
+  .btn:active{transform:translateY(1px)}
+  .lhint{margin-top:12px;text-align:center;font-size:12px;color:var(--muted);line-height:1.5}
+  .lhint b{color:var(--petrol)}
+
+  /* ---------- APP ---------- */
+  #app{display:none;flex:1;flex-direction:column;min-height:100vh}
+  .bar{background:var(--petrol);color:var(--ivory);padding:14px 16px;display:flex;align-items:center;gap:11px;position:sticky;top:0;z-index:10}
+  .bar .mark{width:34px;height:34px;border-radius:50%;background:rgba(247,244,235,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .bar .mark img{width:18px;height:22px;display:block}
+  .bar .back{cursor:pointer;font-size:22px;width:22px;line-height:1}
+  .bar .ttl{font-family:'Poppins';font-weight:600;font-size:15.5px;line-height:1.15}
+  .bar .sub{font-size:11.5px;color:rgba(247,244,235,.6)}
+  .bar .spacer{flex:1}
+  .bar .out{font-size:12px;color:rgba(247,244,235,.7);cursor:pointer;border:1px solid rgba(247,244,235,.25);padding:6px 11px;border-radius:999px}
+  .tabs{display:flex;background:var(--petrol);padding:0 12px 10px;gap:8px}
+  .tab{flex:1;text-align:center;padding:9px;border-radius:999px;font-size:13.5px;font-weight:600;font-family:'Poppins';cursor:pointer;color:rgba(247,244,235,.7);background:rgba(247,244,235,.08)}
+  .tab.on{background:var(--gold);color:var(--petrol-deep)}
+  .screen{flex:1;overflow-y:auto;padding:16px 15px 100px}
+  .greet{font-family:'Poppins';font-weight:600;font-size:19px;color:var(--petrol);margin:4px 2px 2px}
+  .gsub{color:var(--muted);font-size:13.5px;margin:0 2px 14px}
+  .lbl{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:600;margin:16px 4px 9px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 15px;margin-bottom:11px;cursor:pointer;display:flex;gap:12px;align-items:flex-start;transition:transform .1s}
+  .card:active{transform:scale(.99)}
+  .card .ic{width:40px;height:40px;border-radius:12px;background:var(--ivory-soft);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--petrol)}
+  .card .info{flex:1;min-width:0}
+  .card .t1{font-family:'Poppins';font-weight:600;font-size:15px;color:var(--ink)}
+  .card .t2{font-size:13px;color:var(--muted);margin-top:1px}
+  .card .meta{font-size:12px;color:var(--muted);margin-top:6px;display:flex;gap:10px;flex-wrap:wrap}
+  .pill{font-size:10.5px;font-weight:700;padding:4px 9px;border-radius:999px;white-space:nowrap}
+  .pill.today{background:#fbf1d9;color:#8a6d24}
+  .pill.open{background:#eef3ee;color:var(--petrol)}
+  .pill.done{background:#e5f3ec;color:var(--ok)}
+  .pill.cash{background:#efeae0;color:#7a6636}
+  .chev{color:var(--muted);font-size:17px;align-self:center}
+  .empty{text-align:center;color:var(--muted);font-size:14px;padding:40px 20px;line-height:1.6}
+
+  /* detail */
+  .d-h{font-family:'Poppins';font-weight:600;font-size:21px;color:var(--petrol)}
+  .d-s{color:var(--muted);font-size:14.5px;margin-top:2px}
+  .rows{background:#fff;border:1px solid var(--line);border-radius:16px;padding:2px 15px;margin-top:16px}
+  .row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px;gap:14px}
+  .row:last-child{border:none}
+  .row .k{color:var(--muted);flex-shrink:0}
+  .row .v{font-family:'Poppins';font-weight:600;text-align:right}
+  .cta{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:460px;padding:13px 15px calc(15px + env(safe-area-inset-bottom));background:linear-gradient(to top,var(--ivory) 72%,transparent);display:flex;gap:9px}
+
+  /* sheet */
+  .scrim{position:fixed;inset:0;background:rgba(18,40,29,.45);display:none;align-items:flex-end;justify-content:center;z-index:60}
+  .scrim.show{display:flex}
+  .sheet{width:100%;max-width:460px;background:var(--ivory);border-radius:22px 22px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom));animation:up .28s ease}
+  @keyframes up{from{transform:translateY(100%)}to{transform:none}}
+  .sheet h3{font-family:'Poppins';font-weight:600;font-size:18px;color:var(--petrol)}
+  .sheet p.s{color:var(--muted);font-size:13.5px;margin:3px 0 14px}
+  .hours{display:flex;align-items:center;justify-content:center;gap:18px;margin:6px 0 16px}
+  .hours button{width:50px;height:50px;border-radius:50%;border:1.5px solid var(--line);background:#fff;font-size:25px;color:var(--petrol);cursor:pointer;font-weight:600}
+  .hours .val{font-family:'Poppins';font-weight:600;font-size:38px;min-width:118px;text-align:center}
+  .hours .val small{font-size:15px;color:var(--muted);font-weight:500}
+  .stack{display:flex;flex-direction:column;gap:9px}
+  .note{font-size:11.5px;color:var(--muted);text-align:center;margin-top:9px;line-height:1.5}
+
+  /* invoice */
+  .inv{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:14px;font-size:13px}
+  .inv .h{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:10px}
+  .inv .co{font-family:'Poppins';font-weight:600;color:var(--petrol);font-size:14px}
+  .inv .co small{display:block;font-weight:400;color:var(--muted);font-size:11px;margin-top:2px}
+  .inv .nr{text-align:right;color:var(--muted);font-size:11.5px}
+  .inv .li{display:flex;justify-content:space-between;padding:5px 0}
+  .inv .sum{display:flex;justify-content:space-between;border-top:2px solid var(--petrol);margin-top:7px;padding-top:9px;font-family:'Poppins';font-weight:600;font-size:15.5px;color:var(--petrol)}
+  .inv .kn{font-size:10.5px;color:var(--muted);margin-top:10px;line-height:1.5}
+  .done-hero{display:flex;flex-direction:column;align-items:center;text-align:center;padding:26px 20px 6px}
+  .done-hero .big{width:70px;height:70px;border-radius:50%;background:#e5f3ec;color:var(--ok);display:flex;align-items:center;justify-content:center;font-size:34px;margin-bottom:14px}
+  .done-hero h2{font-family:'Poppins';font-weight:600;color:var(--petrol);font-size:19px;margin-bottom:5px}
+  .done-hero p{color:var(--muted);font-size:13.5px;max-width:16em;line-height:1.5}
+  .checks{margin-top:16px;font-size:13px}
+  .checks div{padding:5px 0;display:flex;gap:9px}
+  .checks span{color:var(--ok);font-weight:700}
+</style>
+</head>
+<body>
+<div class="demo">DEMO · Testdaten · keine echte Anmeldung</div>
+<div class="phone">
+
+  <!-- LOGIN -->
+  <div id="login">
+    <img class="logo" src="zeitzurueck-logo-dark.svg" alt="ZeitZurück.at">
+    <div class="sub">Mein Betrieb</div>
+    <div class="lcard">
+      <h2>Anmelden</h2>
+      <div class="field"><label>E-Mail</label><input id="email" type="email" placeholder="ihre@firma.at" autocomplete="username"></div>
+      <div class="field"><label>Passwort</label><input id="pw" type="password" placeholder="••••••••" autocomplete="current-password"></div>
+      <button class="btn btn-primary" onclick="doLogin()">Anmelden</button>
+      <div class="lhint">Demo-Ansicht — <b>beliebige Eingabe genügt</b>.<br>Noch keine echte Anmeldung.</div>
+    </div>
+  </div>
+
+  <!-- APP -->
+  <div id="app">
+    <div class="bar">
+      <div class="back" id="backBtn" style="display:none" onclick="showList()">‹</div>
+      <div class="mark"><img src="zeitzurueck-icon.svg" alt=""></div>
+      <div>
+        <div class="ttl" id="barTitle">Montageservice &amp; Mehr</div>
+        <div class="sub" id="barSub">ZeitZurück Rundum</div>
+      </div>
+      <div class="spacer"></div>
+      <div class="out" onclick="logout()">Abmelden</div>
+    </div>
+    <div class="tabs" id="tabs">
+      <div class="tab on" id="tabJobs" onclick="setTab('jobs')">Aufträge</div>
+      <div class="tab" id="tabInv" onclick="setTab('inv')">Rechnungen</div>
+    </div>
+    <div class="screen" id="screen"></div>
+  </div>
+</div>
+
+<div class="scrim" id="scrim"><div class="sheet" id="sheet"></div></div>
+
+<script>
+/* ============================================================
+   CONFIG — der Betrieb. Ein Eintrag pro Kunde, wie überall bei ZeitZurück.
+   ============================================================ */
+const CONFIG = {
+  betrieb: "Montageservice & Mehr",
+  inhaber: "Alvin Ehrnberger",
+  ort: "3012 Wolfsgraben",
+  stundensatz: 50,                 // €/h  (aus konfig_werte)
+  kleinunternehmer: true,          // § 6 Abs 1 Z 27 UStG
+  rechnungKreis: "2026-0"
+};
+
+let jobs = [
+  { id:1, cust:"Familie Huber",    task:"Küchenmontage (Hängeschränke + Arbeitsplatte)", when:"Heute · 09:00", where:"1120 Wien",   est:"4–5 Std", status:"today", done:false },
+  { id:2, cust:"Frau Berger",      task:"Kleiderschrank PAX, 3-teilig",                  when:"Heute · 13:30", where:"2340 Mödling",est:"2–3 Std", status:"today", done:false },
+  { id:3, cust:"Café Sonnenschein",task:"6 Wandregale + Garderobe",                      when:"Fr · 10:00",    where:"1070 Wien",   est:"3 Std",   status:"open",  done:false },
+];
+let invoices = [
+  { nr:"2026-013", cust:"Herr Novak", task:"Bürostuhl + Aktenregal", hours:1.5, sum:75, art:"rechnung", datum:"14.07.2026" },
+];
+let invNo = 14, curHours = 3, tab = 'jobs';
+
+const boxIcon='<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/></svg>';
+const docIcon='<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg>';
+const pills={today:'<span class="pill today">Heute</span>',open:'<span class="pill open">Geplant</span>',done:'<span class="pill done">Erledigt ✓</span>',cash:'<span class="pill cash">Bar</span>'};
+const eur=n=>n.toLocaleString('de-AT',{minimumFractionDigits:2})+' €';
+
+const screen=document.getElementById('screen'), scrim=document.getElementById('scrim'), sheet=document.getElementById('sheet'), backBtn=document.getElementById('backBtn');
+
+function doLogin(){
+  document.getElementById('login').style.display='none';
+  document.getElementById('app').style.display='flex';
+  document.getElementById('barTitle').textContent=CONFIG.betrieb;
+  showList();
+}
+function logout(){
+  document.getElementById('app').style.display='none';
+  document.getElementById('login').style.display='flex';
+  document.getElementById('email').value=''; document.getElementById('pw').value='';
+}
+function setTab(t){
+  tab=t;
+  document.getElementById('tabJobs').classList.toggle('on',t==='jobs');
+  document.getElementById('tabInv').classList.toggle('on',t==='inv');
+  showList();
+}
+function showList(){
+  backBtn.style.display='none';
+  document.getElementById('tabs').style.display='flex';
+  document.getElementById('barSub').textContent='ZeitZurück Rundum';
+  screen.scrollTop=0;
+  if(tab==='jobs') return renderJobs();
+  renderInvoices();
+}
+function renderJobs(){
+  const open=jobs.filter(j=>!j.done), done=jobs.filter(j=>j.done);
+  screen.innerHTML=`
+    <div class="greet">Grüß dich, ${CONFIG.inhaber.split(' ')[0]} 👋</div>
+    <div class="gsub">${open.length} offene Aufträge${done.length?` · ${done.length} heute erledigt`:''}</div>
+    ${open.length?`<div class="lbl">Offen</div>${open.map(jobCard).join('')}`:'<div class="empty">Keine offenen Aufträge.<br>Zeit für eine Pause. 🌿</div>'}
+    ${done.length?`<div class="lbl">Erledigt</div>${done.map(jobCard).join('')}`:''}`;
+}
+function jobCard(j){
+  return `<div class="card" onclick="showJob(${j.id})">
+    <div class="ic">${boxIcon}</div>
+    <div class="info">
+      <div class="t1">${j.cust}</div><div class="t2">${j.task}</div>
+      <div class="meta"><span>🕒 ${j.when}</span><span>📍 ${j.where}</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:7px">${pills[j.status]}<span class="chev">›</span></div>
+  </div>`;
+}
+function renderInvoices(){
+  const total=invoices.reduce((a,b)=>a+b.sum,0);
+  screen.innerHTML=`
+    <div class="greet">Rechnungen</div>
+    <div class="gsub">${invoices.length} Belege · ${eur(total)} gesamt</div>
+    ${invoices.length?invoices.map(i=>`
+      <div class="card" onclick="showInvoice('${i.nr}')">
+        <div class="ic">${docIcon}</div>
+        <div class="info">
+          <div class="t1">${i.cust}</div><div class="t2">${i.task}</div>
+          <div class="meta"><span>Nr. ${i.nr}</span><span>${i.datum}</span></div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:7px">
+          <span style="font-family:'Poppins';font-weight:600;color:var(--petrol)">${eur(i.sum)}</span>
+          ${i.art==='bar'?pills.cash:pills.done}
+        </div>
+      </div>`).join(''):'<div class="empty">Noch keine Rechnungen.<br>Schließe einen Auftrag ab — die Rechnung entsteht automatisch.</div>'}`;
+}
+function showJob(id){
+  const j=jobs.find(x=>x.id===id);
+  backBtn.style.display='block';
+  document.getElementById('tabs').style.display='none';
+  document.getElementById('barSub').textContent=j.cust;
+  if(j.done){
+    const inv=invoices.find(i=>i.jobId===id);
+    screen.innerHTML=`<div style="padding:4px 2px">
+      <div class="d-h">${j.cust}</div><div class="d-s">${j.task}</div>
+      <div class="rows">
+        <div class="row"><span class="k">Status</span><span class="v" style="color:var(--ok)">Erledigt</span></div>
+        <div class="row"><span class="k">Geleistete Zeit</span><span class="v">${(j.hours+'').replace('.',',')} Std</span></div>
+        ${inv?`<div class="row"><span class="k">${inv.art==='bar'?'Bezahlung':'Rechnung'}</span><span class="v">${inv.art==='bar'?'Bar erhalten':'Nr. '+inv.nr}</span></div>
+        <div class="row"><span class="k">Betrag</span><span class="v">${eur(inv.sum)}</span></div>`:''}
+      </div></div>`;
+    return;
+  }
+  screen.innerHTML=`<div style="padding:4px 2px">
+    <div class="d-h">${j.cust}</div><div class="d-s">${j.task}</div>
+    <div class="rows">
+      <div class="row"><span class="k">Termin</span><span class="v">${j.when}</span></div>
+      <div class="row"><span class="k">Adresse</span><span class="v">${j.where}</span></div>
+      <div class="row"><span class="k">Geschätzte Dauer</span><span class="v">${j.est}</span></div>
+      <div class="row"><span class="k">Stundensatz</span><span class="v">${eur(CONFIG.stundensatz)} / Std</span></div>
+    </div>
+    <p style="color:var(--muted);font-size:13px;margin-top:14px">Wenn du fertig bist: „Arbeit abgeschlossen" tippen, echte Stunden eintragen — den Rest erledigt ZeitZurück.</p>
+  </div>
+  <div class="cta"><button class="btn btn-primary" onclick="openComplete(${j.id})">✓ Arbeit abgeschlossen</button></div>`;
+}
+function showInvoice(nr){
+  const i=invoices.find(x=>x.nr===nr);
+  backBtn.style.display='block';
+  document.getElementById('tabs').style.display='none';
+  document.getElementById('barSub').textContent='Rechnung '+i.nr;
+  screen.innerHTML=`<div style="padding:4px 2px">${invoiceHTML(i)}</div>`;
+}
+function invoiceHTML(i){
+  return `<div class="inv">
+    <div class="h">
+      <div class="co">${CONFIG.betrieb}<small>${CONFIG.inhaber} · ${CONFIG.ort}</small></div>
+      <div class="nr">${i.art==='bar'?'Beleg':'Rechnung'}<br><b>${i.nr}</b><br>${i.datum}</div>
+    </div>
+    <div style="color:var(--muted);font-size:11.5px;margin-bottom:7px">An: ${i.cust}</div>
+    <div class="li"><span>${i.task}</span></div>
+    <div class="li"><span>${(i.hours+'').replace('.',',')} Std × ${eur(CONFIG.stundensatz)}</span><span>${eur(i.sum)}</span></div>
+    <div class="sum"><span>Gesamt</span><span>${eur(i.sum)}</span></div>
+    ${CONFIG.kleinunternehmer?'<div class="kn">Gemäß § 6 Abs. 1 Z 27 UStG (Kleinunternehmer) wird keine Umsatzsteuer ausgewiesen.</div>':''}
+  </div>`;
+}
+function openComplete(id){
+  const j=jobs.find(x=>x.id===id); curHours=3;
+  sheet.innerHTML=`
+    <h3>Arbeit abgeschlossen</h3>
+    <p class="s">${j.cust} · ${j.task}</p>
+    <p class="s" style="margin-bottom:4px">Wie viele Stunden hast du tatsächlich gearbeitet?</p>
+    <div class="hours">
+      <button onclick="stepH(-0.5)">–</button>
+      <div class="val" id="hval">3<small> Std</small></div>
+      <button onclick="stepH(0.5)">+</button>
+    </div>
+    <div class="stack">
+      <button class="btn btn-primary" onclick="finish(${id},'rechnung')">Rechnung erstellen &amp; senden</button>
+      <button class="btn btn-ghost" onclick="finish(${id},'bar')">💶 Bar erhalten (Cash)</button>
+    </div>
+    <div class="note">Bar = Auftrag wird nur auf „erledigt" gesetzt.<br>ZeitZurück stellt <b>keinen</b> Beleg aus — dein Bargeld, dein Beleg.</div>`;
+  scrim.classList.add('show');
+}
+function stepH(d){ curHours=Math.max(0.5,curHours+d); document.getElementById('hval').innerHTML=(curHours+'').replace('.',',')+'<small> Std</small>'; }
+function finish(id,art){
+  const j=jobs.find(x=>x.id===id);
+  scrim.classList.remove('show');
+  j.done=true; j.status = art==='bar' ? 'cash' : 'done'; j.hours=curHours;
+  const sum=curHours*CONFIG.stundensatz;
+  const nr = art==='bar' ? '—' : CONFIG.rechnungKreis+(invNo++);
+  const rec={ nr:nr==='—'?('BAR-'+id):nr, jobId:id, cust:j.cust, task:j.task, hours:curHours, sum, art, datum:'17.07.2026' };
+  invoices.unshift(rec);
+  backBtn.style.display='none';
+  document.getElementById('tabs').style.display='none';
+  document.getElementById('barSub').textContent=j.cust;
+  screen.innerHTML = art==='bar' ? `
+    <div class="done-hero"><div class="big">✓</div><h2>Auftrag erledigt</h2><p>${j.cust} · bar bezahlt.</p>
+      <div class="checks" style="text-align:left">
+        <div><span>✓</span> Auftrag auf „erledigt" gesetzt</div>
+        <div style="color:var(--muted)"><span style="color:var(--muted)">–</span> Kein Beleg über ZeitZurück (Barzahlung)</div>
+      </div></div>
+    <div class="cta"><button class="btn btn-dark" onclick="showList()">Zurück</button></div>`
+  : `<div class="done-hero"><div class="big">✓</div><h2>Rechnung ${rec.nr} gesendet</h2><p>Alles erledigt — du musst nichts weiter tun.</p></div>
+     <div style="padding:0 2px">${invoiceHTML(rec)}</div>
+     <div class="done-hero"><div class="checks" style="text-align:left">
+       <div><span>✓</span> An ${j.cust} per E-Mail gesendet</div>
+       <div><span>✓</span> Kopie in deine Buchhaltung gelegt</div>
+       <div><span>✓</span> Auftrag auf „erledigt" gesetzt</div>
+     </div></div>
+     <div class="cta"><button class="btn btn-dark" onclick="showList()">Zurück zu den Aufträgen</button></div>`;
+  screen.scrollTop=0;
+}
+scrim.addEventListener('click',e=>{ if(e.target===scrim) scrim.classList.remove('show'); });
+document.getElementById('pw').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); });
+</script>
+</body>
+</html>
