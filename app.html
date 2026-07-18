@@ -10,13 +10,12 @@
   @font-face{font-family:'Poppins';font-weight:400;src:url('poppins-400.woff2') format('woff2')}
   @font-face{font-family:'Poppins';font-weight:500;src:url('poppins-500.woff2') format('woff2')}
   @font-face{font-family:'Poppins';font-weight:600;src:url('poppins-600.woff2') format('woff2')}
-  :root{--sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;--petrol:#1A3A2B;--petrol-deep:#12281d;--ivory:#F7F4EB;--ivory-soft:#FBF9F3;--gold:#C9A054;--ink:#14221b;--muted:#5c6a63;--line:rgba(26,58,43,.13);--ok:#2f9e6f}
+  :root{--sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;--petrol:#1A3A2B;--petrol-deep:#12281d;--ivory:#F7F4EB;--ivory-soft:#FBF9F3;--gold:#C9A054;--ink:#14221b;--muted:#5c6a63;--line:rgba(26,58,43,.13);--ok:#2f9e6f;--err:#c0473b}
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
   body{font-family:var(--sans);background:#e7e3d8;color:var(--ink);display:flex;justify-content:center;min-height:100vh}
   .phone{width:100%;max-width:460px;background:var(--ivory);min-height:100vh;position:relative;overflow:hidden;box-shadow:0 30px 80px rgba(22,46,39,.2);display:flex;flex-direction:column}
-  .demo{position:fixed;top:8px;left:50%;transform:translateX(-50%);background:rgba(18,40,29,.85);color:#fff;font-size:10.5px;padding:3px 11px;border-radius:999px;z-index:80;letter-spacing:.04em}
+  .flag{position:fixed;top:8px;left:50%;transform:translateX(-50%);background:rgba(18,40,29,.82);color:#fff;font-size:10.5px;padding:3px 11px;border-radius:999px;z-index:80;letter-spacing:.03em}
 
-  /* ---------- LOGIN ---------- */
   #login{flex:1;background:var(--petrol);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 26px;gap:6px;position:relative}
   #login:after{content:"";position:absolute;right:-16%;top:-12%;width:60%;height:45%;border-radius:50%;background:rgba(217,203,179,.05)}
   #login img.logo{width:min(78%,270px);margin-bottom:6px;position:relative;z-index:1}
@@ -28,18 +27,21 @@
   .field input{width:100%;border:1px solid var(--line);border-radius:12px;padding:13px 14px;font-size:15px;font-family:var(--sans);outline:none;background:#fff;color:var(--ink)}
   .field input:focus{border-color:var(--petrol)}
   .btn{width:100%;border:none;border-radius:999px;padding:15px;font-family:'Poppins';font-weight:600;font-size:15.5px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+  .btn:disabled{opacity:.6;cursor:default}
   .btn-primary{background:var(--gold);color:var(--petrol-deep)}
   .btn-dark{background:var(--petrol);color:var(--ivory)}
   .btn-ghost{background:#fff;border:1.5px solid var(--line);color:var(--ink)}
   .btn:active{transform:translateY(1px)}
-  .lhint{margin-top:12px;text-align:center;font-size:12px;color:var(--muted);line-height:1.5}
-  .lhint b{color:var(--petrol)}
+  .lmsg{margin-top:10px;text-align:center;font-size:12.5px;min-height:16px}
+  .lmsg.err{color:var(--err)}
+  .lmsg.ok{color:var(--ok)}
+  .ltoggle{margin-top:14px;text-align:center;font-size:13px;color:var(--muted)}
+  .ltoggle a{color:var(--petrol);font-weight:600;cursor:pointer;text-decoration:underline}
 
-  /* ---------- APP ---------- */
   #app{display:none;flex:1;flex-direction:column;min-height:100vh}
   .bar{background:var(--petrol);color:var(--ivory);padding:14px 16px;display:flex;align-items:center;gap:11px;position:sticky;top:0;z-index:10}
-  .bar .mark{width:34px;height:34px;border-radius:50%;background:rgba(247,244,235,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-  .bar .mark img{width:18px;height:22px;display:block}
+  .bar .mark{width:34px;height:34px;border-radius:50%;background:rgba(247,244,235,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
+  .bar .mark img{max-width:26px;max-height:26px;display:block}
   .bar .back{cursor:pointer;font-size:22px;width:22px;line-height:1}
   .bar .ttl{font-family:'Poppins';font-weight:600;font-size:15.5px;line-height:1.15}
   .bar .sub{font-size:11.5px;color:rgba(247,244,235,.6)}
@@ -66,8 +68,8 @@
   .pill.cash{background:#efeae0;color:#7a6636}
   .chev{color:var(--muted);font-size:17px;align-self:center}
   .empty{text-align:center;color:var(--muted);font-size:14px;padding:40px 20px;line-height:1.6}
+  .loading{text-align:center;color:var(--muted);font-size:14px;padding:50px 20px}
 
-  /* detail */
   .d-h{font-family:'Poppins';font-weight:600;font-size:21px;color:var(--petrol)}
   .d-s{color:var(--muted);font-size:14.5px;margin-top:2px}
   .rows{background:#fff;border:1px solid var(--line);border-radius:16px;padding:2px 15px;margin-top:16px}
@@ -77,7 +79,6 @@
   .row .v{font-family:'Poppins';font-weight:600;text-align:right}
   .cta{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:460px;padding:13px 15px calc(15px + env(safe-area-inset-bottom));background:linear-gradient(to top,var(--ivory) 72%,transparent);display:flex;gap:9px}
 
-  /* sheet */
   .scrim{position:fixed;inset:0;background:rgba(18,40,29,.45);display:none;align-items:flex-end;justify-content:center;z-index:60}
   .scrim.show{display:flex}
   .sheet{width:100%;max-width:460px;background:var(--ivory);border-radius:22px 22px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom));animation:up .28s ease}
@@ -91,7 +92,6 @@
   .stack{display:flex;flex-direction:column;gap:9px}
   .note{font-size:11.5px;color:var(--muted);text-align:center;margin-top:9px;line-height:1.5}
 
-  /* invoice */
   .inv{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:14px;font-size:13px}
   .inv .h{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:10px}
   .inv .co{font-family:'Poppins';font-weight:600;color:var(--petrol);font-size:14px}
@@ -110,29 +110,28 @@
 </style>
 </head>
 <body>
-<div class="demo">DEMO · Testdaten · keine echte Anmeldung</div>
+<div class="flag" id="flag">Live · Daten in Frankfurt/EU 🇪🇺</div>
 <div class="phone">
 
-  <!-- LOGIN -->
   <div id="login">
     <img class="logo" src="zeitzurueck-logo-dark.svg" alt="ZeitZurück.at">
     <div class="sub">Mein Betrieb</div>
     <div class="lcard">
-      <h2>Anmelden</h2>
+      <h2 id="lTitle">Anmelden</h2>
       <div class="field"><label>E-Mail</label><input id="email" type="email" placeholder="ihre@firma.at" autocomplete="username"></div>
       <div class="field"><label>Passwort</label><input id="pw" type="password" placeholder="••••••••" autocomplete="current-password"></div>
-      <button class="btn btn-primary" onclick="doLogin()">Anmelden</button>
-      <div class="lhint">Demo-Ansicht — <b>beliebige Eingabe genügt</b>.<br>Noch keine echte Anmeldung.</div>
+      <button class="btn btn-primary" id="lBtn" onclick="submitAuth()">Anmelden</button>
+      <div class="lmsg" id="lMsg"></div>
+      <div class="ltoggle" id="lToggle">Noch kein Zugang? <a onclick="setMode('signup')">Registrieren</a></div>
     </div>
   </div>
 
-  <!-- APP -->
   <div id="app">
     <div class="bar">
       <div class="back" id="backBtn" style="display:none" onclick="showList()">‹</div>
-      <div class="mark"><img src="zeitzurueck-icon.svg" alt=""></div>
+      <div class="mark" id="brandMark"><img src="zeitzurueck-icon.svg" alt=""></div>
       <div>
-        <div class="ttl" id="barTitle">Montageservice &amp; Mehr</div>
+        <div class="ttl" id="barTitle">…</div>
         <div class="sub" id="barSub">ZeitZurück Rundum</div>
       </div>
       <div class="spacer"></div>
@@ -148,195 +147,245 @@
 
 <div class="scrim" id="scrim"><div class="sheet" id="sheet"></div></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 /* ============================================================
-   CONFIG — der Betrieb. Ein Eintrag pro Kunde, wie überall bei ZeitZurück.
+   ZeitZurück Rundum — echtes Backend (Supabase, Frankfurt/EU)
+   Publishable Key ist bewusst öffentlich — geschützt durch RLS.
    ============================================================ */
-const CONFIG = {
-  betrieb: "Montageservice & Mehr",
-  inhaber: "Alvin Ehrnberger",
-  ort: "3012 Wolfsgraben",
-  stundensatz: 50,                 // €/h  (aus konfig_werte)
-  kleinunternehmer: true,          // § 6 Abs 1 Z 27 UStG
-  rechnungKreis: "2026-0"
-};
+const SUPA_URL = 'https://adggxentvqnnghiprlbt.supabase.co';
+const SUPA_KEY = 'sb_publishable_HKPpDfId-USe9EO28I34NA_QP2Fnd0D';
+const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
 
-let jobs = [
-  { id:1, cust:"Familie Huber",    task:"Küchenmontage (Hängeschränke + Arbeitsplatte)", when:"Heute · 09:00", where:"1120 Wien",   est:"4–5 Std", status:"today", done:false },
-  { id:2, cust:"Frau Berger",      task:"Kleiderschrank PAX, 3-teilig",                  when:"Heute · 13:30", where:"2340 Mödling",est:"2–3 Std", status:"today", done:false },
-  { id:3, cust:"Café Sonnenschein",task:"6 Wandregale + Garderobe",                      when:"Fr · 10:00",    where:"1070 Wien",   est:"3 Std",   status:"open",  done:false },
-];
-let invoices = [
-  { nr:"2026-013", cust:"Herr Novak", task:"Bürostuhl + Aktenregal", hours:1.5, sum:75, art:"rechnung", datum:"14.07.2026" },
-];
-let invNo = 14, curHours = 3, tab = 'jobs';
+let betrieb=null, auftraege=[], rechnungen=[], tab='jobs', curHours=3, mode='login';
 
 const boxIcon='<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/></svg>';
 const docIcon='<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg>';
-const pills={today:'<span class="pill today">Heute</span>',open:'<span class="pill open">Geplant</span>',done:'<span class="pill done">Erledigt ✓</span>',cash:'<span class="pill cash">Bar</span>'};
-const eur=n=>n.toLocaleString('de-AT',{minimumFractionDigits:2})+' €';
+const eur=n=>Number(n).toLocaleString('de-AT',{minimumFractionDigits:2})+' €';
+const el=id=>document.getElementById(id);
+const screen=el('screen'), scrim=el('scrim'), sheet=el('sheet'), backBtn=el('backBtn');
 
-const screen=document.getElementById('screen'), scrim=document.getElementById('scrim'), sheet=document.getElementById('sheet'), backBtn=document.getElementById('backBtn');
+function statusPill(s){
+  if(s==='erledigt') return '<span class="pill done">Erledigt ✓</span>';
+  if(s==='bar') return '<span class="pill cash">Bar</span>';
+  return '<span class="pill today">Offen</span>';
+}
+function fmtTermin(t){
+  if(!t) return '';
+  const d=new Date(t), now=new Date();
+  const hm=d.toLocaleTimeString('de-AT',{hour:'2-digit',minute:'2-digit'});
+  if(d.toDateString()===now.toDateString()) return 'Heute · '+hm;
+  const wd=['So','Mo','Di','Mi','Do','Fr','Sa'][d.getDay()];
+  return wd+' · '+hm;
+}
 
-function doLogin(){
-  document.getElementById('login').style.display='none';
-  document.getElementById('app').style.display='flex';
-  document.getElementById('barTitle').textContent=CONFIG.betrieb;
+/* ---------- Auth ---------- */
+function setMode(m){
+  mode=m;
+  el('lTitle').textContent = m==='signup' ? 'Registrieren' : 'Anmelden';
+  el('lBtn').textContent   = m==='signup' ? 'Konto erstellen' : 'Anmelden';
+  el('lToggle').innerHTML  = m==='signup'
+    ? 'Schon registriert? <a onclick="setMode(\'login\')">Anmelden</a>'
+    : 'Noch kein Zugang? <a onclick="setMode(\'signup\')">Registrieren</a>';
+  el('pw').setAttribute('autocomplete', m==='signup'?'new-password':'current-password');
+  msg('');
+}
+function msg(t,cls){ const m=el('lMsg'); m.textContent=t||''; m.className='lmsg'+(cls?(' '+cls):''); }
+
+async function submitAuth(){
+  const email=el('email').value.trim(), password=el('pw').value;
+  if(!email||!password){ msg('Bitte E-Mail und Passwort eingeben.','err'); return; }
+  el('lBtn').disabled=true; msg(mode==='signup'?'Konto wird erstellt…':'Anmeldung…');
+  try{
+    const fn = mode==='signup' ? sb.auth.signUp({email,password}) : sb.auth.signInWithPassword({email,password});
+    const { data, error } = await fn;
+    if(error) throw error;
+    if(!data.session){ msg('Bitte E-Mail bestätigen und erneut anmelden.','ok'); el('lBtn').disabled=false; return; }
+    await enterApp();
+  }catch(e){
+    msg(translateErr(e.message), 'err'); el('lBtn').disabled=false;
+  }
+}
+function translateErr(m){
+  if(/Invalid login/i.test(m)) return 'E-Mail oder Passwort falsch.';
+  if(/already registered/i.test(m)) return 'Diese E-Mail ist bereits registriert.';
+  if(/at least 6/i.test(m)) return 'Passwort muss mindestens 6 Zeichen haben.';
+  return m;
+}
+async function logout(){ await sb.auth.signOut(); location.reload(); }
+
+/* ---------- Daten ---------- */
+async function loadData(){
+  const [b,a,r] = await Promise.all([
+    sb.from('betriebe').select('*').limit(1),
+    sb.from('auftraege').select('*').order('termin',{ascending:true}),
+    sb.from('rechnungen').select('*').order('created_at',{ascending:false})
+  ]);
+  betrieb = (b.data&&b.data[0]) || null;
+  auftraege = a.data || [];
+  rechnungen = r.data || [];
+}
+async function enterApp(){
+  el('login').style.display='none';
+  el('app').style.display='flex';
+  screen.innerHTML='<div class="loading">Lade deinen Betrieb…</div>';
+  await loadData();
+  // White-Label: eigenes Logo, sonst Name
+  if(betrieb){
+    el('barTitle').textContent = betrieb.name;
+    if(betrieb.logo_url){ el('brandMark').innerHTML = '<img src="'+betrieb.logo_url+'" alt="">'; }
+  } else {
+    el('barTitle').textContent = 'Kein Betrieb verknüpft';
+  }
   showList();
 }
-function logout(){
-  document.getElementById('app').style.display='none';
-  document.getElementById('login').style.display='flex';
-  document.getElementById('email').value=''; document.getElementById('pw').value='';
-}
-function setTab(t){
-  tab=t;
-  document.getElementById('tabJobs').classList.toggle('on',t==='jobs');
-  document.getElementById('tabInv').classList.toggle('on',t==='inv');
-  showList();
-}
+
+/* ---------- Render ---------- */
+function setTab(t){ tab=t; el('tabJobs').classList.toggle('on',t==='jobs'); el('tabInv').classList.toggle('on',t==='inv'); showList(); }
 function showList(){
-  backBtn.style.display='none';
-  document.getElementById('tabs').style.display='flex';
-  document.getElementById('barSub').textContent='ZeitZurück Rundum';
-  screen.scrollTop=0;
-  if(tab==='jobs') return renderJobs();
-  renderInvoices();
+  backBtn.style.display='none'; el('tabs').style.display='flex'; el('barSub').textContent='ZeitZurück Rundum'; screen.scrollTop=0;
+  tab==='jobs' ? renderJobs() : renderInvoices();
 }
 function renderJobs(){
-  const open=jobs.filter(j=>!j.done), done=jobs.filter(j=>j.done);
+  const open=auftraege.filter(j=>j.status==='offen'), done=auftraege.filter(j=>j.status!=='offen');
+  const vorname=(betrieb&&betrieb.inhaber?betrieb.inhaber.split(' ')[0]:'');
   screen.innerHTML=`
-    <div class="greet">Grüß dich, ${CONFIG.inhaber.split(' ')[0]} 👋</div>
-    <div class="gsub">${open.length} offene Aufträge${done.length?` · ${done.length} heute erledigt`:''}</div>
+    <div class="greet">Grüß dich${vorname?', '+vorname:''} 👋</div>
+    <div class="gsub">${open.length} offene Aufträge${done.length?` · ${done.length} erledigt`:''}</div>
     ${open.length?`<div class="lbl">Offen</div>${open.map(jobCard).join('')}`:'<div class="empty">Keine offenen Aufträge.<br>Zeit für eine Pause. 🌿</div>'}
     ${done.length?`<div class="lbl">Erledigt</div>${done.map(jobCard).join('')}`:''}`;
 }
 function jobCard(j){
-  return `<div class="card" onclick="showJob(${j.id})">
+  return `<div class="card" onclick="showJob('${j.id}')">
     <div class="ic">${boxIcon}</div>
-    <div class="info">
-      <div class="t1">${j.cust}</div><div class="t2">${j.task}</div>
-      <div class="meta"><span>🕒 ${j.when}</span><span>📍 ${j.where}</span></div>
-    </div>
-    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:7px">${pills[j.status]}<span class="chev">›</span></div>
+    <div class="info"><div class="t1">${j.kunde}</div><div class="t2">${j.aufgabe||''}</div>
+      <div class="meta">${j.termin?`<span>🕒 ${fmtTermin(j.termin)}</span>`:''}${j.adresse?`<span>📍 ${j.adresse}</span>`:''}</div></div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:7px">${statusPill(j.status)}<span class="chev">›</span></div>
   </div>`;
 }
 function renderInvoices(){
-  const total=invoices.reduce((a,b)=>a+b.sum,0);
+  const total=rechnungen.filter(i=>i.art!=='bar').reduce((a,b)=>a+Number(b.betrag),0);
   screen.innerHTML=`
     <div class="greet">Rechnungen</div>
-    <div class="gsub">${invoices.length} Belege · ${eur(total)} gesamt</div>
-    ${invoices.length?invoices.map(i=>`
-      <div class="card" onclick="showInvoice('${i.nr}')">
+    <div class="gsub">${rechnungen.length} Belege · ${eur(total)} verrechnet</div>
+    ${rechnungen.length?rechnungen.map(i=>`
+      <div class="card" onclick="showInvoice('${i.id}')">
         <div class="ic">${docIcon}</div>
-        <div class="info">
-          <div class="t1">${i.cust}</div><div class="t2">${i.task}</div>
-          <div class="meta"><span>Nr. ${i.nr}</span><span>${i.datum}</span></div>
-        </div>
+        <div class="info"><div class="t1">${i.kunde||''}</div><div class="t2">${i.positionstext||''}</div>
+          <div class="meta"><span>${i.nummer?('Nr. '+i.nummer):'Barzahlung'}</span><span>${i.datum||''}</span></div></div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:7px">
-          <span style="font-family:'Poppins';font-weight:600;color:var(--petrol)">${eur(i.sum)}</span>
-          ${i.art==='bar'?pills.cash:pills.done}
-        </div>
+          <span style="font-family:'Poppins';font-weight:600;color:var(--petrol)">${eur(i.betrag)}</span>
+          ${i.art==='bar'?'<span class="pill cash">Bar</span>':'<span class="pill done">Rechnung</span>'}</div>
       </div>`).join(''):'<div class="empty">Noch keine Rechnungen.<br>Schließe einen Auftrag ab — die Rechnung entsteht automatisch.</div>'}`;
 }
 function showJob(id){
-  const j=jobs.find(x=>x.id===id);
-  backBtn.style.display='block';
-  document.getElementById('tabs').style.display='none';
-  document.getElementById('barSub').textContent=j.cust;
-  if(j.done){
-    const inv=invoices.find(i=>i.jobId===id);
-    screen.innerHTML=`<div style="padding:4px 2px">
-      <div class="d-h">${j.cust}</div><div class="d-s">${j.task}</div>
+  const j=auftraege.find(x=>x.id===id);
+  backBtn.style.display='block'; el('tabs').style.display='none'; el('barSub').textContent=j.kunde;
+  if(j.status!=='offen'){
+    const inv=rechnungen.find(i=>i.auftrag_id===id);
+    screen.innerHTML=`<div style="padding:4px 2px"><div class="d-h">${j.kunde}</div><div class="d-s">${j.aufgabe||''}</div>
       <div class="rows">
         <div class="row"><span class="k">Status</span><span class="v" style="color:var(--ok)">Erledigt</span></div>
-        <div class="row"><span class="k">Geleistete Zeit</span><span class="v">${(j.hours+'').replace('.',',')} Std</span></div>
-        ${inv?`<div class="row"><span class="k">${inv.art==='bar'?'Bezahlung':'Rechnung'}</span><span class="v">${inv.art==='bar'?'Bar erhalten':'Nr. '+inv.nr}</span></div>
-        <div class="row"><span class="k">Betrag</span><span class="v">${eur(inv.sum)}</span></div>`:''}
+        <div class="row"><span class="k">Geleistete Zeit</span><span class="v">${(''+j.stunden).replace('.',',')} Std</span></div>
+        ${inv?`<div class="row"><span class="k">${inv.art==='bar'?'Bezahlung':'Rechnung'}</span><span class="v">${inv.art==='bar'?'Bar erhalten':'Nr. '+inv.nummer}</span></div>
+        <div class="row"><span class="k">Betrag</span><span class="v">${eur(inv.betrag)}</span></div>`:''}
       </div></div>`;
     return;
   }
-  screen.innerHTML=`<div style="padding:4px 2px">
-    <div class="d-h">${j.cust}</div><div class="d-s">${j.task}</div>
+  const satz=betrieb?Number(betrieb.stundensatz):50;
+  screen.innerHTML=`<div style="padding:4px 2px"><div class="d-h">${j.kunde}</div><div class="d-s">${j.aufgabe||''}</div>
     <div class="rows">
-      <div class="row"><span class="k">Termin</span><span class="v">${j.when}</span></div>
-      <div class="row"><span class="k">Adresse</span><span class="v">${j.where}</span></div>
-      <div class="row"><span class="k">Geschätzte Dauer</span><span class="v">${j.est}</span></div>
-      <div class="row"><span class="k">Stundensatz</span><span class="v">${eur(CONFIG.stundensatz)} / Std</span></div>
+      ${j.termin?`<div class="row"><span class="k">Termin</span><span class="v">${fmtTermin(j.termin)}</span></div>`:''}
+      ${j.adresse?`<div class="row"><span class="k">Adresse</span><span class="v">${j.adresse}</span></div>`:''}
+      ${j.dauer_schaetzung?`<div class="row"><span class="k">Geschätzte Dauer</span><span class="v">${j.dauer_schaetzung}</span></div>`:''}
+      <div class="row"><span class="k">Stundensatz</span><span class="v">${eur(satz)} / Std</span></div>
     </div>
-    <p style="color:var(--muted);font-size:13px;margin-top:14px">Wenn du fertig bist: „Arbeit abgeschlossen" tippen, echte Stunden eintragen — den Rest erledigt ZeitZurück.</p>
-  </div>
-  <div class="cta"><button class="btn btn-primary" onclick="openComplete(${j.id})">✓ Arbeit abgeschlossen</button></div>`;
+    <p style="color:var(--muted);font-size:13px;margin-top:14px">Wenn du fertig bist: „Arbeit abgeschlossen" tippen, echte Stunden eintragen — den Rest erledigt ZeitZurück.</p></div>
+  <div class="cta"><button class="btn btn-primary" onclick="openComplete('${j.id}')">✓ Arbeit abgeschlossen</button></div>`;
 }
-function showInvoice(nr){
-  const i=invoices.find(x=>x.nr===nr);
-  backBtn.style.display='block';
-  document.getElementById('tabs').style.display='none';
-  document.getElementById('barSub').textContent='Rechnung '+i.nr;
+function showInvoice(id){
+  const i=rechnungen.find(x=>x.id===id);
+  backBtn.style.display='block'; el('tabs').style.display='none'; el('barSub').textContent=i.nummer?('Rechnung '+i.nummer):'Beleg';
   screen.innerHTML=`<div style="padding:4px 2px">${invoiceHTML(i)}</div>`;
 }
 function invoiceHTML(i){
+  const satz=betrieb?Number(betrieb.stundensatz):50, klein=betrieb?betrieb.kleinunternehmer:true;
   return `<div class="inv">
-    <div class="h">
-      <div class="co">${CONFIG.betrieb}<small>${CONFIG.inhaber} · ${CONFIG.ort}</small></div>
-      <div class="nr">${i.art==='bar'?'Beleg':'Rechnung'}<br><b>${i.nr}</b><br>${i.datum}</div>
-    </div>
-    <div style="color:var(--muted);font-size:11.5px;margin-bottom:7px">An: ${i.cust}</div>
-    <div class="li"><span>${i.task}</span></div>
-    <div class="li"><span>${(i.hours+'').replace('.',',')} Std × ${eur(CONFIG.stundensatz)}</span><span>${eur(i.sum)}</span></div>
-    <div class="sum"><span>Gesamt</span><span>${eur(i.sum)}</span></div>
-    ${CONFIG.kleinunternehmer?'<div class="kn">Gemäß § 6 Abs. 1 Z 27 UStG (Kleinunternehmer) wird keine Umsatzsteuer ausgewiesen.</div>':''}
-  </div>`;
+    <div class="h"><div class="co">${betrieb?betrieb.name:''}<small>${betrieb?(betrieb.inhaber||'')+' · '+(betrieb.ort||''):''}</small></div>
+      <div class="nr">${i.art==='bar'?'Beleg':'Rechnung'}<br><b>${i.nummer||'—'}</b><br>${i.datum||''}</div></div>
+    <div style="color:var(--muted);font-size:11.5px;margin-bottom:7px">An: ${i.kunde||''}</div>
+    <div class="li"><span>${i.positionstext||''}</span></div>
+    <div class="li"><span>${(''+i.stunden).replace('.',',')} Std × ${eur(satz)}</span><span>${eur(i.betrag)}</span></div>
+    <div class="sum"><span>Gesamt</span><span>${eur(i.betrag)}</span></div>
+    ${klein?'<div class="kn">Gemäß § 6 Abs. 1 Z 27 UStG (Kleinunternehmer) wird keine Umsatzsteuer ausgewiesen.</div>':''}</div>`;
 }
+
+/* ---------- Abschluss (schreibt in die Datenbank) ---------- */
 function openComplete(id){
-  const j=jobs.find(x=>x.id===id); curHours=3;
-  sheet.innerHTML=`
-    <h3>Arbeit abgeschlossen</h3>
-    <p class="s">${j.cust} · ${j.task}</p>
+  const j=auftraege.find(x=>x.id===id); curHours=3;
+  sheet.innerHTML=`<h3>Arbeit abgeschlossen</h3><p class="s">${j.kunde} · ${j.aufgabe||''}</p>
     <p class="s" style="margin-bottom:4px">Wie viele Stunden hast du tatsächlich gearbeitet?</p>
-    <div class="hours">
-      <button onclick="stepH(-0.5)">–</button>
-      <div class="val" id="hval">3<small> Std</small></div>
-      <button onclick="stepH(0.5)">+</button>
-    </div>
+    <div class="hours"><button onclick="stepH(-0.5)">–</button><div class="val" id="hval">3<small> Std</small></div><button onclick="stepH(0.5)">+</button></div>
     <div class="stack">
-      <button class="btn btn-primary" onclick="finish(${id},'rechnung')">Rechnung erstellen &amp; senden</button>
-      <button class="btn btn-ghost" onclick="finish(${id},'bar')">💶 Bar erhalten (Cash)</button>
+      <button class="btn btn-primary" id="cRech" onclick="finish('${id}','rechnung')">Rechnung erstellen &amp; senden</button>
+      <button class="btn btn-ghost" id="cBar" onclick="finish('${id}','bar')">💶 Bar erhalten (Cash)</button>
     </div>
     <div class="note">Bar = Auftrag wird nur auf „erledigt" gesetzt.<br>ZeitZurück stellt <b>keinen</b> Beleg aus — dein Bargeld, dein Beleg.</div>`;
   scrim.classList.add('show');
 }
-function stepH(d){ curHours=Math.max(0.5,curHours+d); document.getElementById('hval').innerHTML=(curHours+'').replace('.',',')+'<small> Std</small>'; }
-function finish(id,art){
-  const j=jobs.find(x=>x.id===id);
-  scrim.classList.remove('show');
-  j.done=true; j.status = art==='bar' ? 'cash' : 'done'; j.hours=curHours;
-  const sum=curHours*CONFIG.stundensatz;
-  const nr = art==='bar' ? '—' : CONFIG.rechnungKreis+(invNo++);
-  const rec={ nr:nr==='—'?('BAR-'+id):nr, jobId:id, cust:j.cust, task:j.task, hours:curHours, sum, art, datum:'17.07.2026' };
-  invoices.unshift(rec);
-  backBtn.style.display='none';
-  document.getElementById('tabs').style.display='none';
-  document.getElementById('barSub').textContent=j.cust;
-  screen.innerHTML = art==='bar' ? `
-    <div class="done-hero"><div class="big">✓</div><h2>Auftrag erledigt</h2><p>${j.cust} · bar bezahlt.</p>
-      <div class="checks" style="text-align:left">
-        <div><span>✓</span> Auftrag auf „erledigt" gesetzt</div>
-        <div style="color:var(--muted)"><span style="color:var(--muted)">–</span> Kein Beleg über ZeitZurück (Barzahlung)</div>
-      </div></div>
-    <div class="cta"><button class="btn btn-dark" onclick="showList()">Zurück</button></div>`
-  : `<div class="done-hero"><div class="big">✓</div><h2>Rechnung ${rec.nr} gesendet</h2><p>Alles erledigt — du musst nichts weiter tun.</p></div>
-     <div style="padding:0 2px">${invoiceHTML(rec)}</div>
-     <div class="done-hero"><div class="checks" style="text-align:left">
-       <div><span>✓</span> An ${j.cust} per E-Mail gesendet</div>
-       <div><span>✓</span> Kopie in deine Buchhaltung gelegt</div>
-       <div><span>✓</span> Auftrag auf „erledigt" gesetzt</div>
-     </div></div>
-     <div class="cta"><button class="btn btn-dark" onclick="showList()">Zurück zu den Aufträgen</button></div>`;
-  screen.scrollTop=0;
+function stepH(d){ curHours=Math.max(0.5,curHours+d); el('hval').innerHTML=(''+curHours).replace('.',',')+'<small> Std</small>'; }
+
+async function finish(id,art){
+  el('cRech').disabled=true; el('cBar').disabled=true;
+  const j=auftraege.find(x=>x.id===id);
+  const satz=betrieb?Number(betrieb.stundensatz):50;
+  const sum=curHours*satz;
+  try{
+    // 1) Auftrag aktualisieren
+    await sb.from('auftraege').update({ status: art==='bar'?'bar':'erledigt', stunden: curHours }).eq('id', id);
+    // 2) Rechnungsnummer (nur bei Rechnung, fortlaufend pro Betrieb)
+    let nummer=null;
+    if(art==='rechnung'){
+      const { count } = await sb.from('rechnungen').select('*',{count:'exact',head:true}).eq('art','rechnung');
+      nummer = (betrieb?betrieb.rechnung_kreis:'2026-') + String((count||0)+1).padStart(3,'0');
+    }
+    // 3) Beleg speichern
+    const { data:rec } = await sb.from('rechnungen').insert({
+      betrieb_id: betrieb.id, auftrag_id: id, nummer, kunde: j.kunde,
+      positionstext: j.aufgabe, stunden: curHours, betrag: sum, art
+    }).select().single();
+    scrim.classList.remove('show');
+    await loadData();
+    backBtn.style.display='none'; el('tabs').style.display='none'; el('barSub').textContent=j.kunde;
+    screen.innerHTML = art==='bar' ? `
+      <div class="done-hero"><div class="big">✓</div><h2>Auftrag erledigt</h2><p>${j.kunde} · bar bezahlt.</p>
+        <div class="checks" style="text-align:left">
+          <div><span>✓</span> Auftrag auf „erledigt" gesetzt</div>
+          <div style="color:var(--muted)"><span style="color:var(--muted)">–</span> Kein Beleg über ZeitZurück (Barzahlung)</div>
+        </div></div>
+      <div class="cta"><button class="btn btn-dark" onclick="showList()">Zurück</button></div>`
+    : `<div class="done-hero"><div class="big">✓</div><h2>Rechnung ${rec.nummer} gesendet</h2><p>Alles erledigt — du musst nichts weiter tun.</p></div>
+       <div style="padding:0 2px">${invoiceHTML(rec)}</div>
+       <div class="done-hero"><div class="checks" style="text-align:left">
+         <div><span>✓</span> An ${j.kunde} per E-Mail gesendet</div>
+         <div><span>✓</span> Kopie in deine Buchhaltung gelegt</div>
+         <div><span>✓</span> Auftrag auf „erledigt" gesetzt</div>
+       </div></div>
+       <div class="cta"><button class="btn btn-dark" onclick="showList()">Zurück zu den Aufträgen</button></div>`;
+    screen.scrollTop=0;
+  }catch(e){
+    scrim.classList.remove('show');
+    alert('Fehler beim Speichern: '+e.message);
+  }
 }
+
+/* ---------- Start ---------- */
 scrim.addEventListener('click',e=>{ if(e.target===scrim) scrim.classList.remove('show'); });
-document.getElementById('pw').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); });
+el('pw').addEventListener('keydown',e=>{ if(e.key==='Enter') submitAuth(); });
+(async function(){
+  const { data } = await sb.auth.getSession();
+  if(data.session) await enterApp();
+})();
 </script>
 </body>
 </html>
