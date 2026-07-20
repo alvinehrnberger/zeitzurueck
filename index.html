@@ -406,7 +406,7 @@
    ============================================================ */
 const CONFIG = {
   leadWebhook: "https://alvvyn.app.n8n.cloud/webhook/zeitzurueck-lead",
-  anfrageWebhook: "https://alvvyn.app.n8n.cloud/webhook/zeitzurueck-anfrage",  // Projektanfrage (Auswählen → Chat)
+  qualiWebhook: "https://alvvyn.app.n8n.cloud/webhook/zeitzurueck-qualifizierung",  // KI-Qualifizierung (Auswählen → Chat)
   setup: 999,          // einmalige Einrichtung (Aufbau des digitalen Front Office)
   /* USt / Umsatzsteuer — B2B, Nettopreise. Beim Überschreiten der
      Kleinunternehmergrenze (2026: 55.000 € brutto/Jahr) nur EIN Wert
@@ -626,54 +626,44 @@ function sendLead(kontakt){
   document.getElementById('againDone').onclick=start;
 }
 
-/* ---- Auswählen → Chat: Qualifizierung (chat-first, kein Formular) ---- */
+/* ---- Auswählen → Chat: KI-Qualifizierung (intelligent, fragt nichts doppelt) ---- */
 function startQualification(pkg){
   window.scrollTo({top:0, behavior:'smooth'});
   body.innerHTML=''; clearControls();
-  const data={ paket: pkg };
-  const steps=[
-    { key:'betrieb',         q:`Sehr gute Wahl – Paket <strong>${pkg}</strong>! 👋<br>Damit wir prüfen können, ob ZeitZurück zu Ihrem Betrieb passt, brauche ich ein paar kurze Angaben.<br><br>Wie heißt Ihr Betrieb?`, ph:'Firmenname' },
-    { key:'ansprechpartner', q:'Und wie ist Ihr Name?', ph:'Vor- und Nachname' },
-    { key:'email',           q:'Unter welcher <strong>E-Mail</strong> dürfen wir Sie erreichen?', ph:'name@betrieb.at', type:'email' },
-    { key:'telefon',         q:'Möchten Sie eine Telefonnummer für den Rückruf hinterlassen? (optional)', ph:'Telefonnummer', skip:true },
-    { key:'gewerbe',         q:'Welches Gewerbe haben Sie?', ph:'z. B. Maler, Installateur, Friseur …' },
-    { key:'ort',             q:'In welchem Ort bzw. welcher Region sind Sie tätig?', ph:'Ort / Region' },
-    { key:'anliegen',        q:'Was ist Ihre <strong>größte Herausforderung</strong>, bei der ZeitZurück helfen soll?', ph:'kurz beschreiben' },
-    { key:'wunschzeit',      q:'Wann passt Ihnen ein kurzes, kostenloses <strong>Erstgespräch</strong> am besten?', ph:'z. B. Mo–Fr vormittags' }
-  ];
-  let i=0;
-  (function nextStep(){
-    if(i>=steps.length){ submitQualification(data); return; }
-    const s=steps[i];
-    bot(s.q);
-    clearControls();
-    const wrap=document.createElement('div'); wrap.className='field-row';
-    const row=document.createElement('div'); row.className='chat-input';
-    const inp=document.createElement('input'); inp.type=s.type||'text'; inp.placeholder=s.ph;
-    const btn=document.createElement('button'); btn.innerHTML='→';
-    const go=()=>{ const v=inp.value.trim(); if(!v && !s.skip) return; data[s.key]=v; user(v||'—'); i++; nextStep(); };
-    btn.onclick=go; inp.addEventListener('keydown',e=>{ if(e.key==='Enter') go(); });
-    row.appendChild(inp); row.appendChild(btn); wrap.appendChild(row); controls.appendChild(wrap);
-    if(s.skip){
-      const sk=document.createElement('button'); sk.className='chip'; sk.textContent='überspringen';
-      sk.style.marginTop='10px';
-      sk.onclick=()=>{ data[s.key]=''; user('—'); i++; nextStep(); };
-      controls.appendChild(sk);
-    }
-    setTimeout(()=>{ inp.focus({preventScroll:true}); if(i===0) body.scrollTop=0; },60);
-  })();
+  const sessionId = 'quali-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8);
+  bot(`Sehr gute Wahl – Paket <strong>${pkg}</strong>! 👋<br>Erzählen Sie mir kurz von Ihrem Betrieb – ich prüfe für Alvin, ob ZeitZurück zu Ihnen passt. Was bieten Sie an?`);
+  setTimeout(()=>{ body.scrollTop=0; }, 60);
+  qualiInput(pkg, sessionId);
 }
 
-function submitQualification(data){
+function qualiTyping(){
+  const el=document.createElement('div'); el.className='msg bot';
+  el.innerHTML='<span style="opacity:.55">…</span>';
+  body.appendChild(el); body.scrollTop=body.scrollHeight; return el;
+}
+
+function qualiInput(pkg, sessionId){
   clearControls();
-  if(CONFIG.anfrageWebhook){
-    fetch(CONFIG.anfrageWebhook,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).catch(()=>{});
-  }
-  bot(`Vielen Dank, ${data.ansprechpartner||''}! 🌿 Ihre Anfrage für Paket <strong>${data.paket}</strong> ist bei uns.<br>Wir prüfen kurz, ob ZeitZurück zu Ihrem Betrieb passt, und Alvin meldet sich persönlich für Ihr kostenloses Erstgespräch.<br><span style="font-size:13px;color:var(--muted)">Das ist noch kein Vertrag – erst nach dem Gespräch erhalten Sie Ihr individuelles Angebot.</span>`, 'result');
-  const box=document.createElement('div'); box.className='chips';
-  box.innerHTML=`<button class="chip" id="qBackCalc">Zurück zum Rechner</button>`;
-  controls.appendChild(box);
-  document.getElementById('qBackCalc').onclick=start;
+  const wrap=document.createElement('div'); wrap.className='field-row';
+  const row=document.createElement('div'); row.className='chat-input';
+  const inp=document.createElement('input'); inp.type='text'; inp.placeholder='Ihre Antwort …';
+  const btn=document.createElement('button'); btn.innerHTML='→';
+  let busy=false;
+  const go=async ()=>{
+    const v=inp.value.trim(); if(!v||busy) return;
+    busy=true; user(v); inp.value='';
+    const t=qualiTyping();
+    try{
+      const r=await fetch(CONFIG.qualiWebhook,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:v, sessionId, paket:pkg})});
+      const d=await r.json(); t.remove(); bot((d && d.reply) || 'Vielen Dank!');
+    }catch(e){ t.remove(); bot('Entschuldigung, das hat gerade nicht geklappt. Bitte versuchen Sie es erneut oder schreiben Sie an office@zeitzurueck.at.'); }
+    busy=false; inp.focus({preventScroll:true});
+  };
+  btn.onclick=go; inp.addEventListener('keydown',e=>{ if(e.key==='Enter') go(); });
+  row.appendChild(inp); row.appendChild(btn); wrap.appendChild(row); controls.appendChild(wrap);
+  const back=document.createElement('button'); back.className='chip'; back.textContent='Zurück zum Rechner'; back.style.marginTop='10px';
+  back.onclick=start; controls.appendChild(back);
+  setTimeout(()=>inp.focus({preventScroll:true}),60);
 }
 
 start();
