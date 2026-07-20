@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- ===== SEO ===== -->
+  <title>Live-Demo · So könnte Ihre Seite aussehen | ZeitZurück.at</title>
+  <meta name="description" content="Live-Demo von ZeitZurück.at – so könnte die Website Ihres Betriebs aussehen. Probieren Sie den KI-Chat aus, der Anfragen aufnimmt und Termine findet.">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="So könnte Ihre Seite aussehen – ZeitZurück.at Live-Demo">
+  <meta property="og:description" content="Probieren Sie den ZeitZurück-Chat live aus – so nimmt er auf Ihrer eigenen Seite Anfragen auf.">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="de_AT">
+  <!-- PLATZHALTER: og:image und og:url ergänzen, sobald die finale Domain steht -->
+
+  <!-- PLATZHALTER: Favicon — eigene Datei ersetzen (favicon.svg / favicon.ico) -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23F4EFE5'/><text x='50' y='68' font-size='52' text-anchor='middle' font-family='Helvetica,Arial,sans-serif' fill='%231C1B18' font-weight='bold'>AE</text></svg>">
+
+  <style>
+    /* ============================================================
+       ALVIN EHRNBERGER — MONTAGESERVICE & MEHR  (v2)
+       Design-System: abgeleitet von der Visitenkarte
+       Ivory-Hintergrund · fast-schwarze Typografie · Messing-Akzente
+       ============================================================ */
+
+    :root {
+      --ivory:       #F4EFE5;
+      --ivory-deep:  #EDE6D8;
+      --ink:         #1C1B18;
+      --ink-soft:    #4A4740;
+      --brass:       #A9853C;
+      --brass-soft:  #C7A96B;
+      --maxw: 62rem;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+
+    body {
+      background: var(--ivory);
+      color: var(--ink);
+      font-family: "Avenir Next", "Helvetica Neue", Helvetica, "Segoe UI", Arial, sans-serif;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    .wrap {
+      max-width: var(--maxw);
+      margin-inline: auto;
+      padding-inline: clamp(1.25rem, 5vw, 3rem);
+    }
+
+    .rule {
+      width: 5.5rem;
+      height: 1px;
+      background: var(--brass);
+      border: none;
+      margin: 1.4rem auto;
+    }
+    .rule--left { margin-inline: 0; }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: none; }
+    }
+    .rise { animation: rise 0.9s ease both; }
+    .rise-2 { animation-delay: 0.15s; }
+    .rise-3 { animation-delay: 0.3s; }
+
+    /* ============================== HERO ============================== */
+    .hero {
+      display: grid;
+      place-content: center;
+      text-align: center;
+      padding-block: clamp(2rem, 5vh, 3rem) clamp(1.4rem, 3vh, 2rem);
+    }
+
+    .hero h1 {
+      font-size: clamp(1.25rem, 4.6vw, 2.9rem);
+      font-weight: 700;
+      letter-spacing: clamp(0.06em, 0.9vw, 0.16em);
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .hero .tagline {
+      font-size: clamp(0.85rem, 2.4vw, 1.15rem);
+      letter-spacing: clamp(0.28em, 1.2vw, 0.42em);
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      font-weight: 500;
+    }
+
+    .hero .lead {
+      max-width: 34rem;
+      margin: 1rem auto 0;
+      color: var(--ink-soft);
+      font-size: 1rem;
+    }
+
+    .cta-row {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 2.6rem;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.9rem 2.2rem;
+      font-size: 0.95rem;
+      letter-spacing: 0.08em;
+      text-decoration: none;
+      border: 1px solid var(--ink);
+      color: var(--ink);
+      background: transparent;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+    .btn--solid { background: var(--ink); color: var(--ivory); }
+    .btn:hover, .btn:focus-visible { background: var(--brass); border-color: var(--brass); color: var(--ivory); }
+    .btn:focus-visible { outline: 3px solid var(--brass); outline-offset: 3px; }
+
+    /* ============================== SECTIONS ============================== */
+    section { padding-block: clamp(3.5rem, 9vh, 6rem); }
+
+    .kicker {
+      display: block;
+      font-size: 0.78rem;
+      letter-spacing: 0.34em;
+      text-transform: uppercase;
+      color: var(--brass);
+      font-weight: 600;
+      margin-bottom: 0.9rem;
+    }
+
+    h2 {
+      font-size: clamp(1.4rem, 3.5vw, 2rem);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .intro p { max-width: 40rem; color: var(--ink-soft); font-size: 1.08rem; }
+
+    /* ---------- Leistungen ---------- */
+    .services { background: var(--ivory-deep); }
+
+    .service-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+      gap: 1.1rem;
+      margin-top: 2.4rem;
+    }
+
+    .card {
+      background: var(--ivory);
+      border: 1px solid rgba(169, 133, 60, 0.35);
+      padding: 1.8rem 1.6rem;
+    }
+    .card h3 { font-size: 1.02rem; letter-spacing: 0.06em; font-weight: 600; margin-bottom: 0.5rem; }
+    .card p { color: var(--ink-soft); font-size: 0.95rem; }
+
+    .services .note { margin-top: 1.6rem; font-size: 0.88rem; color: var(--ink-soft); font-style: italic; }
+
+    /* ---------- Ablauf ---------- */
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+      gap: 1.4rem;
+      margin-top: 2.4rem;
+      counter-reset: step;
+    }
+    .step { text-align: center; }
+    .step::before {
+      counter-increment: step;
+      content: counter(step, decimal-leading-zero);
+      display: block;
+      font-size: 0.85rem;
+      letter-spacing: 0.2em;
+      color: var(--brass);
+      font-weight: 600;
+      margin-bottom: 0.6rem;
+    }
+    .step h3 { font-size: 1rem; font-weight: 600; letter-spacing: 0.05em; }
+
+    /* ---------- Digital ---------- */
+    .digital { background: var(--ivory-deep); }
+    .digital p { max-width: 40rem; color: var(--ink-soft); font-size: 1.02rem; }
+
+    /* ---------- Einsatzgebiet ---------- */
+    .area { text-align: center; }
+    .area p {
+      font-size: clamp(1.1rem, 3vw, 1.5rem);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    /* ============================== CHAT-KONTAKT (Prompt-Stil) ============================== */
+    .contact { background: var(--ivory-deep); }
+    .contact-head { text-align: center; }
+
+    .chat-title {
+      text-align: center;
+      font-size: clamp(1.35rem, 3.2vw, 2rem);
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      margin-bottom: 1.6rem;
+    }
+
+    .chat-log {
+      max-width: 38rem;
+      margin: 0 auto 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      max-height: 20rem;
+      overflow-y: auto;
+      padding: 0.2rem;
+    }
+    .chat-log[hidden] { display: none; }
+
+    .msg {
+      max-width: 85%;
+      padding: 0.75rem 1.1rem;
+      font-size: 0.97rem;
+      line-height: 1.5;
+      animation: rise 0.4s ease both;
+    }
+    .msg--bot {
+      align-self: flex-start;
+      background: var(--ivory);
+      border-radius: 1.1rem;
+      border-bottom-left-radius: 0.3rem;
+    }
+    .msg--user {
+      align-self: flex-end;
+      background: var(--ink);
+      color: var(--ivory);
+      border-radius: 1.1rem;
+      border-bottom-right-radius: 0.3rem;
+    }
+
+    .chat-bar {
+      max-width: 38rem;
+      margin: 0 auto;
+      position: relative;
+      display: block;
+      background: var(--ivory);
+      border: 1px solid rgba(169, 133, 60, 0.5);
+      border-radius: 1.2rem;
+      padding: 1.15rem 1.4rem 3.6rem;
+      box-shadow: 0 8px 24px rgba(28, 27, 24, 0.06);
+      transition: border-color 0.2s ease;
+    }
+    .chat-bar:focus-within { border-color: var(--brass); }
+    .chat-bar input {
+      width: 100%;
+      border: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: 1rem;
+      color: var(--ink);
+      padding: 0;
+      min-width: 0;
+    }
+    .chat-bar input:focus { outline: none; }
+    .chat-bar button {
+      position: absolute;
+      right: 0.7rem;
+      bottom: 0.7rem;
+      width: 2.6rem;
+      height: 2.6rem;
+      border-radius: 0.85rem;
+      border: none;
+      background: var(--ink);
+      color: var(--ivory);
+      font-size: 1.25rem;
+      line-height: 1;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .chat-bar button:hover, .chat-bar button:focus-visible { background: var(--brass); }
+    .chat-bar button:focus-visible { outline: 3px solid var(--brass); outline-offset: 2px; }
+    .chat-bar button:disabled { opacity: 0.5; cursor: default; }
+
+    /* ---------- Vorschlags-Chips (Pillen) ---------- */
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-top: 1.1rem;
+    }
+    .chip {
+      border: 1px solid rgba(169, 133, 60, 0.6);
+      border-radius: 999px;
+      background: var(--ivory);
+      color: var(--ink);
+      font-family: inherit;
+      font-size: 0.85rem;
+      letter-spacing: 0.03em;
+      padding: 0.5rem 1.05rem;
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    .chip:hover, .chip:focus-visible { background: var(--brass); border-color: var(--brass); color: var(--ivory); }
+    .chip:focus-visible { outline: 3px solid var(--brass); outline-offset: 2px; }
+
+    .chat-hint {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--ink-soft);
+      margin-top: 1.2rem;
+    }
+    .chat-hint a { color: var(--ink-soft); }
+
+    /* ---------- Footer ---------- */
+    footer {
+      background: var(--ink);
+      color: var(--ivory);
+      padding-block: 2.2rem;
+      font-size: 0.85rem;
+    }
+    footer .wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: space-between;
+      align-items: center;
+    }
+    footer .powered { opacity: 0.7; letter-spacing: 0.06em; }
+    footer nav a {
+      color: var(--ivory);
+      opacity: 0.85;
+      margin-left: 1.4rem;
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+    }
+    footer nav a:hover, footer nav a:focus-visible { border-color: var(--brass); opacity: 1; }
+  </style>
+</head>
+
+<body>
+  <!-- ZeitZurück Live-Demo banner -->
+  <div style="position:sticky;top:0;z-index:9999;background:#1A3A2B;color:#F7F4EB;text-align:center;padding:11px 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;font-size:14px;line-height:1.45">
+    <strong>Live-Demo</strong> · So könnte Ihre Seite aussehen — probieren Sie den Chat unten aus.
+    <a href="https://zeitzurueck.at" style="color:#C9A054;text-decoration:none;font-weight:600;white-space:nowrap;margin-left:6px">erstellt mit ZeitZurück.at ›</a>
+  </div>
+
+  <!-- ============================== HERO ============================== -->
+  <header class="hero wrap">
+    <div>
+      <h1 class="rise">Ihr Unternehmen</h1>
+      <hr class="rule rise-2" aria-hidden="true">
+      <p class="tagline rise-2">So könnte Ihre Seite aussehen</p>
+      <p class="lead rise-3">Ihr Slogan, Ihre Leistungen, Ihr Auftritt – und ein Chat, der rund um die Uhr Anfragen aufnimmt.</p>
+    </div>
+  </header>
+
+  <!-- ============================== KONTAKT (CHAT) ============================== -->
+  <section class="contact" id="kontakt" style="padding-block: clamp(2.2rem, 5vh, 3.5rem) clamp(3rem, 7vh, 5rem);">
+    <div class="wrap">
+      <div class="contact-head">
+        <span class="kicker">Kontakt</span>
+      </div>
+
+      <h2 class="chat-title rise-2" id="chatTitle">Wie kann ich Ihnen helfen?</h2>
+
+      <div class="chat-log" id="chatLog" aria-live="polite" hidden></div>
+
+      <form class="chat-bar rise-3" id="chatForm" aria-label="Kontakt-Chat">
+        <input type="text" id="chatInput" autocomplete="off"
+               placeholder="Beschreiben Sie Ihr Vorhaben in ein paar Worten …"
+               aria-label="Nachricht eingeben" required>
+        <button type="submit" id="chatSend" aria-label="Senden">↑</button>
+      </form>
+
+      <div class="chips rise-3" id="chatChips" aria-label="Vorschläge">
+        <button type="button" class="chip">Möbel aufbauen</button>
+        <button type="button" class="chip">Auf- oder Abbau</button>
+        <button type="button" class="chip">Etwas anderes</button>
+      </div>
+
+      <p class="chat-hint">Das ist eine Live-Demo: Schreiben Sie dem Chat wie ein echter Kunde – so nimmt er auf Ihrer eigenen Seite Anfragen auf, stellt Rückfragen und schlägt Termine vor.</p>
+    </div>
+  </section>
+
+  <!-- ============================== INTRO ============================== -->
+  <section class="intro" id="ueber">
+    <div class="wrap">
+      <span class="kicker">Worum es geht</span>
+      <h2>Anpacken, wo Unterstützung gebraucht wird.</h2>
+      <hr class="rule rule--left" aria-hidden="true">
+      <p>Ich unterstütze Privatkundinnen, Privatkunden und kleine Betriebe in Wien und Niederösterreich bei praktischen Aufgaben – verlässlich, unkompliziert und auf Augenhöhe. Kein großes Unternehmen, kein Callcenter: Sie schreiben direkt mir, wir stimmen ab, was gebraucht wird, und dann wird es erledigt.</p>
+    </div>
+  </section>
+
+  <!-- ============================== LEISTUNGEN ==============================
+       HINWEIS ZUM BEARBEITEN:
+       Die vier Karten sind PLATZHALTER-Kategorien. Endgültige Leistungen
+       werden später festgelegt. Zum Ändern: <h3> und <p> austauschen.
+       Keine reglementierten Gewerbe eintragen (Elektro, Installateur, Bau …).
+  ======================================================================= -->
+  <section class="services" id="leistungen">
+    <div class="wrap">
+      <span class="kicker">Leistungen</span>
+      <h2>Was ich für Sie tun kann.</h2>
+      <hr class="rule rule--left" aria-hidden="true">
+
+      <div class="service-grid">
+        <div class="card">
+          <h3>Montagearbeiten</h3>
+          <p>Möbel, Regale und Alltagsgegenstände – sorgfältig montiert.</p>
+        </div>
+        <div class="card">
+          <h3>Auf- &amp; Abbau</h3>
+          <p>Unterstützung bei Auf- und Abbau – von einzelnen Stücken bis zum kompletten Umbau.</p>
+        </div>
+        <div class="card">
+          <h3>Praktische Unterstützung</h3>
+          <p>Helfende Hände für Aufgaben, die alleine schwer zu stemmen sind.</p>
+        </div>
+        <div class="card">
+          <h3>Individuelle Hilfe nach Absprache</h3>
+          <p>Sie haben etwas anderes im Kopf? Fragen Sie einfach – wir finden eine Lösung.</p>
+        </div>
+      </div>
+
+      <p class="note">Das genaue Leistungsangebot wird laufend erweitert – am besten direkt anfragen.</p>
+    </div>
+  </section>
+
+  <!-- ============================== ABLAUF ============================== -->
+  <section class="how" id="ablauf">
+    <div class="wrap">
+      <span class="kicker">So einfach geht’s</span>
+      <h2>Von der Anfrage bis zur erledigten Arbeit.</h2>
+      <hr class="rule rule--left" aria-hidden="true">
+
+      <div class="steps-grid">
+        <div class="step"><h3>Anfrage</h3></div>
+        <div class="step"><h3>Kurz abstimmen</h3></div>
+        <div class="step"><h3>Termin vereinbaren</h3></div>
+        <div class="step"><h3>Erledigen</h3></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== DIGITAL ============================== -->
+  <section class="digital" id="digital">
+    <div class="wrap">
+      <span class="kicker">Auch digital</span>
+      <h2>Moderne Abläufe, altmodische Verlässlichkeit.</h2>
+      <hr class="rule rule--left" aria-hidden="true">
+      <p>Hinter diesem kleinen Betrieb stecken moderne, automatisierte Abläufe – Ihre Anfrage landet in Sekunden direkt bei mir. Dieselbe Unterstützung biete ich auch anderen kleinen Betrieben: wiederkehrende Aufgaben automatisieren, damit mehr Zeit für die eigentliche Arbeit bleibt. Bei Interesse einfach im Chat erwähnen.</p>
+    </div>
+  </section>
+
+  <!-- ============================== EINSATZGEBIET ============================== -->
+  <section class="area" id="gebiet">
+    <div class="wrap">
+      <span class="kicker">Einsatzgebiet</span>
+      <p>Wien &amp; Niederösterreich</p>
+    </div>
+  </section>
+
+  <!-- ============================== FOOTER ============================== -->
+  <footer>
+    <div class="wrap">
+      <p>© 2026 ZeitZurück.at · Live-Demo (Musterbetrieb)<br>
+         <span class="powered">Powered by ZeitZurück.at</span></p>
+      <nav aria-label="Rechtliches">
+        <a href="impressum.html">Impressum</a>
+        <a href="datenschutz.html">Datenschutz</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+    /* ============================================================
+       KI-Chat → n8n (Alvvyn Automation / ZeitZurück)  v3
+       Die gesamte Gesprächsführung lebt serverseitig im n8n-Workflow
+       "Montageservice – KI-Chat (v2a)". Diese Seite sendet nur
+       {sessionId, message} und zeigt die Antwort an.
+       ============================================================ */
+    (function () {
+      var WEBHOOK_URL = "https://alvvyn.app.n8n.cloud/webhook/demo-chat";
+
+      var log   = document.getElementById("chatLog");
+      var form  = document.getElementById("chatForm");
+      var input = document.getElementById("chatInput");
+      var send  = document.getElementById("chatSend");
+      var chips = document.getElementById("chatChips");
+      var title = document.getElementById("chatTitle");
+
+      var sessionId = "web-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 10);
+      var erste = true;
+      var wartet = false;
+
+      function addMsg(text, who) {
+        var el = document.createElement("div");
+        el.className = "msg msg--" + who;
+        el.textContent = text;
+        log.appendChild(el);
+        log.scrollTop = log.scrollHeight;
+        return el;
+      }
+
+      function sende(text) {
+        if (wartet) return;
+        if (log.hidden) log.hidden = false;
+        if (erste) {
+          if (title) title.style.display = "none";
+          if (chips) chips.style.display = "none";
+          erste = false;
+        }
+        addMsg(text, "user");
+        input.value = "";
+        wartet = true;
+        send.disabled = true;
+
+        var denker = addMsg("…", "bot");
+
+        fetch(WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sessionId: sessionId, message: text, seite: "demo" })
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          denker.textContent = (data && data.reply)
+            ? data.reply
+            : "Vielen Dank! Ihre Nachricht ist angekommen.";
+        })
+        .catch(function () {
+          denker.textContent = "Entschuldigung – die Verbindung hat gerade nicht geklappt. Bitte versuchen Sie es gleich noch einmal oder nutzen Sie die Kontaktdaten im Impressum.";
+        })
+        .finally(function () {
+          wartet = false;
+          send.disabled = false;
+          input.focus();
+          log.scrollTop = log.scrollHeight;
+        });
+      }
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var text = input.value.trim();
+        if (!text) return;
+        sende(text);
+      });
+
+      /* Vorschlags-Chips: Klick = erste Nachricht */
+      if (chips) {
+        chips.addEventListener("click", function (e) {
+          var btn = e.target.closest(".chip");
+          if (!btn) return;
+          sende(btn.textContent.trim());
+        });
+      }
+    })();
+  </script>
+
+</body>
+</html>
