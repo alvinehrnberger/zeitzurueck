@@ -132,14 +132,17 @@
 
     .service-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 1.1rem;
       margin-top: 2.4rem;
     }
+    @media (max-width: 860px) { .service-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 480px) { .service-grid { grid-template-columns: 1fr; } }
 
     .card {
       background: var(--ivory);
       border: 1px solid rgba(46, 111, 142, 0.32);
+      border-radius: 0.9rem;
       padding: 1.8rem 1.6rem;
     }
     .card h3 { font-size: 1.02rem; letter-spacing: 0.06em; font-weight: 600; margin-bottom: 0.5rem; }
@@ -330,7 +333,7 @@
   <!-- ZeitZurück Live-Demo banner -->
   <div style="position:sticky;top:0;z-index:9999;background:#1A3A2B;color:#F7F4EB;text-align:center;padding:11px 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;font-size:14px;line-height:1.45">
     <strong>Live-Demo</strong> · So könnte Ihre Seite aussehen — probieren Sie den Chat unten aus.
-    <a href="https://zeitzurueck.at" style="color:#C9A054;text-decoration:none;font-weight:600;white-space:nowrap;margin-left:6px">erstellt mit ZeitZurück.at ›</a>
+    <a href="../" style="color:#C9A054;text-decoration:none;font-weight:600;white-space:nowrap;margin-left:6px">erstellt mit ZeitZurück.at ›</a>
   </div>
 
   <!-- ============================== HERO ============================== -->
