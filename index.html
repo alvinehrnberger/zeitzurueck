@@ -545,8 +545,8 @@ function pickTrade(choice){
 }
 
 function askHourly(){
-  bot(`Sehr gut. Was ist Ihnen eine <strong>produktive Arbeitsstunde</strong> wert? (in ${CONFIG.calc.currency})`);
-  numberField("Betrieblicher Stundenwert", state.trade.hourly, v=>{ state.hourly=v; user(fmt(v)+" "+CONFIG.calc.currency); askAdmin(); });
+  bot(`Sehr gut. Was ist Ihnen eine <strong>Stunde Ihrer Zeit</strong> wert? (in ${CONFIG.calc.currency})<br><span style="font-size:13px;color:var(--muted)">Egal ob Sie nach Stunden abrechnen oder Produkte verkaufen – gemeint ist der Wert Ihrer Zeit.</span>`);
+  numberField("Wert einer Stunde Ihrer Zeit", state.trade.hourly, v=>{ state.hourly=v; user(fmt(v)+" "+CONFIG.calc.currency); askAdmin(); });
 }
 
 function askAdmin(){
@@ -559,17 +559,36 @@ function showResult(){
   const hours = (state.adminMin/60) * c.workingDaysPerMonth * c.captureRate;
   const value = hours * state.hourly;
   bot(`<span class="big">ZeitZurück könnte Ihnen rund ${fmt(hours)} Stunden pro Monat zurückgeben.</span>
-       Bei einem betrieblichen Stundenwert von ${fmt(state.hourly)} ${c.currency} entspricht das einem möglichen Wert von <strong>${fmt(value)} ${c.currency} pro Monat</strong>.<br>
+       Wenn Ihnen eine Stunde Ihrer Zeit ${fmt(state.hourly)} ${c.currency} wert ist, entspricht das einem möglichen Wert von <strong>${fmt(value)} ${c.currency} pro Monat</strong>.<br>
        ZeitZurück ist ab ${c.fromPrice} ${c.currency} monatlich verfügbar.
        <span class="tagline">Mehr Zeit für Ihre Arbeit. Mehr Zeit für Sie.</span>`, 'result');
   state.hours = hours; state.value = value;
   clearControls();
-  offerContact();
+  offerNext();
+}
+
+/* After the result: let them browse Pakete first, THEN optionally leave contact. */
+function offerNext(){
+  clearControls();
+  bot("Schauen Sie sich in Ruhe unsere Pakete an – und kommen Sie danach einfach hierher zurück. Oder hinterlassen Sie gleich Ihre Kontaktdaten für einen konkreten Vorschlag.");
+  const box=document.createElement('div'); box.className='chips';
+  const pkg=document.createElement('a'); pkg.className='btn btn-primary'; pkg.href='#pakete'; pkg.style.justifyContent='center'; pkg.textContent='Pakete ansehen';
+  const contact=document.createElement('button'); contact.className='chip'; contact.textContent='Kontakt hinterlassen';
+  const again=document.createElement('button'); again.className='chip'; again.textContent='Neu berechnen';
+  box.appendChild(pkg); box.appendChild(contact); box.appendChild(again);
+  controls.appendChild(box);
+  contact.onclick=offerContact;
+  again.onclick=start;
+  const note=document.createElement('div');
+  note.style.cssText='padding:4px 20px 16px;font-size:12px;color:var(--muted)';
+  note.textContent=CONFIG.calc.disclaimer;
+  controls.appendChild(note);
 }
 
 /* Optional contact capture → POSTs to n8n (leads_marktforschung) for market research. */
 function offerContact(){
-  bot("Möchten Sie, dass wir uns mit einem konkreten Vorschlag für Ihren Betrieb bei Ihnen melden? Hinterlassen Sie einfach Ihre E-Mail oder Telefonnummer – ganz unverbindlich.");
+  clearControls();
+  bot("Gerne! Hinterlassen Sie einfach Ihre E-Mail oder Telefonnummer – ganz unverbindlich, und wir melden uns mit einem konkreten Vorschlag.");
   const wrap=document.createElement('div'); wrap.className='field-row';
   const row=document.createElement('div'); row.className='chat-input';
   const inp=document.createElement('input'); inp.type='text'; inp.placeholder='E-Mail oder Telefonnummer';
@@ -578,14 +597,10 @@ function offerContact(){
   btn.onclick=go; inp.addEventListener('keydown',e=>{if(e.key==='Enter')go();});
   row.appendChild(inp); row.appendChild(btn); wrap.appendChild(row); controls.appendChild(wrap);
   const box=document.createElement('div'); box.className='chips';
-  box.innerHTML=`<a href="#pakete" class="btn btn-primary" style="justify-content:center">Passendes Paket ansehen</a>
+  box.innerHTML=`<a href="#pakete" class="btn btn-dark" style="justify-content:center">Pakete ansehen</a>
                  <button class="chip" id="again">Neu berechnen</button>`;
   controls.appendChild(box);
   document.getElementById('again').onclick=start;
-  const note=document.createElement('div');
-  note.style.cssText='padding:4px 20px 16px;font-size:12px;color:var(--muted)';
-  note.textContent=CONFIG.calc.disclaimer;
-  controls.appendChild(note);
 }
 
 function sendLead(kontakt){
