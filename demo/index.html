@@ -13,25 +13,25 @@
   <meta property="og:description" content="Probieren Sie den ZeitZurück-Chat live aus – so nimmt er auf Ihrer eigenen Seite Anfragen auf.">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="de_AT">
-  <!-- PLATZHALTER: og:image und og:url ergänzen, sobald die finale Domain steht -->
 
-  <!-- PLATZHALTER: Favicon — eigene Datei ersetzen (favicon.svg / favicon.ico) -->
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23F4EFE5'/><text x='50' y='68' font-size='52' text-anchor='middle' font-family='Helvetica,Arial,sans-serif' fill='%231C1B18' font-weight='bold'>AE</text></svg>">
+  <!-- Neutraler Platzhalter-Favicon (kein echtes Logo – in der Kundenversion ersetzt) -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%232E6F8E'/><circle cx='50' cy='50' r='17' fill='white'/></svg>">
 
   <style>
     /* ============================================================
-       ALVIN EHRNBERGER — MONTAGESERVICE & MEHR  (v2)
-       Design-System: abgeleitet von der Visitenkarte
-       Ivory-Hintergrund · fast-schwarze Typografie · Messing-Akzente
+       ZEITZURÜCK — LIVE-DEMO (Musterbetrieb)
+       Bewusst eigenständiges Design-System (kühles Schiefer-Blau),
+       damit die Demo NICHT wie ein bestehender Kunde aussieht.
+       Alle Inhalte sind Platzhalter.
        ============================================================ */
 
     :root {
-      --ivory:       #F4EFE5;
-      --ivory-deep:  #EDE6D8;
-      --ink:         #1C1B18;
-      --ink-soft:    #4A4740;
-      --brass:       #A9853C;
-      --brass-soft:  #C7A96B;
+      --ivory:       #F1F4F6;   /* kühler heller Hintergrund */
+      --ivory-deep:  #E4EAEE;
+      --ink:         #17222B;   /* tiefes Schiefer */
+      --ink-soft:    #4E5C66;
+      --brass:       #2E6F8E;   /* Akzent: Schiefer-Blau */
+      --brass-soft:  #6FA0B5;
       --maxw: 62rem;
     }
 
@@ -106,31 +106,6 @@
       font-size: 1rem;
     }
 
-    .cta-row {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: 2.6rem;
-    }
-
-    .btn {
-      display: inline-block;
-      padding: 0.9rem 2.2rem;
-      font-size: 0.95rem;
-      letter-spacing: 0.08em;
-      text-decoration: none;
-      border: 1px solid var(--ink);
-      color: var(--ink);
-      background: transparent;
-      cursor: pointer;
-      font-family: inherit;
-      transition: background 0.25s ease, color 0.25s ease;
-    }
-    .btn--solid { background: var(--ink); color: var(--ivory); }
-    .btn:hover, .btn:focus-visible { background: var(--brass); border-color: var(--brass); color: var(--ivory); }
-    .btn:focus-visible { outline: 3px solid var(--brass); outline-offset: 3px; }
-
     /* ============================== SECTIONS ============================== */
     section { padding-block: clamp(3.5rem, 9vh, 6rem); }
 
@@ -164,7 +139,7 @@
 
     .card {
       background: var(--ivory);
-      border: 1px solid rgba(169, 133, 60, 0.35);
+      border: 1px solid rgba(46, 111, 142, 0.32);
       padding: 1.8rem 1.6rem;
     }
     .card h3 { font-size: 1.02rem; letter-spacing: 0.06em; font-weight: 600; margin-bottom: 0.5rem; }
@@ -206,7 +181,7 @@
       font-weight: 500;
     }
 
-    /* ============================== CHAT-KONTAKT (Prompt-Stil) ============================== */
+    /* ============================== CHAT-KONTAKT ============================== */
     .contact { background: var(--ivory-deep); }
     .contact-head { text-align: center; }
 
@@ -257,10 +232,10 @@
       position: relative;
       display: block;
       background: var(--ivory);
-      border: 1px solid rgba(169, 133, 60, 0.5);
+      border: 1px solid rgba(46, 111, 142, 0.5);
       border-radius: 1.2rem;
       padding: 1.15rem 1.4rem 3.6rem;
-      box-shadow: 0 8px 24px rgba(28, 27, 24, 0.06);
+      box-shadow: 0 8px 24px rgba(23, 34, 43, 0.07);
       transition: border-color 0.2s ease;
     }
     .chat-bar:focus-within { border-color: var(--brass); }
@@ -294,7 +269,7 @@
     .chat-bar button:focus-visible { outline: 3px solid var(--brass); outline-offset: 2px; }
     .chat-bar button:disabled { opacity: 0.5; cursor: default; }
 
-    /* ---------- Vorschlags-Chips (Pillen) ---------- */
+    /* ---------- Vorschlags-Chips ---------- */
     .chips {
       display: flex;
       flex-wrap: wrap;
@@ -303,7 +278,7 @@
       margin-top: 1.1rem;
     }
     .chip {
-      border: 1px solid rgba(169, 133, 60, 0.6);
+      border: 1px solid rgba(46, 111, 142, 0.55);
       border-radius: 999px;
       background: var(--ivory);
       color: var(--ink);
@@ -364,7 +339,7 @@
       <h1 class="rise">Ihr Unternehmen</h1>
       <hr class="rule rise-2" aria-hidden="true">
       <p class="tagline rise-2">So könnte Ihre Seite aussehen</p>
-      <p class="lead rise-3">Ihr Slogan, Ihre Leistungen, Ihr Auftritt – und ein Chat, der rund um die Uhr Anfragen aufnimmt.</p>
+      <p class="lead rise-3">Ihr Name, Ihr Slogan, Ihre Leistungen – und ein Chat, der rund um die Uhr Anfragen aufnimmt. Alles Folgende ist ein Muster und wird für Ihren Betrieb gestaltet.</p>
     </div>
   </header>
 
@@ -375,20 +350,20 @@
         <span class="kicker">Kontakt</span>
       </div>
 
-      <h2 class="chat-title rise-2" id="chatTitle">Wie kann ich Ihnen helfen?</h2>
+      <h2 class="chat-title rise-2" id="chatTitle">Wie können wir Ihnen helfen?</h2>
 
       <div class="chat-log" id="chatLog" aria-live="polite" hidden></div>
 
       <form class="chat-bar rise-3" id="chatForm" aria-label="Kontakt-Chat">
         <input type="text" id="chatInput" autocomplete="off"
-               placeholder="Beschreiben Sie Ihr Vorhaben in ein paar Worten …"
+               placeholder="Beschreiben Sie Ihr Anliegen in ein paar Worten …"
                aria-label="Nachricht eingeben" required>
         <button type="submit" id="chatSend" aria-label="Senden">↑</button>
       </form>
 
       <div class="chips rise-3" id="chatChips" aria-label="Vorschläge">
-        <button type="button" class="chip">Möbel aufbauen</button>
-        <button type="button" class="chip">Auf- oder Abbau</button>
+        <button type="button" class="chip">Angebot anfragen</button>
+        <button type="button" class="chip">Beratung</button>
         <button type="button" class="chip">Etwas anderes</button>
       </div>
 
@@ -400,44 +375,39 @@
   <section class="intro" id="ueber">
     <div class="wrap">
       <span class="kicker">Worum es geht</span>
-      <h2>Anpacken, wo Unterstützung gebraucht wird.</h2>
+      <h2>Ihr Betrieb, klar auf den Punkt gebracht.</h2>
       <hr class="rule rule--left" aria-hidden="true">
-      <p>Ich unterstütze Privatkundinnen, Privatkunden und kleine Betriebe in Wien und Niederösterreich bei praktischen Aufgaben – verlässlich, unkompliziert und auf Augenhöhe. Kein großes Unternehmen, kein Callcenter: Sie schreiben direkt mir, wir stimmen ab, was gebraucht wird, und dann wird es erledigt.</p>
+      <p>Hier steht ein kurzer, persönlicher Text über Ihren Betrieb – wofür Sie stehen, was Sie besonders macht und für wen Sie da sind. In Ihrer echten Seite formulieren wir ihn gemeinsam mit Ihnen. Dies ist nur ein Muster, das den Aufbau zeigt.</p>
     </div>
   </section>
 
-  <!-- ============================== LEISTUNGEN ==============================
-       HINWEIS ZUM BEARBEITEN:
-       Die vier Karten sind PLATZHALTER-Kategorien. Endgültige Leistungen
-       werden später festgelegt. Zum Ändern: <h3> und <p> austauschen.
-       Keine reglementierten Gewerbe eintragen (Elektro, Installateur, Bau …).
-  ======================================================================= -->
+  <!-- ============================== LEISTUNGEN (Platzhalter) ============================== -->
   <section class="services" id="leistungen">
     <div class="wrap">
       <span class="kicker">Leistungen</span>
-      <h2>Was ich für Sie tun kann.</h2>
+      <h2>Was Sie anbieten.</h2>
       <hr class="rule rule--left" aria-hidden="true">
 
       <div class="service-grid">
         <div class="card">
-          <h3>Montagearbeiten</h3>
-          <p>Möbel, Regale und Alltagsgegenstände – sorgfältig montiert.</p>
+          <h3>Ihr Hauptangebot</h3>
+          <p>Ihre wichtigste Leistung – in ein, zwei Sätzen beschrieben.</p>
         </div>
         <div class="card">
-          <h3>Auf- &amp; Abbau</h3>
-          <p>Unterstützung bei Auf- und Abbau – von einzelnen Stücken bis zum kompletten Umbau.</p>
+          <h3>Beratung</h3>
+          <p>Persönliche Beratung, abgestimmt auf Ihre Kundinnen und Kunden.</p>
         </div>
         <div class="card">
-          <h3>Praktische Unterstützung</h3>
-          <p>Helfende Hände für Aufgaben, die alleine schwer zu stemmen sind.</p>
+          <h3>Weiteres Angebot</h3>
+          <p>Platz für einen weiteren Schwerpunkt Ihres Betriebs.</p>
         </div>
         <div class="card">
-          <h3>Individuelle Hilfe nach Absprache</h3>
-          <p>Sie haben etwas anderes im Kopf? Fragen Sie einfach – wir finden eine Lösung.</p>
+          <h3>Individuell nach Absprache</h3>
+          <p>Sie bieten etwas Besonderes an? Auch das findet hier seinen Platz.</p>
         </div>
       </div>
 
-      <p class="note">Das genaue Leistungsangebot wird laufend erweitert – am besten direkt anfragen.</p>
+      <p class="note">Alle Inhalte sind Platzhalter – in Ihrer Version stehen hier Ihre echten Leistungen.</p>
     </div>
   </section>
 
@@ -445,14 +415,14 @@
   <section class="how" id="ablauf">
     <div class="wrap">
       <span class="kicker">So einfach geht’s</span>
-      <h2>Von der Anfrage bis zur erledigten Arbeit.</h2>
+      <h2>Von der Anfrage bis zum Abschluss.</h2>
       <hr class="rule rule--left" aria-hidden="true">
 
       <div class="steps-grid">
         <div class="step"><h3>Anfrage</h3></div>
-        <div class="step"><h3>Kurz abstimmen</h3></div>
-        <div class="step"><h3>Termin vereinbaren</h3></div>
-        <div class="step"><h3>Erledigen</h3></div>
+        <div class="step"><h3>Rückfragen</h3></div>
+        <div class="step"><h3>Termin</h3></div>
+        <div class="step"><h3>Abschluss</h3></div>
       </div>
     </div>
   </section>
@@ -461,9 +431,9 @@
   <section class="digital" id="digital">
     <div class="wrap">
       <span class="kicker">Auch digital</span>
-      <h2>Moderne Abläufe, altmodische Verlässlichkeit.</h2>
+      <h2>Moderne Abläufe im Hintergrund.</h2>
       <hr class="rule rule--left" aria-hidden="true">
-      <p>Hinter diesem kleinen Betrieb stecken moderne, automatisierte Abläufe – Ihre Anfrage landet in Sekunden direkt bei mir. Dieselbe Unterstützung biete ich auch anderen kleinen Betrieben: wiederkehrende Aufgaben automatisieren, damit mehr Zeit für die eigentliche Arbeit bleibt. Bei Interesse einfach im Chat erwähnen.</p>
+      <p>Hinter dieser Seite arbeitet ZeitZurück: Anfragen werden rund um die Uhr aufgenommen, Rückfragen automatisch gestellt und passende Termine vorgeschlagen – ganz ohne technisches Wissen auf Ihrer Seite. So bleibt Ihnen mehr Zeit für Ihre eigentliche Arbeit.</p>
     </div>
   </section>
 
@@ -471,7 +441,7 @@
   <section class="area" id="gebiet">
     <div class="wrap">
       <span class="kicker">Einsatzgebiet</span>
-      <p>Wien &amp; Niederösterreich</p>
+      <p>Ihre Region</p>
     </div>
   </section>
 
@@ -489,10 +459,10 @@
 
   <script>
     /* ============================================================
-       KI-Chat → n8n (Alvvyn Automation / ZeitZurück)  v3
-       Die gesamte Gesprächsführung lebt serverseitig im n8n-Workflow
-       "Montageservice – KI-Chat (v2a)". Diese Seite sendet nur
-       {sessionId, message} und zeigt die Antwort an.
+       ZeitZurück Live-Demo — KI-Chat → n8n (sandboxed)
+       Serverseitiger Workflow: "ZeitZurück – Demo-Chat (Testsite)".
+       Diese Seite sendet nur {sessionId, message} und zeigt die Antwort.
+       Keine echten Buchungen, keine E-Mails an Besucher.
        ============================================================ */
     (function () {
       var WEBHOOK_URL = "https://alvvyn.app.n8n.cloud/webhook/demo-chat";
@@ -544,7 +514,7 @@
             : "Vielen Dank! Ihre Nachricht ist angekommen.";
         })
         .catch(function () {
-          denker.textContent = "Entschuldigung – die Verbindung hat gerade nicht geklappt. Bitte versuchen Sie es gleich noch einmal oder nutzen Sie die Kontaktdaten im Impressum.";
+          denker.textContent = "Entschuldigung – die Verbindung hat gerade nicht geklappt. Bitte versuchen Sie es gleich noch einmal.";
         })
         .finally(function () {
           wartet = false;
@@ -561,7 +531,6 @@
         sende(text);
       });
 
-      /* Vorschlags-Chips: Klick = erste Nachricht */
       if (chips) {
         chips.addEventListener("click", function (e) {
           var btn = e.target.closest(".chip");
