@@ -110,7 +110,7 @@
   .chat-body{flex:1;min-height:0;padding:22px 20px;display:flex;flex-direction:column;gap:14px;overflow-y:auto}
   .msg{max-width:86%;padding:12px 16px;border-radius:16px;font-size:15px;line-height:1.5;animation:pop .28s ease}
   .msg.bot{background:#fff;border:1px solid var(--line);border-bottom-left-radius:5px;align-self:flex-start;color:var(--ink)}
-  .msg.user{background:var(--petrol);color:var(--ivory);border-bottom-right-radius:5px;align-self:flex-end}
+  .msg.user{background:var(--petrol);color:var(--ivory);border-bottom-right-radius:5px;align-self:flex-end;white-space:pre-wrap}
   .msg.result{background:var(--beige);border:none;color:var(--petrol-deep);align-self:flex-start;max-width:96%}
   .msg.result .big{font-family:'Poppins';font-size:19px;font-weight:600;display:block;margin:2px 0 6px}
   .msg.result .tagline{font-family:'Poppins';font-style:normal;font-weight:500;color:var(--petrol);margin-top:10px;font-size:14.5px}
@@ -118,10 +118,12 @@
   .chips{display:flex;flex-wrap:wrap;gap:8px;padding:0 20px 6px}
   .chip{background:#fff;border:1px solid var(--line);color:var(--ink);padding:9px 15px;border-radius:999px;font-size:14px;font-weight:500;cursor:pointer;font-family:var(--sans);transition:all .12s ease}
   .chip:hover{background:var(--petrol);color:var(--ivory);border-color:var(--petrol)}
-  .chat-input{border-top:1px solid var(--line);padding:14px 16px;display:flex;gap:10px;background:#fff}
+  .chat-input{border-top:1px solid var(--line);padding:14px 16px;display:flex;gap:10px;align-items:flex-end;background:#fff}
   .chat-input input{flex:1;border:1px solid var(--line);border-radius:999px;padding:11px 16px;font-size:15px;font-family:var(--sans);outline:none;color:var(--ink)}
   .chat-input input:focus{border-color:var(--petrol)}
-  .chat-input button{background:var(--petrol);border:none;color:var(--ivory);width:42px;height:42px;border-radius:50%;cursor:pointer;font-size:17px;display:flex;align-items:center;justify-content:center}
+  .chat-input textarea{flex:1;border:1px solid var(--line);border-radius:22px;padding:11px 16px;font-size:15px;line-height:1.5;font-family:var(--sans);outline:none;color:var(--ink);resize:none;max-height:120px;overflow-y:auto}
+  .chat-input textarea:focus{border-color:var(--petrol)}
+  .chat-input button{background:var(--petrol);border:none;color:var(--ivory);width:42px;height:42px;border-radius:50%;cursor:pointer;font-size:17px;display:flex;align-items:center;justify-content:center;flex:none}
   .chat-input button:hover{background:var(--petrol-deep)}
   .field-row{padding:0 20px 8px}
   .field-row .inp{display:flex;gap:8px;align-items:center}
@@ -646,12 +648,13 @@ function qualiInput(pkg, sessionId){
   clearControls();
   const wrap=document.createElement('div'); wrap.className='field-row';
   const row=document.createElement('div'); row.className='chat-input';
-  const inp=document.createElement('input'); inp.type='text'; inp.placeholder='Ihre Antwort …';
+  const inp=document.createElement('textarea'); inp.rows=1; inp.placeholder='Ihre Antwort …';
   const btn=document.createElement('button'); btn.innerHTML='→';
   let busy=false;
+  const autoGrow=()=>{ inp.style.height='auto'; inp.style.height=Math.min(inp.scrollHeight,120)+'px'; };
   const go=async ()=>{
     const v=inp.value.trim(); if(!v||busy) return;
-    busy=true; user(v); inp.value='';
+    busy=true; user(v); inp.value=''; autoGrow();
     const t=qualiTyping();
     try{
       const r=await fetch(CONFIG.qualiWebhook,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:v, sessionId, paket:pkg})});
@@ -659,7 +662,9 @@ function qualiInput(pkg, sessionId){
     }catch(e){ t.remove(); bot('Entschuldigung, das hat gerade nicht geklappt. Bitte versuchen Sie es erneut oder schreiben Sie an office@zeitzurueck.at.'); }
     busy=false; inp.focus({preventScroll:true});
   };
-  btn.onclick=go; inp.addEventListener('keydown',e=>{ if(e.key==='Enter') go(); });
+  btn.onclick=go;
+  inp.addEventListener('input',autoGrow);
+  inp.addEventListener('keydown',e=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); go(); } });
   row.appendChild(inp); row.appendChild(btn); wrap.appendChild(row); controls.appendChild(wrap);
   const back=document.createElement('button'); back.className='chip'; back.textContent='Zurück zum Rechner'; back.style.marginTop='10px';
   back.onclick=start; controls.appendChild(back);
