@@ -17,8 +17,7 @@
   <style>
     /* ============================================================
        ZEITZURÜCK — LIVE-DEMO (Musterbetrieb)
-       Bewusst eigenständiges Design-System (kühles Schiefer-Blau),
-       damit die Demo NICHT wie ein bestehender Kunde aussieht.
+       Eigenständiges Design-System (kühles Schiefer-Blau).
        ============================================================ */
     :root {
       --ivory:       #F1F4F6;
@@ -127,8 +126,26 @@
     .chat-hint { text-align: center; font-size: 0.8rem; color: var(--ink-soft); margin-top: 1.2rem; }
     .chat-hint a { color: var(--ink-soft); }
 
+    /* ---------- Übergang: erscheint, wenn das Gespräch durch ist ---------- */
+    .weiter {
+      max-width: 38rem; margin: 1.6rem auto 0; background: var(--ink); color: var(--ivory);
+      border-radius: 1.1rem; padding: 1.3rem 1.5rem; display: none;
+      align-items: center; gap: 1.1rem; flex-wrap: wrap;
+      box-shadow: 0 14px 34px rgba(23, 34, 43, 0.22);
+    }
+    .weiter.show { display: flex; animation: rise 0.6s ease both; }
+    .weiter .txt { flex: 1; min-width: 12rem; }
+    .weiter strong { display: block; font-size: 1.04rem; margin-bottom: 0.2rem; }
+    .weiter span { font-size: 0.9rem; color: rgba(241, 244, 246, 0.72); line-height: 1.5; }
+    .weiter button {
+      border: none; border-radius: 999px; padding: 0.8rem 1.5rem; cursor: pointer;
+      background: #C9A054; color: #12281d; font-family: inherit; font-weight: 600; font-size: 0.95rem;
+      white-space: nowrap;
+    }
+    .weiter button:hover { background: #d8b671; }
+
     /* ====================== ABLAUF (Erklärung) ====================== */
-    .ablauf { background: #17222B; color: #F1F4F6; }
+    .ablauf { background: #17222B; color: #F1F4F6; scroll-margin-top: 3.2rem; }
     .ablauf .head { text-align: center; max-width: 40rem; margin-inline: auto; }
     .ablauf .kicker { color: #7FB3CB; }
     .ablauf h2 { color: #F1F4F6; }
@@ -187,6 +204,15 @@
         <button type="button" class="chip">Etwas anderes</button>
       </div>
 
+      <!-- erscheint, sobald das Gespräch durch ist -->
+      <div class="weiter" id="weiter">
+        <div class="txt">
+          <strong>Das war der erste Schritt.</strong>
+          <span>Genau so nimmt Ihre Seite Anfragen auf. Sehen Sie, was danach automatisch passiert – bis das Geld am Konto ist.</span>
+        </div>
+        <button type="button" id="weiterBtn">Weiter zum Ablauf ↓</button>
+      </div>
+
       <p class="chat-hint">Das ist eine Live-Demo: Schreiben Sie dem Chat wie ein echter Kunde – so nimmt er auf Ihrer eigenen Seite Anfragen auf, stellt Rückfragen und schlägt Termine vor.</p>
     </div>
   </section>
@@ -201,7 +227,7 @@
         <p>Sie haben gerade ausprobiert, wie eine Anfrage hereinkommt. Was danach passiert – Termin, Bestätigung, Auftrag, Rechnung, Zahlung – läuft genauso automatisch weiter.</p>
       </div>
       <div class="frame">
-        <iframe src="../ablauf.html" title="So läuft es ab – von der Anfrage bis zur Zahlung" loading="lazy"></iframe>
+        <iframe id="ablaufFrame" src="../ablauf.html" title="So läuft es ab – von der Anfrage bis zur Zahlung" loading="lazy"></iframe>
       </div>
       <p class="after">Acht Schritte – sieben davon ohne Ihr Zutun.</p>
     </div>
@@ -278,20 +304,25 @@
   <script>
     /* ============================================================
        ZeitZurück Live-Demo — KI-Chat → n8n (sandboxed)
+       Nach Gesprächsende wird zur Ablauf-Erklärung übergeleitet.
        ============================================================ */
     (function () {
       var WEBHOOK_URL = "https://alvvyn.app.n8n.cloud/webhook/demo-chat";
 
-      var log   = document.getElementById("chatLog");
-      var form  = document.getElementById("chatForm");
-      var input = document.getElementById("chatInput");
-      var send  = document.getElementById("chatSend");
-      var chips = document.getElementById("chatChips");
-      var title = document.getElementById("chatTitle");
+      var log    = document.getElementById("chatLog");
+      var form   = document.getElementById("chatForm");
+      var input  = document.getElementById("chatInput");
+      var send   = document.getElementById("chatSend");
+      var chips  = document.getElementById("chatChips");
+      var title  = document.getElementById("chatTitle");
+      var weiter = document.getElementById("weiter");
+      var frame  = document.getElementById("ablaufFrame");
 
       var sessionId = "web-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 10);
       var erste = true;
       var wartet = false;
+      var runden = 0;
+      var uebergeleitet = false;
 
       function addMsg(text, who) {
         var el = document.createElement("div");
@@ -306,6 +337,24 @@
         input.style.height = Math.min(input.scrollHeight, 96) + "px";
       }
 
+      /* Gespräch zu Ende? Entweder das Schlusswort des Assistenten
+         oder genug Hin und Her, dass der Besucher das Prinzip kennt. */
+      function gespraechFertig(reply) {
+        if (runden >= 4) return true;
+        return /vielen dank|meldet sich|ist eingegangen|bestätigung|fix gebucht|notiert/i.test(reply || "");
+      }
+      function zeigeWeiter() {
+        if (uebergeleitet) return;
+        uebergeleitet = true;
+        setTimeout(function () { weiter.classList.add("show"); }, 700);
+      }
+
+      document.getElementById("weiterBtn").addEventListener("click", function () {
+        var ziel = document.getElementById("ablauf");
+        if (frame) frame.src = "../ablauf.html?play=" + Date.now();  // von vorne starten
+        if (ziel) ziel.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+
       function sende(text) {
         if (wartet) return;
         if (log.hidden) log.hidden = false;
@@ -315,6 +364,7 @@
           erste = false;
         }
         addMsg(text, "user");
+        runden++;
         input.value = "";
         autoGrow();
         wartet = true;
@@ -329,9 +379,9 @@
         })
         .then(function (r) { return r.json(); })
         .then(function (data) {
-          denker.textContent = (data && data.reply)
-            ? data.reply
-            : "Vielen Dank! Ihre Nachricht ist angekommen.";
+          var reply = (data && data.reply) ? data.reply : "Vielen Dank! Ihre Nachricht ist angekommen.";
+          denker.textContent = reply;
+          if (gespraechFertig(reply)) zeigeWeiter();
         })
         .catch(function () {
           denker.textContent = "Entschuldigung – die Verbindung hat gerade nicht geklappt. Bitte versuchen Sie es gleich noch einmal.";
