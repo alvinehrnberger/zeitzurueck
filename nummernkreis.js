@@ -3,6 +3,8 @@
    Wird von app.html geladen und überschreibt einzelne Funktionen.
    1) Fortlaufende Rechnungsnummer über ALLE Betriebe
    2) "Geld erhalten" direkt beim erledigten Auftrag
+   3) Begrüßung: "Hallo" statt "Grüß dich"
+   4) Rechnung verwalten: sichtbare Zeile statt versteckter Punkte
    ============================================================ */
 (function () {
 
@@ -122,5 +124,85 @@
       alert('Konnte nicht speichern: ' + e.message);
     }
   };
+
+  /* ============================================================
+     3) + 4) Bedienbarkeit — laeuft nach dem Rendern
+     ============================================================ */
+
+  /* Zusaetzliches CSS, damit "Rechnung verwalten" nicht mehr
+     wie ein Fussnoten-Hinweis aussieht, sondern wie ein Schalter. */
+  var css = document.createElement('style');
+  css.textContent =
+    '.more.mk{display:flex;align-items:center;gap:12px;width:100%;' +
+      'text-align:left;padding:14px 16px;margin-top:18px;border-radius:14px;' +
+      'background:rgba(26,58,43,.06);border:1px solid rgba(26,58,43,.14);' +
+      'color:inherit;font-size:15px;cursor:pointer;opacity:1;' +
+      'transition:background .15s ease}' +
+    '.more.mk:hover{background:rgba(26,58,43,.11)}' +
+    '.more.mk .mk-i{flex:none;width:34px;height:34px;border-radius:50%;' +
+      'display:flex;align-items:center;justify-content:center;font-size:16px;' +
+      'background:rgba(26,58,43,.1)}' +
+    '.more.mk .mk-t{flex:1;min-width:0;line-height:1.35}' +
+    '.more.mk .mk-t b{display:block;font-weight:600;font-size:15px}' +
+    '.more.mk .mk-t i{display:block;font-style:normal;font-size:13px;opacity:.62;margin-top:1px}' +
+    '.more.mk .mk-c{flex:none;opacity:.4;font-size:20px}';
+  document.head.appendChild(css);
+
+  function verwaltenSichtbar() {
+    var m = document.querySelector('.more');
+    if (!m || m.classList.contains('mk')) return;
+    m.classList.add('mk');
+    m.innerHTML =
+      '<span class="mk-i">⚙</span>' +
+      '<span class="mk-t"><b>Rechnung verwalten</b>' +
+      '<i>Bearbeiten · Stornieren · Löschen</i></span>' +
+      '<span class="mk-c">›</span>';
+  }
+
+  var origShowInvoice = window.showInvoice;
+  if (typeof origShowInvoice === 'function') {
+    window.showInvoice = function () {
+      var r = origShowInvoice.apply(this, arguments);
+      verwaltenSichtbar();
+      return r;
+    };
+  }
+
+  /* "Grüß dich" ist Dialekt — nicht jeder Kunde spricht so.
+     "Hallo" versteht jeder, auch der Wiener und der Deutsche. */
+  function hallo(root) {
+    try {
+      var w = document.createTreeWalker(root || document.body, NodeFilter.SHOW_TEXT, null);
+      var n;
+      while ((n = w.nextNode())) {
+        if (n.nodeValue.indexOf('Grüß dich') > -1) {
+          n.nodeValue = n.nodeValue.replace(/Grüß dich/g, 'Hallo');
+        }
+      }
+    } catch (e) { }
+  }
+
+  var wartet = false;
+  var beob = new MutationObserver(function () {
+    if (wartet) return;
+    wartet = true;
+    requestAnimationFrame(function () {
+      wartet = false;
+      hallo();
+      verwaltenSichtbar();
+    });
+  });
+
+  function start() {
+    hallo();
+    verwaltenSichtbar();
+    beob.observe(document.body, { childList: true, subtree: true, characterData: true });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start);
+  } else {
+    start();
+  }
 
 })();

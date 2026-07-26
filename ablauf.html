@@ -17,7 +17,7 @@
   .stage{position:relative;width:100%;height:100%;max-width:940px;padding:22px 26px 62px;
     display:flex;flex-direction:column}
 
-  .head{flex:none;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+  .head{flex:none;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px;padding-right:150px}
   .head h1{font-family:'Poppins';font-size:clamp(15px,2.4vw,20px);font-weight:600;letter-spacing:.01em}
   .head span{font-size:clamp(11px,1.7vw,13px);color:rgba(247,244,235,.55)}
 
@@ -41,24 +41,29 @@
     background:rgba(247,244,235,.1);color:rgba(247,244,235,.75)}
   .who.auto{background:rgba(201,160,84,.2);color:#e8cf9c}
 
-  /* ---------- Fortschritt ---------- */
+  /* ---------- Steuerung ---------- */
+  .ctrl{position:absolute;right:26px;top:18px;display:flex;gap:8px;z-index:5}
+  .ctrl button{background:rgba(247,244,235,.1);border:none;color:var(--ivory);
+    font-family:var(--sans);font-size:12px;padding:8px 15px;border-radius:999px;cursor:pointer;
+    transition:background .15s ease;white-space:nowrap}
+  .ctrl button:hover{background:rgba(247,244,235,.22)}
+  .ctrl button.main{background:var(--gold);color:var(--petrol-deep);font-weight:600}
+  .ctrl button.main:hover{background:#d8b671}
+
   .bar{position:absolute;left:26px;right:26px;bottom:26px;display:flex;gap:6px;align-items:center}
   .dot{flex:1;height:3px;border-radius:2px;background:rgba(247,244,235,.18);cursor:pointer;position:relative;overflow:hidden}
   .dot i{position:absolute;inset:0;width:0;background:var(--gold);border-radius:2px}
   .dot.done i{width:100%}
   .dot.act i{animation:fill var(--dur) linear forwards}
+  .dot.paused i{animation-play-state:paused}
   @keyframes fill{from{width:0}to{width:100%}}
-  .replay{position:absolute;right:26px;top:20px;background:rgba(247,244,235,.1);border:none;
-    color:var(--ivory);font-family:var(--sans);font-size:12px;padding:7px 14px;border-radius:999px;cursor:pointer}
-  .replay:hover{background:rgba(247,244,235,.2)}
 
   /* ---------- Illustrationen ---------- */
   svg{width:100%;height:auto;display:block}
-  .pop{animation:pop .5s ease both}
   @keyframes pop{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
   .step.on .d1{animation:pop .5s .15s ease both}
-  .step.on .d2{animation:pop .5s .35s ease both}
-  .step.on .d3{animation:pop .5s .55s ease both}
+  .step.on .d2{animation:pop .5s .4s ease both}
+  .step.on .d3{animation:pop .5s .65s ease both}
   .step:not(.on) .d1,.step:not(.on) .d2,.step:not(.on) .d3{opacity:0}
 </style>
 </head>
@@ -68,7 +73,11 @@
     <h1>Von der Anfrage bis zum Geld am Konto</h1>
     <span>Alles, was ZeitZurück im Hintergrund übernimmt</span>
   </div>
-  <button class="replay" id="replay">↻ Nochmal</button>
+
+  <div class="ctrl">
+    <button id="pause" class="main">⏸ Pause</button>
+    <button id="replay">↻ Von vorne</button>
+  </div>
 
   <div class="track" id="track">
 
@@ -248,15 +257,17 @@
 
 <script>
 (function(){
-  var DUR = 4200;
+  var DUR = 8000;                    // mehr Zeit zum Lesen
   var steps = Array.prototype.slice.call(document.querySelectorAll('.step'));
   var bar = document.getElementById('bar');
-  var timer = null, i = 0;
+  var pauseBtn = document.getElementById('pause');
+  var timer = null, i = 0, paused = false;
 
   steps.forEach(function(_, n){
     var d = document.createElement('div');
     d.className = 'dot'; d.innerHTML = '<i></i>';
     d.style.setProperty('--dur', DUR + 'ms');
+    d.title = 'Schritt ' + (n+1);
     d.addEventListener('click', function(){ go(n); });
     bar.appendChild(d);
   });
@@ -265,24 +276,55 @@
   function paint(){
     steps.forEach(function(s, n){ s.classList.toggle('on', n === i); });
     dots.forEach(function(d, n){
-      d.classList.remove('act','done');
+      d.classList.remove('act','done','paused');
       if(n < i) d.classList.add('done');
-      if(n === i){ d.querySelector('i').style.animation='none'; void d.offsetWidth;
-                   d.querySelector('i').style.animation=''; d.classList.add('act'); }
+      if(n === i){
+        var f = d.querySelector('i');
+        f.style.animation = 'none'; void d.offsetWidth; f.style.animation = '';
+        d.classList.add('act');
+        if(paused) d.classList.add('paused');
+      }
     });
   }
-  function go(n){ i = n; paint(); restart(); }
   function next(){ i = (i + 1) % steps.length; paint(); }
-  function restart(){ clearInterval(timer); timer = setInterval(next, DUR); }
+  function run(){ clearInterval(timer); if(!paused) timer = setInterval(next, DUR); }
+  function go(n){ i = n; paint(); run(); }
 
-  document.getElementById('replay').addEventListener('click', function(){ go(0); });
+  function setPaused(p){
+    paused = p;
+    if(paused){
+      clearInterval(timer);
+      dots[i].classList.add('paused');
+      pauseBtn.textContent = '▶ Weiter';
+      pauseBtn.setAttribute('aria-label','Fortsetzen');
+    } else {
+      dots[i].classList.remove('paused');
+      pauseBtn.textContent = '⏸ Pause';
+      pauseBtn.setAttribute('aria-label','Pausieren');
+      paint();   // aktuellen Schritt neu starten, damit Balken und Text zusammenpassen
+      run();
+    }
+  }
+
+  pauseBtn.addEventListener('click', function(){ setPaused(!paused); });
+  document.getElementById('replay').addEventListener('click', function(){
+    paused = false;
+    pauseBtn.textContent = '⏸ Pause';
+    go(0);
+  });
+
+  /* Leertaste pausiert ebenfalls */
+  document.addEventListener('keydown', function(e){
+    if(e.code === 'Space'){ e.preventDefault(); setPaused(!paused); }
+  });
 
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     steps.forEach(function(s){ s.classList.add('on'); s.style.position='relative'; });
     document.querySelector('.track').style.height='auto';
     bar.style.display='none';
+    document.querySelector('.ctrl').style.display='none';
   } else {
-    paint(); restart();
+    paint(); run();
   }
 })();
 </script>
