@@ -89,6 +89,7 @@
   .row:last-child{border:none}
   .row .k{color:var(--muted);flex-shrink:0}
   .row .v{font-family:'Poppins';font-weight:600;text-align:right}
+  .row .v a{color:var(--petrol)}
   .cta{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:460px;padding:13px 15px calc(15px + env(safe-area-inset-bottom));background:linear-gradient(to top,var(--ivory) 72%,transparent);display:flex;gap:9px}
   .fab{position:fixed;bottom:calc(88px + env(safe-area-inset-bottom));right:calc(50% - 230px + 16px);width:54px;height:54px;border-radius:50%;background:var(--petrol);color:var(--ivory);border:none;font-size:27px;line-height:1;cursor:pointer;box-shadow:0 12px 30px rgba(22,46,39,.32);z-index:20;display:flex;align-items:center;justify-content:center}
   @media(max-width:492px){.fab{right:16px}}
@@ -225,6 +226,8 @@ function isoDate(d){ const x=d?new Date(d):new Date(); return x.toISOString().sl
 function addDays(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
 function daysBetween(a,b){ return Math.floor((b-a)/86400000); }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+/* Adresse -> Karten-App des jeweiligen Geraets (iPhone: Apple Karten, sonst Google Maps) */
+function mapsLink(adresse){ return 'https://maps.apple.com/?daddr=' + encodeURIComponent(adresse||''); }
 
 /* ---------- Storno-Hilfen ---------- */
 function istStorno(i){ return i.art==='storno'; }
@@ -335,9 +338,9 @@ async function enterApp(){
 }
 function openBetriebPicker(){
   if(betriebe.length<2) return;
-  sheet.innerHTML='<h3>Betrieb wechseln</h3><p class="s">Jeder Betrieb hat einen eigenen Rechnungs-Nummernkreis.</p>'+
+  sheet.innerHTML='<h3>Betrieb wechseln</h3><p class="s">Die Rechnungsnummer läuft fortlaufend über beide Betriebe.</p>'+
     betriebe.map(b=>`<div class="pick ${b.id===betrieb.id?'on':''}" onclick="switchBetrieb('${b.id}')">
-      <div class="n">${esc(b.name)}</div><div class="o">${esc(b.inhaber||'')} · Nummernkreis ${esc((BETRIEB_KONFIG[b.name]||{}).praefix||'—')}</div></div>`).join('');
+      <div class="n">${esc(b.name)}</div><div class="o">${esc(b.inhaber||'')} · Präfix ${esc((BETRIEB_KONFIG[b.name]||{}).praefix||'—')}</div></div>`).join('');
   scrim.classList.add('show');
 }
 async function switchBetrieb(id){
@@ -348,7 +351,7 @@ async function switchBetrieb(id){
   await loadData(); paintBrand(); showList();
 }
 
-/* ---------- Rechnungsnummer ---------- */
+/* ---------- Rechnungsnummer (wird von nummernkreis.js ueberschrieben) ---------- */
 function naechsteNummer(){
   const k=konf(), jahr=new Date().getFullYear();
   const bisher = rechnungen.filter(i=>{
@@ -432,7 +435,7 @@ function showJob(id){
   screen.innerHTML=`<div style="padding:4px 2px"><div class="d-h">${esc(j.kunde)}</div><div class="d-s">${esc(j.aufgabe||'')}</div>
     <div class="rows">
       ${j.termin?`<div class="row"><span class="k">Termin</span><span class="v">${fmtTermin(j.termin)}</span></div>`:''}
-      ${j.adresse?`<div class="row"><span class="k">Adresse</span><span class="v">${esc(j.adresse)}</span></div>`:''}
+      ${j.adresse?`<div class="row"><span class="k">Adresse</span><span class="v"><a href="${mapsLink(j.adresse)}" target="_blank" rel="noopener">${esc(j.adresse)} ↗</a></span></div>`:''}
       ${j.kunde_email?`<div class="row"><span class="k">E-Mail</span><span class="v">${esc(j.kunde_email)}</span></div>`:''}
       <div class="row"><span class="k">Stundensatz</span><span class="v">${eur(satz)} / Std</span></div>
       <div class="row"><span class="k">Nächste Rechnung</span><span class="v">${naechsteNummer()}</span></div>
@@ -658,7 +661,7 @@ async function markPaid(id){
   try{
     await sb.from('rechnungen').update({ bezahlt_am: isoDate() }).eq('id',id);
     await loadData(); showInvoice(id);
-  }catch(e){ alert('Konnte nicht speichern: '+e.message+'\n\n(Fehlt die Spalte bezahlt_am? Siehe SQL im Handoff.)'); }
+  }catch(e){ alert('Konnte nicht speichern: '+e.message); }
 }
 
 /* ---------- Verwalten: Bearbeiten / Storno / Löschen ---------- */
@@ -706,10 +709,9 @@ async function saveEdit(id){
   };
   const st=parseFloat(el('eStd').value); if(!isNaN(st)) upd.stunden=st;
   const mail=(el('eMail').value||'').trim();
+  if(mail) upd.kunde_email=mail;
   try{
-    if(mail){ try{ await sb.from('rechnungen').update(Object.assign({kunde_email:mail},upd)).eq('id',id); }
-              catch(e){ await sb.from('rechnungen').update(upd).eq('id',id); } }
-    else await sb.from('rechnungen').update(upd).eq('id',id);
+    await sb.from('rechnungen').update(upd).eq('id',id);
     scrim.classList.remove('show'); await loadData(); showInvoice(id);
   }catch(e){ btn.disabled=false; btn.textContent='Änderungen speichern'; alert('Fehler: '+e.message); }
 }
@@ -730,11 +732,9 @@ async function doStorno(id){
   const btn=el('stGo'); btn.disabled=true; btn.textContent='Wird erstellt…';
   const grund=(el('stGrund').value||('Storno zu Rechnung '+(i.nummer||''))).trim();
   const payload={ betrieb_id:betrieb.id, auftrag_id:i.auftrag_id||null, nummer:naechsteNummer(),
-    kunde:i.kunde, positionstext:grund, stunden:i.stunden, betrag:-Math.abs(Number(i.betrag)), art:'storno' };
+    kunde:i.kunde, positionstext:grund, stunden:i.stunden, betrag:-Math.abs(Number(i.betrag)), art:'storno', storno_zu:i.nummer };
   try{
-    let rec=null;
-    try{ const {data}=await sb.from('rechnungen').insert(Object.assign({storno_zu:i.nummer},payload)).select().single(); rec=data; }
-    catch(e){ const {data}=await sb.from('rechnungen').insert(payload).select().single(); rec=data; }
+    const {data:rec}=await sb.from('rechnungen').insert(payload).select().single();
     try{ await sb.from('rechnungen').update({ storniert_am: isoDate() }).eq('id', id); }catch(e){}
     scrim.classList.remove('show'); await loadData();
     if(rec&&rec.id) showInvoice(rec.id); else showList();
@@ -869,6 +869,9 @@ async function finish(id,art){
 /* ---------- Start ---------- */
 scrim.addEventListener('click',e=>{ if(e.target===scrim) scrim.classList.remove('show'); });
 el('pw').addEventListener('keydown',e=>{ if(e.key==='Enter') submitAuth(); });
+</script>
+<script src="nummernkreis.js"></script>
+<script>
 (async function(){
   const { data } = await sb.auth.getSession();
   if(data.session) await enterApp();
