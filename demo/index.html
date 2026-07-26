@@ -214,6 +214,7 @@
       padding: 0.75rem 1.1rem;
       font-size: 0.97rem;
       line-height: 1.5;
+      white-space: pre-wrap;
       animation: rise 0.4s ease both;
     }
     .msg--bot {
@@ -243,17 +244,21 @@
       transition: border-color 0.2s ease;
     }
     .chat-bar:focus-within { border-color: var(--brass); }
-    .chat-bar input {
+    .chat-bar textarea {
       width: 100%;
       border: none;
       background: transparent;
       font-family: inherit;
       font-size: 1rem;
+      line-height: 1.5;
       color: var(--ink);
       padding: 0;
       min-width: 0;
+      resize: none;
+      overflow-y: auto;
+      max-height: 6rem;
     }
-    .chat-bar input:focus { outline: none; }
+    .chat-bar textarea:focus { outline: none; }
     .chat-bar button {
       position: absolute;
       right: 0.7rem;
@@ -359,9 +364,9 @@
       <div class="chat-log" id="chatLog" aria-live="polite" hidden></div>
 
       <form class="chat-bar rise-3" id="chatForm" aria-label="Kontakt-Chat">
-        <input type="text" id="chatInput" autocomplete="off"
+        <textarea id="chatInput" rows="1" autocomplete="off"
                placeholder="Beschreiben Sie Ihr Anliegen in ein paar Worten …"
-               aria-label="Nachricht eingeben" required>
+               aria-label="Nachricht eingeben" required></textarea>
         <button type="submit" id="chatSend" aria-label="Senden">↑</button>
       </form>
 
@@ -491,6 +496,11 @@
         return el;
       }
 
+      function autoGrow() {
+        input.style.height = "auto";
+        input.style.height = Math.min(input.scrollHeight, 96) + "px";
+      }
+
       function sende(text) {
         if (wartet) return;
         if (log.hidden) log.hidden = false;
@@ -501,6 +511,7 @@
         }
         addMsg(text, "user");
         input.value = "";
+        autoGrow();
         wartet = true;
         send.disabled = true;
 
@@ -534,6 +545,15 @@
         if (!text) return;
         sende(text);
       });
+
+      /* Enter sendet, Umschalt+Enter macht eine neue Zeile */
+      input.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          if (form.requestSubmit) { form.requestSubmit(); } else { sende(input.value.trim()); }
+        }
+      });
+      input.addEventListener("input", autoGrow);
 
       if (chips) {
         chips.addEventListener("click", function (e) {
