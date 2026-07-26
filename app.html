@@ -92,15 +92,24 @@
   .hours button{width:50px;height:50px;border-radius:50%;border:1.5px solid var(--line);background:#fff;font-size:25px;color:var(--petrol);cursor:pointer;font-weight:600}
   .hours .val{font-family:'Poppins';font-weight:600;font-size:38px;min-width:118px;text-align:center}
   .hours .val small{font-size:15px;color:var(--muted);font-weight:500}
+  .sheet .mailrow{margin-bottom:12px}
+  .sheet .mailrow label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:5px;font-weight:500}
+  .sheet .mailrow input{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:15px;font-family:var(--sans);outline:none;background:#fff;color:var(--ink)}
+  .sheet .mailrow input:focus{border-color:var(--petrol)}
   .stack{display:flex;flex-direction:column;gap:9px}
   .note{font-size:11.5px;color:var(--muted);text-align:center;margin-top:9px;line-height:1.5}
 
   .inv{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:14px;font-size:13px}
-  .inv .h{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:10px}
-  .inv .co{font-family:'Poppins';font-weight:600;color:var(--petrol);font-size:14px}
-  .inv .co small{display:block;font-weight:400;color:var(--muted);font-size:11px;margin-top:2px}
-  .inv .nr{text-align:right;color:var(--muted);font-size:11.5px}
-  .inv .li{display:flex;justify-content:space-between;padding:5px 0}
+  .inv .top{text-align:center;border-bottom:1px solid var(--line);padding-bottom:11px;margin-bottom:11px}
+  .inv .top .co{font-family:'Poppins';font-weight:600;color:var(--petrol);font-size:15px}
+  .inv .top .ih{font-size:12px;color:var(--muted);margin-top:1px}
+  .inv .top .ct{font-size:10.5px;color:var(--muted);margin-top:3px}
+  .inv .an{font-size:12.5px;margin-bottom:2px}
+  .inv .an b{font-family:'Poppins'}
+  .inv .nr{font-family:'Poppins';font-weight:600;color:var(--petrol);font-size:14.5px;margin:12px 0 8px}
+  .inv .dt{font-size:11.5px;color:var(--muted);text-align:right;margin-top:-18px}
+  .inv .li{display:flex;justify-content:space-between;padding:5px 0;gap:12px}
+  .inv .li span:first-child{flex:1}
   .inv .sum{display:flex;justify-content:space-between;border-top:2px solid var(--petrol);margin-top:7px;padding-top:9px;font-family:'Poppins';font-weight:600;font-size:15.5px;color:var(--petrol)}
   .inv .kn{font-size:10.5px;color:var(--muted);margin-top:10px;line-height:1.5}
   .done-hero{display:flex;flex-direction:column;align-items:center;text-align:center;padding:26px 20px 6px}
@@ -110,28 +119,6 @@
   .checks{margin-top:16px;font-size:13px}
   .checks div{padding:5px 0;display:flex;gap:9px}
   .checks span{color:var(--ok);font-weight:700}
-
-  /* ---- Druck / PDF ---- */
-  #printArea{display:none}
-  @media print{
-    body{background:#fff}
-    .phone,.flag,.scrim{display:none !important}
-    #printArea{display:block !important}
-    .pdoc{font-family:var(--sans);color:#14221b;max-width:180mm;margin:0 auto;padding:12mm 6mm;font-size:11.5pt;line-height:1.5}
-    .phead{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #1A3A2B;padding-bottom:6mm;margin-bottom:8mm}
-    .pbetrieb{font-weight:700;font-size:15pt;color:#1A3A2B}
-    .pmeta{font-size:9.5pt;color:#5c6a63;margin-top:2mm}
-    .ptitle{font-size:19pt;font-weight:700;color:#1A3A2B;letter-spacing:3px}
-    .pto{margin-bottom:5mm}
-    .pnrline{display:flex;justify-content:space-between;font-size:10pt;color:#333;margin-bottom:7mm}
-    .ptab{width:100%;border-collapse:collapse;margin-bottom:5mm}
-    .ptab th{text-align:left;border-bottom:1px solid #cbc9c0;padding:3mm 2mm;color:#5c6a63;font-size:8.5pt;text-transform:uppercase;letter-spacing:1px}
-    .ptab td{padding:3mm 2mm;border-bottom:1px solid #eee}
-    .ptab th:nth-child(n+2),.ptab td:nth-child(n+2){text-align:right}
-    .psum{text-align:right;font-weight:700;font-size:13.5pt;color:#1A3A2B;border-top:2px solid #1A3A2B;padding-top:4mm}
-    .pnote{font-size:8.5pt;color:#666;margin-top:12mm;line-height:1.5}
-    .pfoot{margin-top:16mm;font-size:8.5pt;color:#999;border-top:1px solid #eee;padding-top:4mm}
-  }
 </style>
 </head>
 <body>
@@ -171,9 +158,9 @@
 </div>
 
 <div class="scrim" id="scrim"><div class="sheet" id="sheet"></div></div>
-<div id="printArea"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 /* ============================================================
    ZeitZurück Rundum — echtes Backend (Supabase, Frankfurt/EU)
@@ -183,6 +170,48 @@ const SUPA_URL = 'https://adggxentvqnnghiprlbt.supabase.co';
 const SUPA_KEY = 'sb_publishable_HKPpDfId-USe9EO28I34NA_QP2Fnd0D';
 const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
 
+const RECHNUNG_WEBHOOK = 'https://alvvyn.app.n8n.cloud/webhook/rechnung-senden';
+
+/* ============================================================
+   RECHNUNGS-KONFIGURATION pro Betrieb.
+   Jeder Betrieb hat einen EIGENEN Nummernkreis mit Präfix —
+   so vermischen sich die Rechnungsnummern nie.
+   praefix     : steht vor der Nummer, z.B. "M " -> "M 03/2026"
+   startJahr   : Jahr, in dem bereits Rechnungen existierten
+   startNummer : letzte bereits vergebene Nummer in diesem Jahr
+                 (Montageservice: 02/2026 -> naechste ist 03/2026)
+   ============================================================ */
+const BETRIEB_KONFIG = {
+  'Montageservice & Mehr': {
+    praefix: 'M ',
+    startJahr: 2026,
+    startNummer: 2,
+    strasse: 'Frühlingsstraße 91',
+    plzOrt: '3012 Wolfsgraben',
+    telefon: '0660/8268569',
+    email: 'Alvin.Ehrnberger@gmail.com',
+    ausstellungsort: 'Wolfsgraben',
+    bank: 'Erste Bank AG',
+    iban: 'AT56 2011 1287 4423 7300',
+    bic: 'GIBAATWWXXX',
+    zahlungsziel: 14
+  },
+  '_default': {
+    praefix: '',
+    startJahr: 0,
+    startNummer: 0,
+    strasse: '', plzOrt: '', telefon: '', email: '',
+    ausstellungsort: '',
+    bank: '', iban: '', bic: '',
+    zahlungsziel: 14
+  }
+};
+function konf(){
+  const name = betrieb && betrieb.name ? betrieb.name : '';
+  const k = BETRIEB_KONFIG[name] || BETRIEB_KONFIG['_default'];
+  return Object.assign({}, BETRIEB_KONFIG['_default'], k);
+}
+
 let betrieb=null, auftraege=[], rechnungen=[], tab='jobs', curHours=3, mode='login';
 
 const boxIcon='<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/></svg>';
@@ -190,6 +219,7 @@ const docIcon='<svg width="21" height="21" viewBox="0 0 24 24" fill="none" strok
 const eur=n=>Number(n).toLocaleString('de-AT',{minimumFractionDigits:2})+' €';
 const el=id=>document.getElementById(id);
 const screen=el('screen'), scrim=el('scrim'), sheet=el('sheet'), backBtn=el('backBtn');
+function deDate(d){ const x=d?new Date(d):new Date(); return String(x.getDate()).padStart(2,'0')+'.'+String(x.getMonth()+1).padStart(2,'0')+'.'+x.getFullYear(); }
 
 function statusPill(s){
   if(s==='erledigt') return '<span class="pill done">Erledigt ✓</span>';
@@ -260,7 +290,6 @@ async function enterApp(){
   el('app').style.display='flex';
   screen.innerHTML='<div class="loading">Lade deinen Betrieb…</div>';
   await loadData();
-  // White-Label: eigenes Logo, sonst Name
   if(betrieb){
     el('barTitle').textContent = betrieb.name;
     if(betrieb.logo_url){ el('brandMark').innerHTML = '<img src="'+betrieb.logo_url+'" alt="">'; }
@@ -268,6 +297,19 @@ async function enterApp(){
     el('barTitle').textContent = 'Kein Betrieb verknüpft';
   }
   showList();
+}
+
+/* ---------- Rechnungsnummer: NN/JJJJ, laeuft pro Jahr weiter ---------- */
+function naechsteNummer(){
+  const k = konf();
+  const jahr = new Date().getFullYear();
+  const bisher = rechnungen.filter(function(i){
+    if(i.art!=='rechnung') return false;
+    const d = i.datum || i.created_at;
+    return d ? (new Date(d)).getFullYear()===jahr : true;
+  }).length;
+  const offset = (k.startJahr===jahr) ? k.startNummer : 0;
+  return k.praefix + String(offset + bisher + 1).padStart(2,'0') + '/' + jahr;
 }
 
 /* ---------- Render ---------- */
@@ -329,75 +371,246 @@ function showJob(id){
       ${j.adresse?`<div class="row"><span class="k">Adresse</span><span class="v">${j.adresse}</span></div>`:''}
       ${j.dauer_schaetzung?`<div class="row"><span class="k">Geschätzte Dauer</span><span class="v">${j.dauer_schaetzung}</span></div>`:''}
       <div class="row"><span class="k">Stundensatz</span><span class="v">${eur(satz)} / Std</span></div>
+      <div class="row"><span class="k">Nächste Rechnung</span><span class="v">${naechsteNummer()}</span></div>
     </div>
     <p style="color:var(--muted);font-size:13px;margin-top:14px">Wenn du fertig bist: „Arbeit abgeschlossen" tippen, echte Stunden eintragen — den Rest erledigt ZeitZurück.</p></div>
   <div class="cta"><button class="btn btn-primary" onclick="openComplete('${j.id}')">✓ Arbeit abgeschlossen</button></div>`;
 }
-function printInvoice(id){
-  const i=rechnungen.find(x=>x.id===id); if(!i) return;
-  const satz=betrieb?Number(betrieb.stundensatz):50, klein=betrieb?betrieb.kleinunternehmer:true;
-  el('printArea').innerHTML=`<div class="pdoc">
-    <div class="phead"><div><div class="pbetrieb">${betrieb?betrieb.name:''}</div><div class="pmeta">${betrieb?(betrieb.inhaber||''):''}<br>${betrieb?(betrieb.ort||''):''}</div></div><div class="ptitle">RECHNUNG</div></div>
-    <div class="pto"><b>An:</b> ${i.kunde||''}</div>
-    <div class="pnrline"><span>Rechnungsnummer: <b>${i.nummer||'—'}</b></span><span>Datum: ${i.datum||''}</span></div>
-    <table class="ptab"><thead><tr><th>Position</th><th>Menge</th><th>Einzelpreis</th><th>Betrag</th></tr></thead>
-    <tbody><tr><td>${i.positionstext||''}</td><td>${(''+i.stunden).replace('.',',')} Std</td><td>${eur(satz)}</td><td>${eur(i.betrag)}</td></tr></tbody></table>
-    <div class="psum">Gesamt: ${eur(i.betrag)}</div>
-    ${klein?'<div class="pnote">Gemäß § 6 Abs. 1 Z 27 UStG (Kleinunternehmer) wird keine Umsatzsteuer ausgewiesen.</div>':''}
-    <div class="pfoot">${betrieb?betrieb.name:''} · Vielen Dank für Ihren Auftrag.</div></div>`;
-  window.print();
+
+/* ---------- PDF im Layout der Honorarnote ---------- */
+function buildPDF(i){
+  const k = konf();
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit:'mm', format:'a4' });
+  const L = 25, R = 185, MID = 105;
+  const satz = betrieb?Number(betrieb.stundensatz):50;
+  const stunden = Number(i.stunden);
+
+  /* Kopf: Betrieb mittig, Name darunter kleiner */
+  doc.setFont('helvetica','bold'); doc.setFontSize(15);
+  doc.text(betrieb?betrieb.name:'', MID, 22, {align:'center'});
+  doc.setFont('helvetica','normal'); doc.setFontSize(11);
+  doc.text(betrieb?(betrieb.inhaber||''):'', MID, 28, {align:'center'});
+  doc.setFontSize(9); doc.setTextColor(110);
+  const kopfz = [k.strasse, k.plzOrt].filter(Boolean).join(', ');
+  if(kopfz) doc.text(kopfz, MID, 33.5, {align:'center'});
+  const kontakt = [k.telefon, k.email].filter(Boolean).join('  ·  ');
+  if(kontakt) doc.text(kontakt, MID, 38, {align:'center'});
+  doc.setTextColor(0);
+  doc.setDrawColor(26,58,43); doc.setLineWidth(0.6); doc.line(L, 43, R, 43);
+
+  /* Empfänger links oben */
+  doc.setFontSize(11);
+  let y = 57;
+  doc.setFont('helvetica','bold'); doc.text(i.kunde||'', L, y); y += 5.5;
+  doc.setFont('helvetica','normal'); doc.setFontSize(10.5);
+  (i.kunde_adresse||'').split('\n').filter(Boolean).forEach(function(z){ doc.text(z, L, y); y += 5; });
+
+  /* Ort, am Datum — rechts */
+  doc.setFontSize(10.5);
+  doc.text((k.ausstellungsort? k.ausstellungsort+', am ':'') + deDate(i.datum), R, 57, {align:'right'});
+
+  /* Titel */
+  const yT = Math.max(y + 12, 82);
+  doc.setFont('helvetica','bold'); doc.setFontSize(14);
+  doc.text('Rechnung Nr. ' + (i.nummer||''), L, yT);
+
+  /* Tabelle */
+  let yR = yT + 12;
+  doc.setFontSize(8.5); doc.setTextColor(110); doc.setFont('helvetica','bold');
+  doc.text('DATUM', L, yR); doc.text('LEISTUNG', L+26, yR); doc.text('€', R, yR, {align:'right'});
+  doc.setTextColor(0);
+  doc.setDrawColor(190); doc.setLineWidth(0.25); doc.line(L, yR+2.2, R, yR+2.2);
+
+  yR += 9;
+  doc.setFont('helvetica','normal'); doc.setFontSize(10.5);
+  doc.text(deDate(i.leistungsdatum || i.datum), L, yR);
+  const txt = doc.splitTextToSize(i.positionstext||'', 92);
+  doc.text(txt, L+26, yR);
+  doc.text(Number(i.betrag).toLocaleString('de-AT',{minimumFractionDigits:2}), R, yR, {align:'right'});
+  let yN = yR + (txt.length*5);
+  doc.setFontSize(9.5); doc.setTextColor(90);
+  doc.text(String(stunden).replace('.',',') + ' h a € ' + satz + ',—', L+26, yN);
+  doc.setTextColor(0);
+
+  /* Summe */
+  const yS = yN + 10;
+  doc.setDrawColor(26,58,43); doc.setLineWidth(0.6); doc.line(L, yS, R, yS);
+  doc.setFont('helvetica','bold'); doc.setFontSize(12.5);
+  doc.text('Gesamt', L, yS+7);
+  doc.text(Number(i.betrag).toLocaleString('de-AT',{minimumFractionDigits:2}) + ' €', R, yS+7, {align:'right'});
+
+  /* Hinweise */
+  let yF = yS + 20;
+  doc.setFont('helvetica','normal'); doc.setFontSize(9.5); doc.setTextColor(80);
+  if(!betrieb || betrieb.kleinunternehmer){
+    doc.text('Umsatzsteuerbefreiung gem. § 6 Abs. 1 Z 27 UStG.', L, yF); yF += 9;
+  }
+  doc.text('Abgerechnet wird nach tatsächlich geleisteter Zeit zu € ' + satz + ',— pro Stunde.', L, yF); yF += 9;
+  if(k.iban){
+    const zt = doc.splitTextToSize(
+      'Ich ersuche um Überweisung des oben genannten Betrages binnen ' + k.zahlungsziel +
+      ' Tagen auf mein Konto bei der ' + k.bank + ', mit dem IBAN: ' + k.iban +
+      ', BIC: ' + k.bic + ' und verbleibe', R-L);
+    doc.text(zt, L, yF); yF += zt.length*5 + 7;
+  }
+  doc.text('mit freundlichen Grüßen', L, yF); yF += 12;
+  doc.setTextColor(0); doc.setFontSize(10.5);
+  doc.text(betrieb?(betrieb.inhaber||''):'', L, yF);
+
+  return doc;
 }
+function pdfName(i){ return 'Rechnung-' + String(i.nummer||'').replace(/[^\w]+/g,'-') + '.pdf'; }
+function downloadPDF(id){
+  const i=rechnungen.find(x=>x.id===id); if(!i) return;
+  buildPDF(i).save(pdfName(i));
+}
+
+/* ---------- Versand ---------- */
+async function sendInvoice(rec, empfaenger){
+  const doc = buildPDF(rec);
+  const b64 = doc.output('datauristring').split(',')[1];
+  const res = await fetch(RECHNUNG_WEBHOOK, {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      empfaenger: empfaenger,
+      kunde: rec.kunde||'',
+      nummer: rec.nummer||'',
+      betrag: eur(rec.betrag),
+      leistung: rec.positionstext||'',
+      betrieb: betrieb?betrieb.name:'',
+      inhaber: betrieb?(betrieb.inhaber||''):'',
+      dateiname: pdfName(rec),
+      pdf_base64: b64
+    })
+  });
+  if(!res.ok) throw new Error('Versand fehlgeschlagen');
+  return true;
+}
+
 function showInvoice(id){
   const i=rechnungen.find(x=>x.id===id);
   backBtn.style.display='block'; el('tabs').style.display='none'; el('barSub').textContent=i.nummer?('Rechnung '+i.nummer):'Beleg';
-  screen.innerHTML=`<div style="padding:4px 2px">${invoiceHTML(i)}</div>`+(i.art==='rechnung'?`<div class="cta"><button class="btn btn-dark" onclick="printInvoice('${i.id}')">🖨  Drucken / als PDF speichern</button></div>`:'');
+  screen.innerHTML=`<div style="padding:4px 2px">${invoiceHTML(i)}</div>`+(i.art==='rechnung'?`<div class="cta">
+     <button class="btn btn-ghost" onclick="downloadPDF('${i.id}')">⬇ PDF</button>
+     <button class="btn btn-dark" onclick="openSend('${i.id}')">✉ Senden</button></div>`:'');
 }
 function invoiceHTML(i){
+  const k=konf();
   const satz=betrieb?Number(betrieb.stundensatz):50, klein=betrieb?betrieb.kleinunternehmer:true;
   return `<div class="inv">
-    <div class="h"><div class="co">${betrieb?betrieb.name:''}<small>${betrieb?(betrieb.inhaber||'')+' · '+(betrieb.ort||''):''}</small></div>
-      <div class="nr">${i.art==='bar'?'Beleg':'Rechnung'}<br><b>${i.nummer||'—'}</b><br>${i.datum||''}</div></div>
-    <div style="color:var(--muted);font-size:11.5px;margin-bottom:7px">An: ${i.kunde||''}</div>
-    <div class="li"><span>${i.positionstext||''}</span></div>
-    <div class="li"><span>${(''+i.stunden).replace('.',',')} Std × ${eur(satz)}</span><span>${eur(i.betrag)}</span></div>
+    <div class="top">
+      <div class="co">${betrieb?betrieb.name:''}</div>
+      <div class="ih">${betrieb?(betrieb.inhaber||''):''}</div>
+      <div class="ct">${[k.strasse,k.plzOrt].filter(Boolean).join(', ')}${k.telefon?' · '+k.telefon:''}</div>
+    </div>
+    <div class="an"><b>${i.kunde||''}</b></div>
+    ${(i.kunde_adresse||'').split('\n').filter(Boolean).map(z=>`<div class="an" style="color:var(--muted)">${z}</div>`).join('')}
+    <div class="nr">Rechnung Nr. ${i.nummer||'—'}</div>
+    <div class="dt">${k.ausstellungsort?k.ausstellungsort+', am ':''}${deDate(i.datum)}</div>
+    <div class="li"><span>${i.positionstext||''}</span><span>${eur(i.betrag)}</span></div>
+    <div class="li" style="color:var(--muted);font-size:11.5px"><span>${(''+i.stunden).replace('.',',')} h a ${eur(satz)}</span></div>
     <div class="sum"><span>Gesamt</span><span>${eur(i.betrag)}</span></div>
-    ${klein?'<div class="kn">Gemäß § 6 Abs. 1 Z 27 UStG (Kleinunternehmer) wird keine Umsatzsteuer ausgewiesen.</div>':''}</div>`;
+    ${klein?'<div class="kn">Umsatzsteuerbefreiung gem. § 6 Abs. 1 Z 27 UStG.</div>':''}
+    <div class="kn">Abgerechnet wird nach tatsächlich geleisteter Zeit zu ${eur(satz)} pro Stunde.</div>
+    ${k.iban?`<div class="kn">Zahlbar binnen ${k.zahlungsziel} Tagen · ${k.bank}<br>IBAN ${k.iban} · BIC ${k.bic}</div>`:''}
+  </div>`;
+}
+
+function openSend(id){
+  const i=rechnungen.find(x=>x.id===id);
+  const j=auftraege.find(x=>x.id===i.auftrag_id);
+  const vor=(i.kunde_email)||(j&&j.kunde_email)||'';
+  sheet.innerHTML=`<h3>Rechnung senden</h3><p class="s">${i.nummer} · ${i.kunde||''} · ${eur(i.betrag)}</p>
+    <div class="mailrow"><label>E-Mail des Kunden</label><input id="sendMail" type="email" value="${vor}" placeholder="kunde@example.com"></div>
+    <div class="stack">
+      <button class="btn btn-primary" id="sendGo" onclick="doSend('${id}')">✉ Rechnung mit PDF senden</button>
+      <button class="btn btn-ghost" onclick="scrim.classList.remove('show')">Abbrechen</button>
+    </div>
+    <div class="note">Die Rechnung geht als PDF an den Kunden.<br>Eine Kopie landet automatisch in deiner Buchhaltung.</div>`;
+  scrim.classList.add('show');
+  setTimeout(()=>el('sendMail').focus(),80);
+}
+async function doSend(id){
+  const mail=(el('sendMail').value||'').trim();
+  if(!/.+@.+\..+/.test(mail)){ alert('Bitte eine gültige E-Mail eingeben.'); return; }
+  const btn=el('sendGo'); btn.disabled=true; btn.textContent='Wird gesendet…';
+  const i=rechnungen.find(x=>x.id===id);
+  try{
+    await sendInvoice(i, mail);
+    try{ await sb.from('rechnungen').update({ kunde_email: mail }).eq('id', id); }catch(e){}
+    scrim.classList.remove('show');
+    screen.innerHTML=`<div class="done-hero"><div class="big">✓</div><h2>Rechnung ${i.nummer} gesendet</h2>
+      <p>Als PDF an ${mail} — Kopie liegt in deiner Buchhaltung.</p></div>
+      <div style="padding:0 2px">${invoiceHTML(i)}</div>
+      <div class="cta"><button class="btn btn-ghost" onclick="downloadPDF('${i.id}')">⬇ PDF</button>
+      <button class="btn btn-dark" onclick="showList()">Fertig</button></div>`;
+    screen.scrollTop=0;
+  }catch(e){
+    btn.disabled=false; btn.textContent='✉ Rechnung mit PDF senden';
+    alert('Konnte nicht senden: '+e.message);
+  }
 }
 
 /* ---------- Abschluss (schreibt in die Datenbank) ---------- */
 function openComplete(id){
   const j=auftraege.find(x=>x.id===id); curHours=3;
+  const satz=betrieb?Number(betrieb.stundensatz):50;
   sheet.innerHTML=`<h3>Arbeit abgeschlossen</h3><p class="s">${j.kunde} · ${j.aufgabe||''}</p>
     <p class="s" style="margin-bottom:4px">Wie viele Stunden hast du tatsächlich gearbeitet?</p>
     <div class="hours"><button onclick="stepH(-0.5)">–</button><div class="val" id="hval">3<small> Std</small></div><button onclick="stepH(0.5)">+</button></div>
+    <p class="s" style="text-align:center;margin-top:-8px">Ergibt <b id="hsum">${eur(3*satz)}</b> bei ${eur(satz)}/Std</p>
+    <div class="mailrow"><label>E-Mail des Kunden (für den Rechnungsversand)</label><input id="cMail" type="email" value="${j.kunde_email||''}" placeholder="kunde@example.com"></div>
     <div class="stack">
       <button class="btn btn-primary" id="cRech" onclick="finish('${id}','rechnung')">Rechnung erstellen &amp; senden</button>
       <button class="btn btn-ghost" id="cBar" onclick="finish('${id}','bar')">💶 Bar erhalten (Cash)</button>
     </div>
-    <div class="note">Bar = Auftrag wird nur auf „erledigt" gesetzt.<br>ZeitZurück stellt <b>keinen</b> Beleg aus — dein Bargeld, dein Beleg.</div>`;
+    <div class="note">Rechnungsnummer wird automatisch vergeben: <b>${naechsteNummer()}</b><br>Bar = Auftrag wird nur auf „erledigt" gesetzt, ZeitZurück stellt <b>keinen</b> Beleg aus.</div>`;
   scrim.classList.add('show');
 }
-function stepH(d){ curHours=Math.max(0.5,curHours+d); el('hval').innerHTML=(''+curHours).replace('.',',')+'<small> Std</small>'; }
+function stepH(d){
+  curHours=Math.max(0.5,curHours+d);
+  const satz=betrieb?Number(betrieb.stundensatz):50;
+  el('hval').innerHTML=(''+curHours).replace('.',',')+'<small> Std</small>';
+  const s=el('hsum'); if(s) s.textContent=eur(curHours*satz);
+}
 
 async function finish(id,art){
+  const mailEl=el('cMail');
+  const mail=(mailEl&&mailEl.value||'').trim();
+  if(art==='rechnung' && !/.+@.+\..+/.test(mail)){ alert('Bitte die E-Mail des Kunden eingeben – dorthin geht die Rechnung.'); return; }
   el('cRech').disabled=true; el('cBar').disabled=true;
+  if(art==='rechnung') el('cRech').textContent='Rechnung wird erstellt…';
   const j=auftraege.find(x=>x.id===id);
   const satz=betrieb?Number(betrieb.stundensatz):50;
   const sum=curHours*satz;
   try{
-    // 1) Auftrag aktualisieren
     await sb.from('auftraege').update({ status: art==='bar'?'bar':'erledigt', stunden: curHours }).eq('id', id);
-    // 2) Rechnungsnummer (nur bei Rechnung, fortlaufend pro Betrieb)
     let nummer=null;
-    if(art==='rechnung'){
-      const { count } = await sb.from('rechnungen').select('*',{count:'exact',head:true}).eq('art','rechnung');
-      nummer = (betrieb?betrieb.rechnung_kreis:'2026-') + String((count||0)+1).padStart(3,'0');
-    }
-    // 3) Beleg speichern
-    const { data:rec } = await sb.from('rechnungen').insert({
+    if(art==='rechnung') nummer = naechsteNummer();
+    const payload = {
       betrieb_id: betrieb.id, auftrag_id: id, nummer, kunde: j.kunde,
       positionstext: j.aufgabe, stunden: curHours, betrag: sum, art
-    }).select().single();
+    };
+    if(art==='rechnung') payload.kunde_email = mail;
+    let rec;
+    try{
+      const { data } = await sb.from('rechnungen').insert(payload).select().single();
+      rec = data;
+    }catch(e){
+      delete payload.kunde_email;
+      const { data } = await sb.from('rechnungen').insert(payload).select().single();
+      rec = data;
+    }
+    if(!rec) rec = Object.assign({ id:'tmp', datum:new Date().toISOString() }, payload);
+    rec.kunde_adresse = j.adresse || '';
+
+    let versendet=false, sendErr='';
+    if(art==='rechnung'){
+      try{ await sendInvoice(rec, mail); versendet=true; }
+      catch(e){ sendErr = e.message||'Versand fehlgeschlagen'; }
+    }
+
     scrim.classList.remove('show');
     await loadData();
     backBtn.style.display='none'; el('tabs').style.display='none'; el('barSub').textContent=j.kunde;
@@ -408,14 +621,16 @@ async function finish(id,art){
           <div style="color:var(--muted)"><span style="color:var(--muted)">–</span> Kein Beleg über ZeitZurück (Barzahlung)</div>
         </div></div>
       <div class="cta"><button class="btn btn-dark" onclick="showList()">Zurück</button></div>`
-    : `<div class="done-hero"><div class="big">✓</div><h2>Rechnung ${rec.nummer} gesendet</h2><p>Alles erledigt — du musst nichts weiter tun.</p></div>
+    : `<div class="done-hero"><div class="big">✓</div><h2>Rechnung ${rec.nummer} ${versendet?'gesendet':'erstellt'}</h2>
+       <p>${versendet?('Als PDF an '+mail+' — du musst nichts weiter tun.'):('Konnte nicht automatisch senden ('+sendErr+'). Du kannst sie unten erneut senden.')}</p></div>
        <div style="padding:0 2px">${invoiceHTML(rec)}</div>
        <div class="done-hero"><div class="checks" style="text-align:left">
-         <div><span>✓</span> An ${j.kunde} per E-Mail gesendet</div>
+         <div><span>${versendet?'✓':'–'}</span> ${versendet?('Als PDF an '+j.kunde+' gesendet'):'Noch nicht gesendet'}</div>
          <div><span>✓</span> Kopie in deine Buchhaltung gelegt</div>
          <div><span>✓</span> Auftrag auf „erledigt" gesetzt</div>
        </div></div>
-       <div class="cta"><button class="btn btn-ghost" onclick="printInvoice('${rec.id}')">🖨  Drucken</button><button class="btn btn-dark" onclick="showList()">Zurück</button></div>`;
+       <div class="cta"><button class="btn btn-ghost" onclick="downloadPDF('${rec.id}')">⬇ PDF</button>
+       <button class="btn btn-dark" onclick="showList()">Fertig</button></div>`;
     screen.scrollTop=0;
   }catch(e){
     scrim.classList.remove('show');
