@@ -10,7 +10,7 @@
   @font-face{font-family:'Poppins';font-weight:400;src:url('poppins-400.woff2') format('woff2')}
   @font-face{font-family:'Poppins';font-weight:500;src:url('poppins-500.woff2') format('woff2')}
   @font-face{font-family:'Poppins';font-weight:600;src:url('poppins-600.woff2') format('woff2')}
-  :root{--sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;--petrol:#1A3A2B;--petrol-deep:#12281d;--ivory:#F7F4EB;--ivory-soft:#FBF9F3;--gold:#C9A054;--ink:#14221b;--muted:#5c6a63;--line:rgba(26,58,43,.13);--ok:#2f9e6f;--err:#c0473b}
+  :root{--sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;--petrol:#1A3A2B;--petrol-deep:#12281d;--ivory:#F7F4EB;--ivory-soft:#FBF9F3;--gold:#C9A054;--ink:#14221b;--muted:#5c6a63;--line:rgba(26,58,43,.13);--ok:#2f9e6f;--err:#c0473b;--warn:#b3701f}
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
   body{font-family:var(--sans);background:#e7e3d8;color:var(--ink);display:flex;justify-content:center;min-height:100vh}
   .phone{width:100%;max-width:460px;background:var(--ivory);min-height:100vh;position:relative;overflow:hidden;box-shadow:0 30px 80px rgba(22,46,39,.2);display:flex;flex-direction:column}
@@ -34,6 +34,7 @@
   .btn-primary{background:var(--gold);color:var(--petrol-deep)}
   .btn-dark{background:var(--petrol);color:var(--ivory)}
   .btn-ghost{background:#fff;border:1.5px solid var(--line);color:var(--ink)}
+  .btn-warn{background:#b3701f;color:#fff}
   .btn:active{transform:translateY(1px)}
   .lmsg{margin-top:10px;text-align:center;font-size:12.5px;min-height:16px}
   .lmsg.err{color:var(--err)}
@@ -46,7 +47,8 @@
   .bar .mark{width:34px;height:34px;border-radius:50%;background:rgba(247,244,235,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
   .bar .mark img{max-width:26px;max-height:26px;display:block}
   .bar .back{cursor:pointer;font-size:22px;width:22px;line-height:1}
-  .bar .ttl{font-family:'Poppins';font-weight:600;font-size:15.5px;line-height:1.15}
+  .bar .ttl{font-family:'Poppins';font-weight:600;font-size:15.5px;line-height:1.15;cursor:pointer}
+  .bar .ttl .caret{font-size:11px;opacity:.7;margin-left:3px}
   .bar .sub{font-size:11.5px;color:rgba(247,244,235,.6)}
   .bar .spacer{flex:1}
   .bar .out{font-size:12px;color:rgba(247,244,235,.7);cursor:pointer;border:1px solid rgba(247,244,235,.25);padding:6px 11px;border-radius:999px}
@@ -57,6 +59,8 @@
   .greet{font-family:'Poppins';font-weight:600;font-size:19px;color:var(--petrol);margin:4px 2px 2px}
   .gsub{color:var(--muted);font-size:13.5px;margin:0 2px 14px}
   .lbl{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:600;margin:16px 4px 9px}
+  .alert{background:#fdf3e6;border:1px solid #e8c99a;border-radius:14px;padding:12px 14px;margin-bottom:12px;font-size:13.5px;color:#8a5a13}
+  .alert b{font-family:'Poppins'}
   .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 15px;margin-bottom:11px;cursor:pointer;display:flex;gap:12px;align-items:flex-start;transition:transform .1s}
   .card:active{transform:scale(.99)}
   .card .ic{width:40px;height:40px;border-radius:12px;background:var(--ivory-soft);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--petrol)}
@@ -69,6 +73,8 @@
   .pill.open{background:#eef3ee;color:var(--petrol)}
   .pill.done{background:#e5f3ec;color:var(--ok)}
   .pill.cash{background:#efeae0;color:#7a6636}
+  .pill.late{background:#fbe6e4;color:var(--err)}
+  .pill.warn{background:#fdf0dd;color:var(--warn)}
   .chev{color:var(--muted);font-size:17px;align-self:center}
   .empty{text-align:center;color:var(--muted);font-size:14px;padding:40px 20px;line-height:1.6}
   .loading{text-align:center;color:var(--muted);font-size:14px;padding:50px 20px}
@@ -81,10 +87,12 @@
   .row .k{color:var(--muted);flex-shrink:0}
   .row .v{font-family:'Poppins';font-weight:600;text-align:right}
   .cta{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:460px;padding:13px 15px calc(15px + env(safe-area-inset-bottom));background:linear-gradient(to top,var(--ivory) 72%,transparent);display:flex;gap:9px}
+  .fab{position:fixed;bottom:calc(88px + env(safe-area-inset-bottom));right:calc(50% - 230px + 16px);width:54px;height:54px;border-radius:50%;background:var(--petrol);color:var(--ivory);border:none;font-size:27px;line-height:1;cursor:pointer;box-shadow:0 12px 30px rgba(22,46,39,.32);z-index:20;display:flex;align-items:center;justify-content:center}
+  @media(max-width:492px){.fab{right:16px}}
 
   .scrim{position:fixed;inset:0;background:rgba(18,40,29,.45);display:none;align-items:flex-end;justify-content:center;z-index:60}
   .scrim.show{display:flex}
-  .sheet{width:100%;max-width:460px;background:var(--ivory);border-radius:22px 22px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom));animation:up .28s ease}
+  .sheet{width:100%;max-width:460px;background:var(--ivory);border-radius:22px 22px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom));animation:up .28s ease;max-height:92vh;overflow-y:auto}
   @keyframes up{from{transform:translateY(100%)}to{transform:none}}
   .sheet h3{font-family:'Poppins';font-weight:600;font-size:18px;color:var(--petrol)}
   .sheet p.s{color:var(--muted);font-size:13.5px;margin:3px 0 14px}
@@ -92,12 +100,18 @@
   .hours button{width:50px;height:50px;border-radius:50%;border:1.5px solid var(--line);background:#fff;font-size:25px;color:var(--petrol);cursor:pointer;font-weight:600}
   .hours .val{font-family:'Poppins';font-weight:600;font-size:38px;min-width:118px;text-align:center}
   .hours .val small{font-size:15px;color:var(--muted);font-weight:500}
-  .sheet .mailrow{margin-bottom:12px}
-  .sheet .mailrow label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:5px;font-weight:500}
-  .sheet .mailrow input{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:15px;font-family:var(--sans);outline:none;background:#fff;color:var(--ink)}
-  .sheet .mailrow input:focus{border-color:var(--petrol)}
+  .mailrow{margin-bottom:12px}
+  .mailrow label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:5px;font-weight:500}
+  .mailrow input,.mailrow textarea{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:15px;font-family:var(--sans);outline:none;background:#fff;color:var(--ink)}
+  .mailrow textarea{resize:none;min-height:64px}
+  .mailrow input:focus,.mailrow textarea:focus{border-color:var(--petrol)}
   .stack{display:flex;flex-direction:column;gap:9px}
   .note{font-size:11.5px;color:var(--muted);text-align:center;margin-top:9px;line-height:1.5}
+  .pick{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:9px;cursor:pointer}
+  .pick.on{border-color:var(--gold);border-width:2px}
+  .pick .n{font-family:'Poppins';font-weight:600;font-size:15px}
+  .pick .o{font-size:12.5px;color:var(--muted)}
+  .dngr{text-align:center;margin-top:14px;font-size:13px;color:var(--err);cursor:pointer;text-decoration:underline}
 
   .inv{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:14px;font-size:13px}
   .inv .top{text-align:center;border-bottom:1px solid var(--line);padding-bottom:11px;margin-bottom:11px}
@@ -115,7 +129,7 @@
   .done-hero{display:flex;flex-direction:column;align-items:center;text-align:center;padding:26px 20px 6px}
   .done-hero .big{width:70px;height:70px;border-radius:50%;background:#e5f3ec;color:var(--ok);display:flex;align-items:center;justify-content:center;font-size:34px;margin-bottom:14px}
   .done-hero h2{font-family:'Poppins';font-weight:600;color:var(--petrol);font-size:19px;margin-bottom:5px}
-  .done-hero p{color:var(--muted);font-size:13.5px;max-width:16em;line-height:1.5}
+  .done-hero p{color:var(--muted);font-size:13.5px;max-width:17em;line-height:1.5}
   .checks{margin-top:16px;font-size:13px}
   .checks div{padding:5px 0;display:flex;gap:9px}
   .checks span{color:var(--ok);font-weight:700}
@@ -143,7 +157,7 @@
       <div class="back" id="backBtn" style="display:none" onclick="showList()">‹</div>
       <div class="mark" id="brandMark"><img src="zeitzurueck-icon.svg" alt=""></div>
       <div>
-        <div class="ttl" id="barTitle">…</div>
+        <div class="ttl" id="barTitle" onclick="openBetriebPicker()">…</div>
         <div class="sub" id="barSub">ZeitZurück Rundum</div>
       </div>
       <div class="spacer"></div>
@@ -154,6 +168,7 @@
       <div class="tab" id="tabInv" onclick="setTab('inv')">Rechnungen</div>
     </div>
     <div class="screen" id="screen"></div>
+    <button class="fab" id="fab" onclick="openNewJob()" title="Neuer Auftrag">+</button>
   </div>
 </div>
 
@@ -169,50 +184,34 @@
 const SUPA_URL = 'https://adggxentvqnnghiprlbt.supabase.co';
 const SUPA_KEY = 'sb_publishable_HKPpDfId-USe9EO28I34NA_QP2Fnd0D';
 const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
-
 const RECHNUNG_WEBHOOK = 'https://alvvyn.app.n8n.cloud/webhook/rechnung-senden';
 
 /* ============================================================
-   RECHNUNGS-KONFIGURATION pro Betrieb.
-   Jeder Betrieb hat einen EIGENEN Nummernkreis mit Präfix —
-   so vermischen sich die Rechnungsnummern nie.
-   praefix     : steht vor der Nummer, z.B. "M " -> "M 03/2026"
-   startJahr   : Jahr, in dem bereits Rechnungen existierten
-   startNummer : letzte bereits vergebene Nummer in diesem Jahr
-                 (Montageservice: 02/2026 -> naechste ist 03/2026)
+   RECHNUNGS-KONFIGURATION pro Betrieb — eigener Nummernkreis.
    ============================================================ */
 const BETRIEB_KONFIG = {
   'Montageservice & Mehr': {
-    praefix: 'M ',
-    startJahr: 2026,
-    startNummer: 2,
-    strasse: 'Frühlingsstraße 91',
-    plzOrt: '3012 Wolfsgraben',
-    telefon: '0660/8268569',
-    email: 'Alvin.Ehrnberger@gmail.com',
-    ausstellungsort: 'Wolfsgraben',
-    bank: 'Erste Bank AG',
-    iban: 'AT56 2011 1287 4423 7300',
-    bic: 'GIBAATWWXXX',
-    zahlungsziel: 14
+    praefix:'M ', startJahr:2026, startNummer:2,
+    strasse:'Frühlingsstraße 91', plzOrt:'3012 Wolfsgraben',
+    telefon:'0660/8268569', email:'Alvin.Ehrnberger@gmail.com',
+    ausstellungsort:'Wolfsgraben', bank:'Erste Bank AG',
+    iban:'AT56 2011 1287 4423 7300', bic:'GIBAATWWXXX', zahlungsziel:14
   },
-  '_default': {
-    praefix: '',
-    startJahr: 0,
-    startNummer: 0,
-    strasse: '', plzOrt: '', telefon: '', email: '',
-    ausstellungsort: '',
-    bank: '', iban: '', bic: '',
-    zahlungsziel: 14
-  }
+  'ZeitZurück.at': {
+    praefix:'ZZ ', startJahr:0, startNummer:0,
+    strasse:'Frühlingsstraße 91', plzOrt:'3012 Wolfsgraben',
+    telefon:'0660/8268569', email:'office@zeitzurueck.at',
+    ausstellungsort:'Wolfsgraben', bank:'Erste Bank AG',
+    iban:'AT56 2011 1287 4423 7300', bic:'GIBAATWWXXX', zahlungsziel:14
+  },
+  '_default': { praefix:'', startJahr:0, startNummer:0, strasse:'', plzOrt:'', telefon:'', email:'', ausstellungsort:'', bank:'', iban:'', bic:'', zahlungsziel:14 }
 };
 function konf(){
   const name = betrieb && betrieb.name ? betrieb.name : '';
-  const k = BETRIEB_KONFIG[name] || BETRIEB_KONFIG['_default'];
-  return Object.assign({}, BETRIEB_KONFIG['_default'], k);
+  return Object.assign({}, BETRIEB_KONFIG['_default'], BETRIEB_KONFIG[name] || {});
 }
 
-let betrieb=null, auftraege=[], rechnungen=[], tab='jobs', curHours=3, mode='login';
+let betriebe=[], betrieb=null, auftraege=[], rechnungen=[], tab='jobs', curHours=3, mode='login';
 
 const boxIcon='<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/></svg>';
 const docIcon='<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg>';
@@ -220,19 +219,35 @@ const eur=n=>Number(n).toLocaleString('de-AT',{minimumFractionDigits:2})+' €';
 const el=id=>document.getElementById(id);
 const screen=el('screen'), scrim=el('scrim'), sheet=el('sheet'), backBtn=el('backBtn');
 function deDate(d){ const x=d?new Date(d):new Date(); return String(x.getDate()).padStart(2,'0')+'.'+String(x.getMonth()+1).padStart(2,'0')+'.'+x.getFullYear(); }
+function addDays(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
+function daysBetween(a,b){ return Math.floor((b-a)/86400000); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
-function statusPill(s){
-  if(s==='erledigt') return '<span class="pill done">Erledigt ✓</span>';
-  if(s==='bar') return '<span class="pill cash">Bar</span>';
-  return '<span class="pill today">Offen</span>';
+/* ---------- Zahlungsstatus ---------- */
+function faelligAm(i){ return addDays(i.datum||i.created_at||new Date(), konf().zahlungsziel); }
+function invStatus(i){
+  if(i.art==='bar') return {k:'bar', txt:'Bar'};
+  if(i.bezahlt_am) return {k:'bezahlt', txt:'Bezahlt'};
+  const heute=new Date(), f=faelligAm(i);
+  if(heute>f){
+    const tage=daysBetween(f,heute);
+    if(i.erinnerung_am){
+      const m=addDays(i.erinnerung_am,14);
+      if(heute>m) return {k:'mahnung', txt:'Mahnung fällig', tage:tage};
+      return {k:'erinnert', txt:'Erinnert', tage:tage};
+    }
+    return {k:'ueberfaellig', txt:'Überfällig', tage:tage};
+  }
+  return {k:'offen', txt:'Offen'};
 }
-function fmtTermin(t){
-  if(!t) return '';
-  const d=new Date(t), now=new Date();
-  const hm=d.toLocaleTimeString('de-AT',{hour:'2-digit',minute:'2-digit'});
-  if(d.toDateString()===now.toDateString()) return 'Heute · '+hm;
-  const wd=['So','Mo','Di','Mi','Do','Fr','Sa'][d.getDay()];
-  return wd+' · '+hm;
+function invPill(i){
+  const s=invStatus(i);
+  if(s.k==='bar') return '<span class="pill cash">Bar</span>';
+  if(s.k==='bezahlt') return '<span class="pill done">Bezahlt ✓</span>';
+  if(s.k==='mahnung') return '<span class="pill late">Mahnung fällig</span>';
+  if(s.k==='ueberfaellig') return '<span class="pill late">'+s.tage+' Tage überfällig</span>';
+  if(s.k==='erinnert') return '<span class="pill warn">Erinnert</span>';
+  return '<span class="pill open">Offen</span>';
 }
 
 /* ---------- Auth ---------- */
@@ -264,7 +279,7 @@ async function submitAuth(){
   }
 }
 function translateErr(m){
-  m = (m||'').trim();
+  m=(m||'').trim();
   if(/Invalid login/i.test(m)) return 'E-Mail oder Passwort falsch.';
   if(/already registered|already been registered/i.test(m)) return 'Diese E-Mail ist bereits registriert. Bitte anmelden.';
   if(/at least 6|Password should/i.test(m)) return 'Passwort muss mindestens 6 Zeichen haben.';
@@ -275,292 +290,399 @@ function translateErr(m){
 async function logout(){ await sb.auth.signOut(); location.reload(); }
 
 /* ---------- Daten ---------- */
+async function loadBetriebe(){
+  const { data } = await sb.from('betriebe').select('*').order('name');
+  betriebe = data || [];
+  const saved = localStorage.getItem('zz_betrieb');
+  betrieb = betriebe.find(b=>b.id===saved) || betriebe[0] || null;
+}
 async function loadData(){
-  const [b,a,r] = await Promise.all([
-    sb.from('betriebe').select('*').limit(1),
-    sb.from('auftraege').select('*').order('termin',{ascending:true}),
-    sb.from('rechnungen').select('*').order('created_at',{ascending:false})
+  if(!betrieb){ auftraege=[]; rechnungen=[]; return; }
+  const [a,r] = await Promise.all([
+    sb.from('auftraege').select('*').eq('betrieb_id',betrieb.id).order('termin',{ascending:true}),
+    sb.from('rechnungen').select('*').eq('betrieb_id',betrieb.id).order('created_at',{ascending:false})
   ]);
-  betrieb = (b.data&&b.data[0]) || null;
   auftraege = a.data || [];
   rechnungen = r.data || [];
+}
+function paintBrand(){
+  if(betrieb){
+    el('barTitle').innerHTML = esc(betrieb.name) + (betriebe.length>1?' <span class="caret">▾</span>':'');
+    if(betrieb.logo_url) el('brandMark').innerHTML = '<img src="'+esc(betrieb.logo_url)+'" alt="">';
+  } else el('barTitle').textContent='Kein Betrieb verknüpft';
 }
 async function enterApp(){
   el('login').style.display='none';
   el('app').style.display='flex';
   screen.innerHTML='<div class="loading">Lade deinen Betrieb…</div>';
+  await loadBetriebe();
   await loadData();
-  if(betrieb){
-    el('barTitle').textContent = betrieb.name;
-    if(betrieb.logo_url){ el('brandMark').innerHTML = '<img src="'+betrieb.logo_url+'" alt="">'; }
-  } else {
-    el('barTitle').textContent = 'Kein Betrieb verknüpft';
-  }
+  paintBrand();
   showList();
 }
+function openBetriebPicker(){
+  if(betriebe.length<2) return;
+  sheet.innerHTML='<h3>Betrieb wechseln</h3><p class="s">Jeder Betrieb hat einen eigenen Rechnungs-Nummernkreis.</p>'+
+    betriebe.map(b=>`<div class="pick ${b.id===betrieb.id?'on':''}" onclick="switchBetrieb('${b.id}')">
+      <div class="n">${esc(b.name)}</div><div class="o">${esc(b.inhaber||'')} · Nummernkreis ${esc((BETRIEB_KONFIG[b.name]||{}).praefix||'—')}</div></div>`).join('');
+  scrim.classList.add('show');
+}
+async function switchBetrieb(id){
+  betrieb = betriebe.find(b=>b.id===id) || betrieb;
+  localStorage.setItem('zz_betrieb', betrieb.id);
+  scrim.classList.remove('show');
+  screen.innerHTML='<div class="loading">Lade…</div>';
+  await loadData(); paintBrand(); showList();
+}
 
-/* ---------- Rechnungsnummer: NN/JJJJ, laeuft pro Jahr weiter ---------- */
+/* ---------- Rechnungsnummer: PRÄFIX NN/JJJJ ---------- */
 function naechsteNummer(){
-  const k = konf();
-  const jahr = new Date().getFullYear();
-  const bisher = rechnungen.filter(function(i){
+  const k=konf(), jahr=new Date().getFullYear();
+  const bisher = rechnungen.filter(i=>{
     if(i.art!=='rechnung') return false;
-    const d = i.datum || i.created_at;
+    const d=i.datum||i.created_at;
     return d ? (new Date(d)).getFullYear()===jahr : true;
   }).length;
-  const offset = (k.startJahr===jahr) ? k.startNummer : 0;
-  return k.praefix + String(offset + bisher + 1).padStart(2,'0') + '/' + jahr;
+  const offset = (k.startJahr===jahr)? k.startNummer : 0;
+  return k.praefix + String(offset+bisher+1).padStart(2,'0') + '/' + jahr;
 }
 
 /* ---------- Render ---------- */
 function setTab(t){ tab=t; el('tabJobs').classList.toggle('on',t==='jobs'); el('tabInv').classList.toggle('on',t==='inv'); showList(); }
 function showList(){
-  backBtn.style.display='none'; el('tabs').style.display='flex'; el('barSub').textContent='ZeitZurück Rundum'; screen.scrollTop=0;
+  backBtn.style.display='none'; el('tabs').style.display='flex'; el('fab').style.display='flex';
+  el('barSub').textContent='ZeitZurück Rundum'; screen.scrollTop=0;
   tab==='jobs' ? renderJobs() : renderInvoices();
+}
+function offeneMahnungen(){
+  return rechnungen.filter(i=>{ const s=invStatus(i); return s.k==='ueberfaellig'||s.k==='mahnung'; });
 }
 function renderJobs(){
   const open=auftraege.filter(j=>j.status==='offen'), done=auftraege.filter(j=>j.status!=='offen');
   const vorname=(betrieb&&betrieb.inhaber?betrieb.inhaber.split(' ')[0]:'');
+  const late=offeneMahnungen();
   screen.innerHTML=`
-    <div class="greet">Grüß dich${vorname?', '+vorname:''} 👋</div>
+    <div class="greet">Grüß dich${vorname?', '+esc(vorname):''} 👋</div>
     <div class="gsub">${open.length} offene Aufträge${done.length?` · ${done.length} erledigt`:''}</div>
-    ${open.length?`<div class="lbl">Offen</div>${open.map(jobCard).join('')}`:'<div class="empty">Keine offenen Aufträge.<br>Zeit für eine Pause. 🌿</div>'}
+    ${late.length?`<div class="alert"><b>${late.length} unbezahlte Rechnung${late.length>1?'en':''}</b> überfällig. <span style="text-decoration:underline;cursor:pointer" onclick="setTab('inv')">Ansehen ›</span></div>`:''}
+    ${open.length?`<div class="lbl">Offen</div>${open.map(jobCard).join('')}`:'<div class="empty">Keine offenen Aufträge.<br>Mit + legst du einen an. 🌿</div>'}
     ${done.length?`<div class="lbl">Erledigt</div>${done.map(jobCard).join('')}`:''}`;
 }
 function jobCard(j){
   return `<div class="card" onclick="showJob('${j.id}')">
     <div class="ic">${boxIcon}</div>
-    <div class="info"><div class="t1">${j.kunde}</div><div class="t2">${j.aufgabe||''}</div>
-      <div class="meta">${j.termin?`<span>🕒 ${fmtTermin(j.termin)}</span>`:''}${j.adresse?`<span>📍 ${j.adresse}</span>`:''}</div></div>
-    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:7px">${statusPill(j.status)}<span class="chev">›</span></div>
+    <div class="info"><div class="t1">${esc(j.kunde)}</div><div class="t2">${esc(j.aufgabe||'')}</div>
+      <div class="meta">${j.termin?`<span>🕒 ${fmtTermin(j.termin)}</span>`:''}${j.adresse?`<span>📍 ${esc(j.adresse)}</span>`:''}</div></div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:7px">${j.status==='erledigt'?'<span class="pill done">Erledigt ✓</span>':(j.status==='bar'?'<span class="pill cash">Bar</span>':'<span class="pill today">Offen</span>')}<span class="chev">›</span></div>
   </div>`;
+}
+function fmtTermin(t){
+  if(!t) return '';
+  const d=new Date(t), now=new Date();
+  const hm=d.toLocaleTimeString('de-AT',{hour:'2-digit',minute:'2-digit'});
+  if(d.toDateString()===now.toDateString()) return 'Heute · '+hm;
+  const wd=['So','Mo','Di','Mi','Do','Fr','Sa'][d.getDay()];
+  return wd+' '+String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+' · '+hm;
 }
 function renderInvoices(){
   const total=rechnungen.filter(i=>i.art!=='bar').reduce((a,b)=>a+Number(b.betrag),0);
+  const offen=rechnungen.filter(i=>i.art==='rechnung'&&!i.bezahlt_am).reduce((a,b)=>a+Number(b.betrag),0);
   screen.innerHTML=`
     <div class="greet">Rechnungen</div>
-    <div class="gsub">${rechnungen.length} Belege · ${eur(total)} verrechnet</div>
+    <div class="gsub">${rechnungen.length} Belege · ${eur(total)} verrechnet${offen?` · <b style="color:var(--warn)">${eur(offen)} offen</b>`:''}</div>
     ${rechnungen.length?rechnungen.map(i=>`
       <div class="card" onclick="showInvoice('${i.id}')">
         <div class="ic">${docIcon}</div>
-        <div class="info"><div class="t1">${i.kunde||''}</div><div class="t2">${i.positionstext||''}</div>
-          <div class="meta"><span>${i.nummer?('Nr. '+i.nummer):'Barzahlung'}</span><span>${i.datum||''}</span></div></div>
+        <div class="info"><div class="t1">${esc(i.kunde||'')}</div><div class="t2">${esc(i.positionstext||'')}</div>
+          <div class="meta"><span>${i.nummer?('Nr. '+esc(i.nummer)):'Barzahlung'}</span><span>${deDate(i.datum||i.created_at)}</span></div></div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:7px">
           <span style="font-family:'Poppins';font-weight:600;color:var(--petrol)">${eur(i.betrag)}</span>
-          ${i.art==='bar'?'<span class="pill cash">Bar</span>':'<span class="pill done">Rechnung</span>'}</div>
+          ${invPill(i)}</div>
       </div>`).join(''):'<div class="empty">Noch keine Rechnungen.<br>Schließe einen Auftrag ab — die Rechnung entsteht automatisch.</div>'}`;
 }
 function showJob(id){
   const j=auftraege.find(x=>x.id===id);
-  backBtn.style.display='block'; el('tabs').style.display='none'; el('barSub').textContent=j.kunde;
+  backBtn.style.display='block'; el('tabs').style.display='none'; el('fab').style.display='none'; el('barSub').textContent=j.kunde;
   if(j.status!=='offen'){
     const inv=rechnungen.find(i=>i.auftrag_id===id);
-    screen.innerHTML=`<div style="padding:4px 2px"><div class="d-h">${j.kunde}</div><div class="d-s">${j.aufgabe||''}</div>
+    screen.innerHTML=`<div style="padding:4px 2px"><div class="d-h">${esc(j.kunde)}</div><div class="d-s">${esc(j.aufgabe||'')}</div>
       <div class="rows">
         <div class="row"><span class="k">Status</span><span class="v" style="color:var(--ok)">Erledigt</span></div>
         <div class="row"><span class="k">Geleistete Zeit</span><span class="v">${(''+j.stunden).replace('.',',')} Std</span></div>
-        ${inv?`<div class="row"><span class="k">${inv.art==='bar'?'Bezahlung':'Rechnung'}</span><span class="v">${inv.art==='bar'?'Bar erhalten':'Nr. '+inv.nummer}</span></div>
+        ${inv?`<div class="row"><span class="k">${inv.art==='bar'?'Bezahlung':'Rechnung'}</span><span class="v">${inv.art==='bar'?'Bar erhalten':'Nr. '+esc(inv.nummer)}</span></div>
         <div class="row"><span class="k">Betrag</span><span class="v">${eur(inv.betrag)}</span></div>`:''}
-      </div></div>`;
+      </div>
+      <div class="dngr" onclick="deleteJob('${j.id}')">Auftrag löschen</div></div>`;
     return;
   }
   const satz=betrieb?Number(betrieb.stundensatz):50;
-  screen.innerHTML=`<div style="padding:4px 2px"><div class="d-h">${j.kunde}</div><div class="d-s">${j.aufgabe||''}</div>
+  screen.innerHTML=`<div style="padding:4px 2px"><div class="d-h">${esc(j.kunde)}</div><div class="d-s">${esc(j.aufgabe||'')}</div>
     <div class="rows">
       ${j.termin?`<div class="row"><span class="k">Termin</span><span class="v">${fmtTermin(j.termin)}</span></div>`:''}
-      ${j.adresse?`<div class="row"><span class="k">Adresse</span><span class="v">${j.adresse}</span></div>`:''}
-      ${j.dauer_schaetzung?`<div class="row"><span class="k">Geschätzte Dauer</span><span class="v">${j.dauer_schaetzung}</span></div>`:''}
+      ${j.adresse?`<div class="row"><span class="k">Adresse</span><span class="v">${esc(j.adresse)}</span></div>`:''}
+      ${j.kunde_email?`<div class="row"><span class="k">E-Mail</span><span class="v">${esc(j.kunde_email)}</span></div>`:''}
+      ${j.dauer_schaetzung?`<div class="row"><span class="k">Geschätzte Dauer</span><span class="v">${esc(j.dauer_schaetzung)}</span></div>`:''}
       <div class="row"><span class="k">Stundensatz</span><span class="v">${eur(satz)} / Std</span></div>
       <div class="row"><span class="k">Nächste Rechnung</span><span class="v">${naechsteNummer()}</span></div>
     </div>
-    <p style="color:var(--muted);font-size:13px;margin-top:14px">Wenn du fertig bist: „Arbeit abgeschlossen" tippen, echte Stunden eintragen — den Rest erledigt ZeitZurück.</p></div>
+    <p style="color:var(--muted);font-size:13px;margin-top:14px">Wenn du fertig bist: „Arbeit abgeschlossen" tippen, echte Stunden eintragen — den Rest erledigt ZeitZurück.</p>
+    <div class="dngr" onclick="deleteJob('${j.id}')">Auftrag löschen</div></div>
   <div class="cta"><button class="btn btn-primary" onclick="openComplete('${j.id}')">✓ Arbeit abgeschlossen</button></div>`;
 }
 
-/* ---------- PDF im Layout der Honorarnote ---------- */
-function buildPDF(i){
-  const k = konf();
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ unit:'mm', format:'a4' });
-  const L = 25, R = 185, MID = 105;
-  const satz = betrieb?Number(betrieb.stundensatz):50;
-  const stunden = Number(i.stunden);
+/* ---------- Neuer Auftrag / löschen ---------- */
+function openNewJob(){
+  sheet.innerHTML=`<h3>Neuer Auftrag</h3><p class="s">Für ${esc(betrieb?betrieb.name:'')}</p>
+    <div class="mailrow"><label>Kunde *</label><input id="nKunde" placeholder="Katrin Ehrnberger"></div>
+    <div class="mailrow"><label>E-Mail des Kunden</label><input id="nMail" type="email" placeholder="kunde@example.com"></div>
+    <div class="mailrow"><label>Aufgabe *</label><input id="nAufgabe" placeholder="Möbelmontage – Kleiderschrank PAX"></div>
+    <div class="mailrow"><label>Adresse</label><input id="nAdresse" placeholder="Straße 1, 3012 Wolfsgraben"></div>
+    <div class="mailrow"><label>Termin</label><input id="nTermin" type="datetime-local"></div>
+    <div class="stack">
+      <button class="btn btn-primary" id="nGo" onclick="createJob()">Auftrag anlegen</button>
+      <button class="btn btn-ghost" onclick="scrim.classList.remove('show')">Abbrechen</button>
+    </div>`;
+  scrim.classList.add('show');
+  setTimeout(()=>el('nKunde').focus(),80);
+}
+async function createJob(){
+  const kunde=(el('nKunde').value||'').trim(), aufgabe=(el('nAufgabe').value||'').trim();
+  if(!kunde||!aufgabe){ alert('Bitte Kunde und Aufgabe ausfüllen.'); return; }
+  const btn=el('nGo'); btn.disabled=true; btn.textContent='Wird angelegt…';
+  const rec={ betrieb_id:betrieb.id, kunde:kunde, aufgabe:aufgabe, status:'offen' };
+  const mail=(el('nMail').value||'').trim(); if(mail) rec.kunde_email=mail;
+  const adr=(el('nAdresse').value||'').trim(); if(adr) rec.adresse=adr;
+  const t=el('nTermin').value; if(t) rec.termin=new Date(t).toISOString();
+  try{
+    await sb.from('auftraege').insert(rec);
+    scrim.classList.remove('show');
+    await loadData(); setTab('jobs');
+  }catch(e){ btn.disabled=false; btn.textContent='Auftrag anlegen'; alert('Fehler: '+e.message); }
+}
+async function deleteJob(id){
+  if(!confirm('Diesen Auftrag wirklich löschen?')) return;
+  try{ await sb.from('auftraege').delete().eq('id',id); await loadData(); showList(); }
+  catch(e){ alert('Fehler: '+e.message); }
+}
 
-  /* Kopf: Betrieb mittig, Name darunter kleiner */
+/* ---------- PDF: Rechnung / Erinnerung / Mahnung ---------- */
+function buildPDF(i, art){
+  art = art || 'rechnung';
+  const k=konf(); const { jsPDF }=window.jspdf;
+  const doc=new jsPDF({unit:'mm',format:'a4'});
+  const L=25,R=185,MID=105;
+  const satz=betrieb?Number(betrieb.stundensatz):50, stunden=Number(i.stunden);
+  const titel = art==='mahnung' ? 'Mahnung zu Rechnung Nr. '+(i.nummer||'')
+              : art==='erinnerung' ? 'Zahlungserinnerung zu Rechnung Nr. '+(i.nummer||'')
+              : 'Rechnung Nr. '+(i.nummer||'');
+
   doc.setFont('helvetica','bold'); doc.setFontSize(15);
   doc.text(betrieb?betrieb.name:'', MID, 22, {align:'center'});
   doc.setFont('helvetica','normal'); doc.setFontSize(11);
   doc.text(betrieb?(betrieb.inhaber||''):'', MID, 28, {align:'center'});
   doc.setFontSize(9); doc.setTextColor(110);
-  const kopfz = [k.strasse, k.plzOrt].filter(Boolean).join(', ');
-  if(kopfz) doc.text(kopfz, MID, 33.5, {align:'center'});
-  const kontakt = [k.telefon, k.email].filter(Boolean).join('  ·  ');
-  if(kontakt) doc.text(kontakt, MID, 38, {align:'center'});
-  doc.setTextColor(0);
-  doc.setDrawColor(26,58,43); doc.setLineWidth(0.6); doc.line(L, 43, R, 43);
+  const kz=[k.strasse,k.plzOrt].filter(Boolean).join(', '); if(kz) doc.text(kz, MID, 33.5, {align:'center'});
+  const kt=[k.telefon,k.email].filter(Boolean).join('  ·  '); if(kt) doc.text(kt, MID, 38, {align:'center'});
+  doc.setTextColor(0); doc.setDrawColor(26,58,43); doc.setLineWidth(0.6); doc.line(L,43,R,43);
 
-  /* Empfänger links oben */
-  doc.setFontSize(11);
-  let y = 57;
-  doc.setFont('helvetica','bold'); doc.text(i.kunde||'', L, y); y += 5.5;
+  doc.setFontSize(11); let y=57;
+  doc.setFont('helvetica','bold'); doc.text(i.kunde||'', L, y); y+=5.5;
   doc.setFont('helvetica','normal'); doc.setFontSize(10.5);
-  (i.kunde_adresse||'').split('\n').filter(Boolean).forEach(function(z){ doc.text(z, L, y); y += 5; });
-
-  /* Ort, am Datum — rechts */
+  (i.kunde_adresse||'').split('\n').filter(Boolean).forEach(z=>{ doc.text(z,L,y); y+=5; });
   doc.setFontSize(10.5);
-  doc.text((k.ausstellungsort? k.ausstellungsort+', am ':'') + deDate(i.datum), R, 57, {align:'right'});
+  doc.text((k.ausstellungsort?k.ausstellungsort+', am ':'')+deDate(new Date()), R, 57, {align:'right'});
 
-  /* Titel */
-  const yT = Math.max(y + 12, 82);
-  doc.setFont('helvetica','bold'); doc.setFontSize(14);
-  doc.text('Rechnung Nr. ' + (i.nummer||''), L, yT);
+  const yT=Math.max(y+12,82);
+  doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.text(titel, L, yT);
 
-  /* Tabelle */
-  let yR = yT + 12;
+  let yR=yT+12;
   doc.setFontSize(8.5); doc.setTextColor(110); doc.setFont('helvetica','bold');
-  doc.text('DATUM', L, yR); doc.text('LEISTUNG', L+26, yR); doc.text('€', R, yR, {align:'right'});
-  doc.setTextColor(0);
-  doc.setDrawColor(190); doc.setLineWidth(0.25); doc.line(L, yR+2.2, R, yR+2.2);
-
-  yR += 9;
+  doc.text('DATUM',L,yR); doc.text('LEISTUNG',L+26,yR); doc.text('€',R,yR,{align:'right'});
+  doc.setTextColor(0); doc.setDrawColor(190); doc.setLineWidth(0.25); doc.line(L,yR+2.2,R,yR+2.2);
+  yR+=9;
   doc.setFont('helvetica','normal'); doc.setFontSize(10.5);
-  doc.text(deDate(i.leistungsdatum || i.datum), L, yR);
-  const txt = doc.splitTextToSize(i.positionstext||'', 92);
+  doc.text(deDate(i.datum||i.created_at), L, yR);
+  const txt=doc.splitTextToSize(i.positionstext||'',92);
   doc.text(txt, L+26, yR);
   doc.text(Number(i.betrag).toLocaleString('de-AT',{minimumFractionDigits:2}), R, yR, {align:'right'});
-  let yN = yR + (txt.length*5);
+  let yN=yR+(txt.length*5);
   doc.setFontSize(9.5); doc.setTextColor(90);
-  doc.text(String(stunden).replace('.',',') + ' h a € ' + satz + ',—', L+26, yN);
+  doc.text(String(stunden).replace('.',',')+' h a € '+satz+',—', L+26, yN);
   doc.setTextColor(0);
 
-  /* Summe */
-  const yS = yN + 10;
-  doc.setDrawColor(26,58,43); doc.setLineWidth(0.6); doc.line(L, yS, R, yS);
+  const yS=yN+10;
+  doc.setDrawColor(26,58,43); doc.setLineWidth(0.6); doc.line(L,yS,R,yS);
   doc.setFont('helvetica','bold'); doc.setFontSize(12.5);
-  doc.text('Gesamt', L, yS+7);
-  doc.text(Number(i.betrag).toLocaleString('de-AT',{minimumFractionDigits:2}) + ' €', R, yS+7, {align:'right'});
+  doc.text(art==='rechnung'?'Gesamt':'Offener Betrag', L, yS+7);
+  doc.text(Number(i.betrag).toLocaleString('de-AT',{minimumFractionDigits:2})+' €', R, yS+7, {align:'right'});
 
-  /* Hinweise */
-  let yF = yS + 20;
+  let yF=yS+20;
   doc.setFont('helvetica','normal'); doc.setFontSize(9.5); doc.setTextColor(80);
-  if(!betrieb || betrieb.kleinunternehmer){
-    doc.text('Umsatzsteuerbefreiung gem. § 6 Abs. 1 Z 27 UStG.', L, yF); yF += 9;
+  if(art!=='rechnung'){
+    const f=deDate(faelligAm(i));
+    const et = art==='mahnung'
+      ? 'Trotz unserer Zahlungserinnerung konnten wir bis heute keinen Zahlungseingang feststellen. Die Rechnung Nr. '+(i.nummer||'')+' vom '+deDate(i.datum||i.created_at)+' war am '+f+' zur Zahlung fällig. Wir ersuchen Sie höflich, den offenen Betrag binnen 7 Tagen zu überweisen.'
+      : 'Die Rechnung Nr. '+(i.nummer||'')+' vom '+deDate(i.datum||i.created_at)+' war am '+f+' zur Zahlung fällig. Vermutlich ist sie in der Alltagshektik untergegangen — wir ersuchen höflich um Überweisung des offenen Betrages. Sollten Sie bereits bezahlt haben, betrachten Sie dieses Schreiben bitte als gegenstandslos.';
+    const es=doc.splitTextToSize(et,R-L); doc.text(es,L,yF); yF+=es.length*5+7;
   }
-  doc.text('Abgerechnet wird nach tatsächlich geleisteter Zeit zu € ' + satz + ',— pro Stunde.', L, yF); yF += 9;
+  if(!betrieb || betrieb.kleinunternehmer){ doc.text('Umsatzsteuerbefreiung gem. § 6 Abs. 1 Z 27 UStG.', L, yF); yF+=9; }
+  if(art==='rechnung'){ doc.text('Abgerechnet wird nach tatsächlich geleisteter Zeit zu € '+satz+',— pro Stunde.', L, yF); yF+=9; }
   if(k.iban){
-    const zt = doc.splitTextToSize(
-      'Ich ersuche um Überweisung des oben genannten Betrages binnen ' + k.zahlungsziel +
-      ' Tagen auf mein Konto bei der ' + k.bank + ', mit dem IBAN: ' + k.iban +
-      ', BIC: ' + k.bic + ' und verbleibe', R-L);
-    doc.text(zt, L, yF); yF += zt.length*5 + 7;
+    const zt=doc.splitTextToSize('Ich ersuche um Überweisung des oben genannten Betrages '+(art==='rechnung'?('binnen '+k.zahlungsziel+' Tagen '):'')+'auf mein Konto bei der '+k.bank+', mit dem IBAN: '+k.iban+', BIC: '+k.bic+' und verbleibe', R-L);
+    doc.text(zt,L,yF); yF+=zt.length*5+7;
   }
-  doc.text('mit freundlichen Grüßen', L, yF); yF += 12;
+  doc.text('mit freundlichen Grüßen', L, yF); yF+=12;
   doc.setTextColor(0); doc.setFontSize(10.5);
   doc.text(betrieb?(betrieb.inhaber||''):'', L, yF);
-
   return doc;
 }
-function pdfName(i){ return 'Rechnung-' + String(i.nummer||'').replace(/[^\w]+/g,'-') + '.pdf'; }
-function downloadPDF(id){
+function pdfName(i,art){
+  const p = art==='mahnung'?'Mahnung-':(art==='erinnerung'?'Erinnerung-':'Rechnung-');
+  return p+String(i.nummer||'').replace(/[^\w]+/g,'-')+'.pdf';
+}
+function downloadPDF(id,art){
   const i=rechnungen.find(x=>x.id===id); if(!i) return;
-  buildPDF(i).save(pdfName(i));
+  buildPDF(i,art).save(pdfName(i,art));
 }
 
 /* ---------- Versand ---------- */
-async function sendInvoice(rec, empfaenger){
-  const doc = buildPDF(rec);
-  const b64 = doc.output('datauristring').split(',')[1];
-  const res = await fetch(RECHNUNG_WEBHOOK, {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({
-      empfaenger: empfaenger,
-      kunde: rec.kunde||'',
-      nummer: rec.nummer||'',
-      betrag: eur(rec.betrag),
-      leistung: rec.positionstext||'',
-      betrieb: betrieb?betrieb.name:'',
-      inhaber: betrieb?(betrieb.inhaber||''):'',
-      dateiname: pdfName(rec),
-      pdf_base64: b64
-    })
-  });
+async function sendDoc(rec, empfaenger, art){
+  art = art||'rechnung';
+  const doc=buildPDF(rec,art);
+  const b64=doc.output('datauristring').split(',')[1];
+  const bez = art==='mahnung'?'Mahnung':(art==='erinnerung'?'Zahlungserinnerung':'Rechnung');
+  const k=konf();
+  const betreff = art==='mahnung' ? ('Mahnung zu Rechnung '+rec.nummer+' – '+(betrieb?betrieb.name:''))
+                : art==='erinnerung' ? ('Zahlungserinnerung zu Rechnung '+rec.nummer+' – '+(betrieb?betrieb.name:''))
+                : ('Ihre Rechnung '+rec.nummer+' – '+(betrieb?betrieb.name:''));
+  let text;
+  if(art==='rechnung'){
+    text = 'Sehr geehrte/r '+(rec.kunde||'')+',\n\nvielen Dank für Ihren Auftrag. Im Anhang finden Sie Ihre Rechnung '+rec.nummer+' über '+eur(rec.betrag)+'.\n\nLeistung: '+(rec.positionstext||'')+'\n\nAbgerechnet wird nach tatsächlich geleisteter Zeit zu '+eur(betrieb?betrieb.stundensatz:50)+' pro Stunde.\n\nIch ersuche um Überweisung des Betrages binnen '+k.zahlungsziel+' Tagen auf mein Konto bei der '+k.bank+',\nIBAN: '+k.iban+', BIC: '+k.bic+'.\n\nMit freundlichen Grüßen\n'+(betrieb?betrieb.inhaber:'')+'\n'+(betrieb?betrieb.name:'');
+  } else if(art==='erinnerung'){
+    text = 'Sehr geehrte/r '+(rec.kunde||'')+',\n\ndarf ich höflich an die offene Rechnung '+rec.nummer+' über '+eur(rec.betrag)+' erinnern? Sie war am '+deDate(faelligAm(rec))+' zur Zahlung fällig.\n\nVermutlich ist sie im Alltag untergegangen. Sollten Sie bereits bezahlt haben, betrachten Sie diese Nachricht bitte als gegenstandslos.\n\nDie Rechnung finden Sie noch einmal im Anhang.\nIBAN: '+k.iban+', BIC: '+k.bic+' ('+k.bank+').\n\nMit freundlichen Grüßen\n'+(betrieb?betrieb.inhaber:'')+'\n'+(betrieb?betrieb.name:'');
+  } else {
+    text = 'Sehr geehrte/r '+(rec.kunde||'')+',\n\ntrotz meiner Zahlungserinnerung konnte ich bis heute keinen Zahlungseingang für die Rechnung '+rec.nummer+' über '+eur(rec.betrag)+' feststellen (fällig am '+deDate(faelligAm(rec))+').\n\nIch ersuche Sie, den offenen Betrag binnen 7 Tagen zu überweisen.\nIBAN: '+k.iban+', BIC: '+k.bic+' ('+k.bank+').\n\nSollten Sie Fragen zur Rechnung haben, melden Sie sich bitte einfach bei mir.\n\nMit freundlichen Grüßen\n'+(betrieb?betrieb.inhaber:'')+'\n'+(betrieb?betrieb.name:'');
+  }
+  const res=await fetch(RECHNUNG_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({ empfaenger:empfaenger, kunde:rec.kunde||'', nummer:rec.nummer||'',
+      betrag:eur(rec.betrag), leistung:rec.positionstext||'',
+      betrieb:betrieb?betrieb.name:'', inhaber:betrieb?(betrieb.inhaber||''):'',
+      dateiname:pdfName(rec,art), pdf_base64:b64, betreff:betreff, text:text, dokumentart:bez })});
   if(!res.ok) throw new Error('Versand fehlgeschlagen');
   return true;
 }
 
 function showInvoice(id){
   const i=rechnungen.find(x=>x.id===id);
-  backBtn.style.display='block'; el('tabs').style.display='none'; el('barSub').textContent=i.nummer?('Rechnung '+i.nummer):'Beleg';
-  screen.innerHTML=`<div style="padding:4px 2px">${invoiceHTML(i)}</div>`+(i.art==='rechnung'?`<div class="cta">
-     <button class="btn btn-ghost" onclick="downloadPDF('${i.id}')">⬇ PDF</button>
-     <button class="btn btn-dark" onclick="openSend('${i.id}')">✉ Senden</button></div>`:'');
+  const s=invStatus(i);
+  backBtn.style.display='block'; el('tabs').style.display='none'; el('fab').style.display='none';
+  el('barSub').textContent=i.nummer?('Rechnung '+i.nummer):'Beleg';
+  let aktion='';
+  if(i.art==='rechnung'){
+    if(s.k==='bezahlt'){
+      aktion=`<div class="cta"><button class="btn btn-ghost" onclick="downloadPDF('${i.id}')">⬇ PDF</button>
+        <button class="btn btn-dark" onclick="showList()">Zurück</button></div>`;
+    } else if(s.k==='mahnung'){
+      aktion=`<div class="cta"><button class="btn btn-ghost" onclick="markPaid('${i.id}')">✓ Bezahlt</button>
+        <button class="btn btn-warn" onclick="openSend('${i.id}','mahnung')">⚠ Mahnung senden</button></div>`;
+    } else if(s.k==='ueberfaellig'||s.k==='erinnert'){
+      aktion=`<div class="cta"><button class="btn btn-ghost" onclick="markPaid('${i.id}')">✓ Bezahlt</button>
+        <button class="btn btn-dark" onclick="openSend('${i.id}','erinnerung')">✉ Erinnerung senden</button></div>`;
+    } else {
+      aktion=`<div class="cta"><button class="btn btn-ghost" onclick="markPaid('${i.id}')">✓ Bezahlt</button>
+        <button class="btn btn-dark" onclick="openSend('${i.id}','rechnung')">✉ Senden</button></div>`;
+    }
+  }
+  const hinweis = i.art!=='rechnung' ? '' :
+    (s.k==='bezahlt' ? `<div class="alert" style="background:#e9f5ee;border-color:#b8ddc7;color:#1d6b46">Bezahlt am ${deDate(i.bezahlt_am)}</div>`
+    : s.k==='mahnung' ? `<div class="alert" style="background:#fdeceb;border-color:#e8b3ae;color:#9c352c"><b>Seit ${s.tage} Tagen überfällig.</b> Erinnerung wurde am ${deDate(i.erinnerung_am)} gesendet — jetzt ist eine Mahnung angebracht.</div>`
+    : s.k==='erinnert' ? `<div class="alert">Erinnerung am ${deDate(i.erinnerung_am)} gesendet · seit ${s.tage} Tagen überfällig.</div>`
+    : s.k==='ueberfaellig' ? `<div class="alert"><b>Seit ${s.tage} Tagen überfällig</b> (fällig war ${deDate(faelligAm(i))}).</div>`
+    : `<div class="alert" style="background:#eef3ee;border-color:#c9d8cd;color:var(--petrol)">Zahlbar bis ${deDate(faelligAm(i))}</div>`);
+  screen.innerHTML=`<div style="padding:4px 2px">${hinweis}${invoiceHTML(i)}
+    ${i.mahnung_am?`<p class="note" style="text-align:left">Mahnung gesendet am ${deDate(i.mahnung_am)}</p>`:''}</div>`+aktion;
 }
 function invoiceHTML(i){
   const k=konf();
   const satz=betrieb?Number(betrieb.stundensatz):50, klein=betrieb?betrieb.kleinunternehmer:true;
   return `<div class="inv">
     <div class="top">
-      <div class="co">${betrieb?betrieb.name:''}</div>
-      <div class="ih">${betrieb?(betrieb.inhaber||''):''}</div>
-      <div class="ct">${[k.strasse,k.plzOrt].filter(Boolean).join(', ')}${k.telefon?' · '+k.telefon:''}</div>
+      <div class="co">${esc(betrieb?betrieb.name:'')}</div>
+      <div class="ih">${esc(betrieb?(betrieb.inhaber||''):'')}</div>
+      <div class="ct">${esc([k.strasse,k.plzOrt].filter(Boolean).join(', '))}${k.telefon?' · '+esc(k.telefon):''}</div>
     </div>
-    <div class="an"><b>${i.kunde||''}</b></div>
-    ${(i.kunde_adresse||'').split('\n').filter(Boolean).map(z=>`<div class="an" style="color:var(--muted)">${z}</div>`).join('')}
-    <div class="nr">Rechnung Nr. ${i.nummer||'—'}</div>
-    <div class="dt">${k.ausstellungsort?k.ausstellungsort+', am ':''}${deDate(i.datum)}</div>
-    <div class="li"><span>${i.positionstext||''}</span><span>${eur(i.betrag)}</span></div>
+    <div class="an"><b>${esc(i.kunde||'')}</b></div>
+    ${(i.kunde_adresse||'').split('\n').filter(Boolean).map(z=>`<div class="an" style="color:var(--muted)">${esc(z)}</div>`).join('')}
+    <div class="nr">Rechnung Nr. ${esc(i.nummer||'—')}</div>
+    <div class="dt">${k.ausstellungsort?esc(k.ausstellungsort)+', am ':''}${deDate(i.datum||i.created_at)}</div>
+    <div class="li"><span>${esc(i.positionstext||'')}</span><span>${eur(i.betrag)}</span></div>
     <div class="li" style="color:var(--muted);font-size:11.5px"><span>${(''+i.stunden).replace('.',',')} h a ${eur(satz)}</span></div>
     <div class="sum"><span>Gesamt</span><span>${eur(i.betrag)}</span></div>
     ${klein?'<div class="kn">Umsatzsteuerbefreiung gem. § 6 Abs. 1 Z 27 UStG.</div>':''}
     <div class="kn">Abgerechnet wird nach tatsächlich geleisteter Zeit zu ${eur(satz)} pro Stunde.</div>
-    ${k.iban?`<div class="kn">Zahlbar binnen ${k.zahlungsziel} Tagen · ${k.bank}<br>IBAN ${k.iban} · BIC ${k.bic}</div>`:''}
+    ${k.iban?`<div class="kn">Zahlbar binnen ${k.zahlungsziel} Tagen · ${esc(k.bank)}<br>IBAN ${esc(k.iban)} · BIC ${esc(k.bic)}</div>`:''}
   </div>`;
 }
 
-function openSend(id){
+async function markPaid(id){
+  try{
+    await sb.from('rechnungen').update({ bezahlt_am: new Date().toISOString().slice(0,10) }).eq('id',id);
+    await loadData(); showInvoice(id);
+  }catch(e){ alert('Konnte nicht speichern: '+e.message+'\n\n(Fehlt die Spalte bezahlt_am? Siehe SQL im Handoff.)'); }
+}
+
+function openSend(id, art){
   const i=rechnungen.find(x=>x.id===id);
   const j=auftraege.find(x=>x.id===i.auftrag_id);
-  const vor=(i.kunde_email)||(j&&j.kunde_email)||'';
-  sheet.innerHTML=`<h3>Rechnung senden</h3><p class="s">${i.nummer} · ${i.kunde||''} · ${eur(i.betrag)}</p>
-    <div class="mailrow"><label>E-Mail des Kunden</label><input id="sendMail" type="email" value="${vor}" placeholder="kunde@example.com"></div>
+  const vor=i.kunde_email||(j&&j.kunde_email)||'';
+  const bez = art==='mahnung'?'Mahnung':(art==='erinnerung'?'Zahlungserinnerung':'Rechnung');
+  sheet.innerHTML=`<h3>${bez} senden</h3><p class="s">${esc(i.nummer)} · ${esc(i.kunde||'')} · ${eur(i.betrag)}</p>
+    <div class="mailrow"><label>E-Mail des Kunden</label><input id="sendMail" type="email" value="${esc(vor)}" placeholder="kunde@example.com"></div>
     <div class="stack">
-      <button class="btn btn-primary" id="sendGo" onclick="doSend('${id}')">✉ Rechnung mit PDF senden</button>
+      <button class="btn ${art==='mahnung'?'btn-warn':'btn-primary'}" id="sendGo" onclick="doSend('${id}','${art}')">✉ ${bez} mit PDF senden</button>
       <button class="btn btn-ghost" onclick="scrim.classList.remove('show')">Abbrechen</button>
     </div>
-    <div class="note">Die Rechnung geht als PDF an den Kunden.<br>Eine Kopie landet automatisch in deiner Buchhaltung.</div>`;
+    <div class="note">Geht als PDF an den Kunden.<br>Eine Kopie landet in deiner Buchhaltung.</div>`;
   scrim.classList.add('show');
   setTimeout(()=>el('sendMail').focus(),80);
 }
-async function doSend(id){
+async function doSend(id, art){
   const mail=(el('sendMail').value||'').trim();
   if(!/.+@.+\..+/.test(mail)){ alert('Bitte eine gültige E-Mail eingeben.'); return; }
   const btn=el('sendGo'); btn.disabled=true; btn.textContent='Wird gesendet…';
   const i=rechnungen.find(x=>x.id===id);
+  const j=auftraege.find(x=>x.id===i.auftrag_id);
+  i.kunde_adresse = (j&&j.adresse)||'';
   try{
-    await sendInvoice(i, mail);
-    try{ await sb.from('rechnungen').update({ kunde_email: mail }).eq('id', id); }catch(e){}
+    await sendDoc(i, mail, art);
+    const upd={ kunde_email: mail };
+    const heute=new Date().toISOString().slice(0,10);
+    if(art==='erinnerung') upd.erinnerung_am=heute;
+    if(art==='mahnung') upd.mahnung_am=heute;
+    try{ await sb.from('rechnungen').update(upd).eq('id',id); }catch(e){}
     scrim.classList.remove('show');
-    screen.innerHTML=`<div class="done-hero"><div class="big">✓</div><h2>Rechnung ${i.nummer} gesendet</h2>
-      <p>Als PDF an ${mail} — Kopie liegt in deiner Buchhaltung.</p></div>
-      <div style="padding:0 2px">${invoiceHTML(i)}</div>
-      <div class="cta"><button class="btn btn-ghost" onclick="downloadPDF('${i.id}')">⬇ PDF</button>
+    await loadData();
+    const bez = art==='mahnung'?'Mahnung':(art==='erinnerung'?'Erinnerung':'Rechnung');
+    screen.innerHTML=`<div class="done-hero"><div class="big">✓</div><h2>${bez} gesendet</h2>
+      <p>${esc(i.nummer)} als PDF an ${esc(mail)} — Kopie liegt in deiner Buchhaltung.</p></div>
+      <div class="cta"><button class="btn btn-ghost" onclick="downloadPDF('${i.id}','${art}')">⬇ PDF</button>
       <button class="btn btn-dark" onclick="showList()">Fertig</button></div>`;
     screen.scrollTop=0;
   }catch(e){
-    btn.disabled=false; btn.textContent='✉ Rechnung mit PDF senden';
+    btn.disabled=false; btn.textContent='✉ Senden';
     alert('Konnte nicht senden: '+e.message);
   }
 }
 
-/* ---------- Abschluss (schreibt in die Datenbank) ---------- */
+/* ---------- Abschluss ---------- */
 function openComplete(id){
   const j=auftraege.find(x=>x.id===id); curHours=3;
   const satz=betrieb?Number(betrieb.stundensatz):50;
-  sheet.innerHTML=`<h3>Arbeit abgeschlossen</h3><p class="s">${j.kunde} · ${j.aufgabe||''}</p>
+  sheet.innerHTML=`<h3>Arbeit abgeschlossen</h3><p class="s">${esc(j.kunde)} · ${esc(j.aufgabe||'')}</p>
     <p class="s" style="margin-bottom:4px">Wie viele Stunden hast du tatsächlich gearbeitet?</p>
     <div class="hours"><button onclick="stepH(-0.5)">–</button><div class="val" id="hval">3<small> Std</small></div><button onclick="stepH(0.5)">+</button></div>
     <p class="s" style="text-align:center;margin-top:-8px">Ergibt <b id="hsum">${eur(3*satz)}</b> bei ${eur(satz)}/Std</p>
-    <div class="mailrow"><label>E-Mail des Kunden (für den Rechnungsversand)</label><input id="cMail" type="email" value="${j.kunde_email||''}" placeholder="kunde@example.com"></div>
+    <div class="mailrow"><label>E-Mail des Kunden (für den Rechnungsversand)</label><input id="cMail" type="email" value="${esc(j.kunde_email||'')}" placeholder="kunde@example.com"></div>
     <div class="stack">
       <button class="btn btn-primary" id="cRech" onclick="finish('${id}','rechnung')">Rechnung erstellen &amp; senden</button>
       <button class="btn btn-ghost" id="cBar" onclick="finish('${id}','bar')">💶 Bar erhalten (Cash)</button>
@@ -574,68 +696,52 @@ function stepH(d){
   el('hval').innerHTML=(''+curHours).replace('.',',')+'<small> Std</small>';
   const s=el('hsum'); if(s) s.textContent=eur(curHours*satz);
 }
-
 async function finish(id,art){
-  const mailEl=el('cMail');
-  const mail=(mailEl&&mailEl.value||'').trim();
+  const mailEl=el('cMail'); const mail=(mailEl&&mailEl.value||'').trim();
   if(art==='rechnung' && !/.+@.+\..+/.test(mail)){ alert('Bitte die E-Mail des Kunden eingeben – dorthin geht die Rechnung.'); return; }
   el('cRech').disabled=true; el('cBar').disabled=true;
   if(art==='rechnung') el('cRech').textContent='Rechnung wird erstellt…';
   const j=auftraege.find(x=>x.id===id);
-  const satz=betrieb?Number(betrieb.stundensatz):50;
-  const sum=curHours*satz;
+  const satz=betrieb?Number(betrieb.stundensatz):50, sum=curHours*satz;
   try{
     await sb.from('auftraege').update({ status: art==='bar'?'bar':'erledigt', stunden: curHours }).eq('id', id);
-    let nummer=null;
-    if(art==='rechnung') nummer = naechsteNummer();
-    const payload = {
-      betrieb_id: betrieb.id, auftrag_id: id, nummer, kunde: j.kunde,
-      positionstext: j.aufgabe, stunden: curHours, betrag: sum, art
-    };
-    if(art==='rechnung') payload.kunde_email = mail;
-    let rec;
-    try{
-      const { data } = await sb.from('rechnungen').insert(payload).select().single();
-      rec = data;
-    }catch(e){
-      delete payload.kunde_email;
-      const { data } = await sb.from('rechnungen').insert(payload).select().single();
-      rec = data;
-    }
-    if(!rec) rec = Object.assign({ id:'tmp', datum:new Date().toISOString() }, payload);
-    rec.kunde_adresse = j.adresse || '';
+    const nummer = art==='rechnung' ? naechsteNummer() : null;
+    const payload={ betrieb_id:betrieb.id, auftrag_id:id, nummer, kunde:j.kunde,
+      positionstext:j.aufgabe, stunden:curHours, betrag:sum, art };
+    if(art==='rechnung') payload.kunde_email=mail;
+    let rec=null;
+    try{ const {data}=await sb.from('rechnungen').insert(payload).select().single(); rec=data; }
+    catch(e){ delete payload.kunde_email; const {data}=await sb.from('rechnungen').insert(payload).select().single(); rec=data; }
+    if(!rec) rec=Object.assign({id:'tmp',datum:new Date().toISOString()},payload);
+    rec.kunde_adresse=j.adresse||'';
 
     let versendet=false, sendErr='';
     if(art==='rechnung'){
-      try{ await sendInvoice(rec, mail); versendet=true; }
-      catch(e){ sendErr = e.message||'Versand fehlgeschlagen'; }
+      try{ await sendDoc(rec, mail, 'rechnung'); versendet=true; }
+      catch(e){ sendErr=e.message||'Versand fehlgeschlagen'; }
     }
-
     scrim.classList.remove('show');
     await loadData();
-    backBtn.style.display='none'; el('tabs').style.display='none'; el('barSub').textContent=j.kunde;
+    backBtn.style.display='none'; el('tabs').style.display='none'; el('fab').style.display='none'; el('barSub').textContent=j.kunde;
     screen.innerHTML = art==='bar' ? `
-      <div class="done-hero"><div class="big">✓</div><h2>Auftrag erledigt</h2><p>${j.kunde} · bar bezahlt.</p>
+      <div class="done-hero"><div class="big">✓</div><h2>Auftrag erledigt</h2><p>${esc(j.kunde)} · bar bezahlt.</p>
         <div class="checks" style="text-align:left">
           <div><span>✓</span> Auftrag auf „erledigt" gesetzt</div>
           <div style="color:var(--muted)"><span style="color:var(--muted)">–</span> Kein Beleg über ZeitZurück (Barzahlung)</div>
         </div></div>
       <div class="cta"><button class="btn btn-dark" onclick="showList()">Zurück</button></div>`
-    : `<div class="done-hero"><div class="big">✓</div><h2>Rechnung ${rec.nummer} ${versendet?'gesendet':'erstellt'}</h2>
-       <p>${versendet?('Als PDF an '+mail+' — du musst nichts weiter tun.'):('Konnte nicht automatisch senden ('+sendErr+'). Du kannst sie unten erneut senden.')}</p></div>
+    : `<div class="done-hero"><div class="big">✓</div><h2>Rechnung ${esc(rec.nummer)} ${versendet?'gesendet':'erstellt'}</h2>
+       <p>${versendet?('Als PDF an '+esc(mail)+'. Zahlbar bis '+deDate(faelligAm(rec))+'.'):('Konnte nicht automatisch senden ('+esc(sendErr)+'). Du kannst sie unten erneut senden.')}</p></div>
        <div style="padding:0 2px">${invoiceHTML(rec)}</div>
        <div class="done-hero"><div class="checks" style="text-align:left">
-         <div><span>${versendet?'✓':'–'}</span> ${versendet?('Als PDF an '+j.kunde+' gesendet'):'Noch nicht gesendet'}</div>
+         <div><span>${versendet?'✓':'–'}</span> ${versendet?('Als PDF an '+esc(j.kunde)+' gesendet'):'Noch nicht gesendet'}</div>
          <div><span>✓</span> Kopie in deine Buchhaltung gelegt</div>
          <div><span>✓</span> Auftrag auf „erledigt" gesetzt</div>
        </div></div>
        <div class="cta"><button class="btn btn-ghost" onclick="downloadPDF('${rec.id}')">⬇ PDF</button>
        <button class="btn btn-dark" onclick="showList()">Fertig</button></div>`;
     screen.scrollTop=0;
-  }catch(e){
-    scrim.classList.remove('show');
-    alert('Fehler beim Speichern: '+e.message);
-  }
+  }catch(e){ scrim.classList.remove('show'); alert('Fehler beim Speichern: '+e.message); }
 }
 
 /* ---------- Start ---------- */
