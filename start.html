@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Startfragebogen — ZeitZurück.at</title>
+<meta name="description" content="Damit wir Ihr digitales Front Office einrichten können: einmalig ein paar Angaben zu Ihrem Betrieb.">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="zeitzurueck-favicon.svg">
+<style>
+  @font-face{font-family:'Poppins';font-weight:400;src:url('poppins-400.woff2') format('woff2')}
+  @font-face{font-family:'Poppins';font-weight:500;src:url('poppins-500.woff2') format('woff2')}
+  @font-face{font-family:'Poppins';font-weight:600;src:url('poppins-600.woff2') format('woff2')}
+  :root{--sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --petrol:#1A3A2B;--petrol-deep:#12281d;--ivory:#F7F4EB;--ivory-soft:#FBF9F3;
+    --gold:#C9A054;--ink:#14221b;--muted:#5c6a63;--line:rgba(26,58,43,.16)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--sans);background:var(--ivory);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:52rem;margin:0 auto;padding:0 clamp(18px,4vw,40px)}
+
+  header{background:var(--petrol);color:var(--ivory);padding:34px 0 30px}
+  header .wrap{display:flex;flex-direction:column;gap:14px}
+  header img{height:34px;width:auto;align-self:flex-start}
+  header h1{font-family:'Poppins';font-size:clamp(22px,4vw,31px);font-weight:600;line-height:1.15}
+  header p{color:rgba(247,244,235,.82);font-size:16px;max-width:38rem}
+  .gold-line{width:54px;height:3px;background:var(--gold);border-radius:2px}
+
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:30px 0 6px}
+  @media(max-width:700px){.split{grid-template-columns:1fr}}
+  .box{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px 22px}
+  .box.gold{background:var(--ivory-soft);border-color:rgba(201,160,84,.5)}
+  .box h3{font-family:'Poppins';font-size:15.5px;font-weight:600;color:var(--petrol);margin-bottom:10px}
+  .box ul{list-style:none}
+  .box li{font-size:14.5px;color:var(--muted);padding:4px 0 4px 20px;position:relative}
+  .box li:before{content:"✓";position:absolute;left:0;color:var(--gold);font-weight:700}
+  .box.gold li:before{content:"→";color:var(--petrol)}
+
+  section.blk{margin-top:34px}
+  .num{display:flex;align-items:center;gap:11px;margin-bottom:4px}
+  .num span{width:27px;height:27px;border-radius:50%;background:var(--petrol);color:var(--ivory);
+    font-family:'Poppins';font-size:13.5px;font-weight:600;display:flex;align-items:center;justify-content:center;flex:none}
+  .num h2{font-family:'Poppins';font-size:19px;font-weight:600;color:var(--petrol)}
+  .hint{font-size:13.5px;color:var(--muted);margin:0 0 14px 38px}
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f{margin-bottom:14px}
+  .f.full{grid-column:1/-1}
+  label{display:block;font-size:13px;font-weight:500;color:var(--muted);margin-bottom:5px}
+  label .req{color:var(--gold)}
+  input[type=text],input[type=email],input[type=tel],textarea,select{
+    width:100%;border:1px solid var(--line);border-radius:11px;padding:12px 14px;
+    font-size:15px;font-family:var(--sans);color:var(--ink);background:#fff;outline:none}
+  textarea{min-height:88px;resize:vertical}
+  input:focus,textarea:focus,select:focus{border-color:var(--petrol);box-shadow:0 0 0 3px rgba(26,58,43,.08)}
+  .radios{display:flex;gap:18px;flex-wrap:wrap;padding-top:4px}
+  .radios label{display:flex;align-items:center;gap:7px;font-size:14.5px;color:var(--ink);font-weight:400;margin:0;cursor:pointer}
+  .checks{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  @media(max-width:640px){.checks{grid-template-columns:1fr}}
+  .checks label{display:flex;align-items:flex-start;gap:8px;font-size:14.5px;color:var(--ink);font-weight:400;margin:0;cursor:pointer}
+  .note{background:var(--ivory-soft);border-left:3px solid var(--gold);border-radius:0 10px 10px 0;
+    padding:12px 16px;font-size:13.5px;color:var(--muted);margin-top:10px}
+
+  .actions{margin:36px 0 10px;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .btn{border:none;border-radius:999px;padding:15px 30px;font-family:'Poppins';font-weight:600;
+    font-size:15.5px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+  .btn-primary{background:var(--gold);color:var(--petrol-deep)}
+  .btn-ghost{background:#fff;border:1.5px solid var(--line);color:var(--ink)}
+  .btn:disabled{opacity:.6;cursor:default}
+  #msg{font-size:14px;min-height:20px;margin-top:6px}
+  #msg.ok{color:#2f9e6f}
+  #msg.err{color:#c0473b}
+
+  .privacy{font-size:12.5px;color:var(--muted);margin-top:18px;line-height:1.55}
+  .privacy a{color:var(--petrol)}
+  footer{background:var(--petrol-deep);color:rgba(247,244,235,.7);font-size:13.5px;padding:26px 0;margin-top:46px}
+  footer .wrap{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
+  footer a{color:rgba(247,244,235,.7)}
+
+  .done{display:none;background:#fff;border:1px solid var(--line);border-radius:18px;padding:34px;text-align:center;margin-top:26px}
+  .done .tick{width:64px;height:64px;border-radius:50%;background:#e5f3ec;color:#2f9e6f;
+    font-size:31px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+  .done h2{font-family:'Poppins';color:var(--petrol);font-size:20px;margin-bottom:6px}
+  .done p{color:var(--muted);font-size:15px}
+
+  /* ============ DRUCK: sauberer Papier-Fragebogen ============ */
+  @media print{
+    @page{margin:14mm}
+    body{background:#fff;font-size:10.5pt;line-height:1.45}
+    .wrap{max-width:none;padding:0}
+    header{background:none;color:#14221b;padding:0 0 8mm;border-bottom:1.5pt solid #1A3A2B;margin-bottom:6mm}
+    header img{height:26px;filter:invert(12%) sepia(18%) saturate(1200%) hue-rotate(96deg)}
+    header h1{font-size:17pt;color:#1A3A2B}
+    header p{color:#444;font-size:10pt}
+    .gold-line{display:none}
+    .split{margin:5mm 0;gap:5mm;break-inside:avoid}
+    .box{border:0.6pt solid #bbb;border-radius:3mm;padding:4mm;background:none}
+    .box h3{font-size:10.5pt}
+    .box li{font-size:9pt;color:#333}
+    section.blk{margin-top:6mm;break-inside:avoid}
+    .num span{background:#1A3A2B;width:6mm;height:6mm;font-size:8.5pt}
+    .num h2{font-size:12pt}
+    .hint{font-size:8.5pt;margin-left:9mm}
+    .grid{gap:3mm}
+    .f{margin-bottom:3.5mm}
+    label{font-size:8.5pt;color:#555}
+    /* Eingabefelder werden zu Schreiblinien */
+    input[type=text],input[type=email],input[type=tel],select{
+      border:0;border-bottom:0.6pt solid #999;border-radius:0;padding:1mm 0 0.5mm;
+      height:7mm;background:none;font-size:10pt}
+    textarea{border:0.6pt solid #999;border-radius:2mm;min-height:16mm;background:none}
+    .radios label,.checks label{font-size:9pt}
+    input[type=radio],input[type=checkbox]{width:3.2mm;height:3.2mm}
+    .note{background:none;border-left:2pt solid #C9A054;font-size:8.5pt;padding:2mm 3mm}
+    .actions,#msg,.done,.noprint{display:none !important}
+    .privacy{font-size:7.5pt;margin-top:5mm}
+    footer{background:none;color:#666;border-top:0.6pt solid #ccc;margin-top:6mm;padding:3mm 0;font-size:8pt}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <img src="zeitzurueck-logo-dark.svg" alt="ZeitZurück.at">
+    <div class="gold-line"></div>
+    <h1>Startfragebogen</h1>
+    <p>Damit wir Ihr digitales Front Office einrichten können, brauchen wir einmalig ein paar Angaben zu Ihrem Betrieb. Das dauert etwa 10 Minuten — danach übernehmen wir.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="split">
+    <div class="box">
+      <h3>Das brauchen wir von Ihnen</h3>
+      <ul>
+        <li>Ihre Firmen- und Kontaktdaten</li>
+        <li>Was Sie anbieten und was es kostet</li>
+        <li>Wann Sie arbeiten können</li>
+        <li>Zugriff auf Kalender und E-Mail</li>
+        <li>Logo und Farben, falls vorhanden</li>
+      </ul>
+    </div>
+    <div class="box gold">
+      <h3>Das übernehmen wir für Sie</h3>
+      <ul>
+        <li>Website aufbauen und betreiben</li>
+        <li>KI-Chat einrichten und trainieren</li>
+        <li>Terminbuchung in Ihren Kalender</li>
+        <li>Bestätigungen und Rechnungen</li>
+        <li>Technik, Updates, Überwachung</li>
+      </ul>
+    </div>
+  </div>
+
+  <form id="startForm">
+
+    <section class="blk">
+      <div class="num"><span>1</span><h2>Ihr Betrieb</h2></div>
+      <p class="hint">Diese Angaben erscheinen auf Ihrer Website, im Impressum und auf Rechnungen.</p>
+      <div class="grid">
+        <div class="f"><label>Firmenname <span class="req">*</span></label><input type="text" name="firma" required></div>
+        <div class="f"><label>Inhaber/in <span class="req">*</span></label><input type="text" name="inhaber" required></div>
+        <div class="f full"><label>Firmenadresse (Straße, PLZ, Ort)</label><input type="text" name="adresse"></div>
+        <div class="f"><label>GISA-Zahl / Gewerbe</label><input type="text" name="gisa"></div>
+        <div class="f"><label>UID-Nummer (falls vorhanden)</label><input type="text" name="uid"></div>
+        <div class="f full">
+          <label>Kleinunternehmer nach § 6 Abs. 1 Z 27 UStG?</label>
+          <div class="radios">
+            <label><input type="radio" name="kleinunternehmer" value="ja"> Ja, keine USt</label>
+            <label><input type="radio" name="kleinunternehmer" value="nein"> Nein, mit USt</label>
+            <label><input type="radio" name="kleinunternehmer" value="unklar"> Weiß ich nicht</label>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="blk">
+      <div class="num"><span>2</span><h2>Kontakt</h2></div>
+      <p class="hint">Hierher gehen Anfragen und Terminbestätigungen.</p>
+      <div class="grid">
+        <div class="f"><label>E-Mail für Anfragen <span class="req">*</span></label><input type="email" name="email" required></div>
+        <div class="f"><label>Telefonnummer</label><input type="tel" name="telefon"></div>
+        <div class="f full"><label>Bestehende Website (falls vorhanden)</label><input type="text" name="website" placeholder="www.…"></div>
+      </div>
+    </section>
+
+    <section class="blk">
+      <div class="num"><span>3</span><h2>Ihre Leistungen &amp; Preise</h2></div>
+      <p class="hint">Damit der Chat richtig beraten und einschätzen kann.</p>
+      <div class="grid">
+        <div class="f full"><label>Was bieten Sie an? <span class="req">*</span></label>
+          <textarea name="leistungen" placeholder="Ihre wichtigsten Leistungen — je Zeile eine" required></textarea></div>
+        <div class="f"><label>Stundensatz</label><input type="text" name="stundensatz" placeholder="z.B. 50 €"></div>
+        <div class="f"><label>Anfahrt / Pauschalen</label><input type="text" name="pauschalen" placeholder="z.B. 20 € Anfahrt"></div>
+        <div class="f full"><label>Wie lange dauert ein typischer Auftrag?</label>
+          <textarea name="dauern" placeholder="z.B. Kleiderschrank 2–3 Std, Küche 1 Tag"></textarea></div>
+        <div class="f full"><label>Was machen Sie ausdrücklich NICHT?</label>
+          <input type="text" name="nicht" placeholder="z.B. keine Elektro-, Wasser- oder Gasarbeiten"></div>
+      </div>
+    </section>
+
+    <section class="blk">
+      <div class="num"><span>4</span><h2>Termine &amp; Verfügbarkeit</h2></div>
+      <p class="hint">Nur innerhalb dieser Zeiten schlägt der Chat Termine vor.</p>
+      <div class="grid">
+        <div class="f full"><label>An welchen Tagen und zu welchen Zeiten arbeiten Sie? <span class="req">*</span></label>
+          <textarea name="zeiten" placeholder="z.B. Mo–Do ab 17:00, Fr ab 12:00, Sa &amp; So 10:00–22:00" required></textarea></div>
+        <div class="f"><label>Vorlauf vor einem Termin</label><input type="text" name="vorlauf" placeholder="z.B. mindestens 48 Stunden"></div>
+        <div class="f"><label>Fahrzeit zwischen Aufträgen</label><input type="text" name="puffer" placeholder="z.B. 45 Minuten"></div>
+        <div class="f full"><label>Einsatzgebiet</label><input type="text" name="gebiet" placeholder="z.B. Wien &amp; Niederösterreich"></div>
+      </div>
+    </section>
+
+    <section class="blk">
+      <div class="num"><span>5</span><h2>Rechnungen</h2></div>
+      <p class="hint">Wichtig: Damit Ihre Nummerierung lückenlos weiterläuft.</p>
+      <div class="grid">
+        <div class="f"><label>Bei welcher Rechnungsnummer stehen Sie gerade? <span class="req">*</span></label>
+          <input type="text" name="rechnung_stand" placeholder="z.B. 02/2026" required></div>
+        <div class="f"><label>Zahlungsziel</label><input type="text" name="zahlungsziel" placeholder="z.B. 14 Tage"></div>
+        <div class="f full"><label>Wie sollen Rechnungen heißen?</label>
+          <div class="radios">
+            <label><input type="radio" name="belegart" value="rechnung"> Rechnung</label>
+            <label><input type="radio" name="belegart" value="honorarnote"> Honorarnote</label>
+          </div>
+        </div>
+      </div>
+      <div class="note">Ihre <b>Bankdaten (IBAN/BIC)</b> für die Rechnungen besprechen wir persönlich — bitte nicht in dieses Formular eintragen.</div>
+    </section>
+
+    <section class="blk">
+      <div class="num"><span>6</span><h2>Kommunikation &amp; Auftritt</h2></div>
+      <p class="hint">So klingt und wirkt Ihr Betrieb nach außen.</p>
+      <div class="grid">
+        <div class="f full"><label>Über welche Kanäle sollen Kunden Sie erreichen?</label>
+          <div class="checks">
+            <label><input type="checkbox" name="kanal" value="Website-Chat"> Chat auf der Website</label>
+            <label><input type="checkbox" name="kanal" value="WhatsApp"> WhatsApp</label>
+            <label><input type="checkbox" name="kanal" value="E-Mail"> E-Mail</label>
+            <label><input type="checkbox" name="kanal" value="Telefon"> Telefon</label>
+          </div>
+        </div>
+        <div class="f full"><label>Wie sollen Ihre Kunden angesprochen werden?</label>
+          <div class="radios">
+            <label><input type="radio" name="ansprache" value="Sie"> Per Sie</label>
+            <label><input type="radio" name="ansprache" value="Du"> Per Du</label>
+          </div>
+        </div>
+        <div class="f"><label>Haben Sie ein Logo?</label>
+          <div class="radios">
+            <label><input type="radio" name="logo" value="ja"> Ja</label>
+            <label><input type="radio" name="logo" value="nein"> Nein</label>
+          </div>
+        </div>
+        <div class="f"><label>Wunschfarben</label><input type="text" name="farben" placeholder="z.B. dunkelgrün, warmes Beige"></div>
+        <div class="f full"><label>Haben Sie schon eine Domain?</label>
+          <input type="text" name="domain" placeholder="z.B. ja, meinbetrieb.at — oder: nein, bitte vorschlagen"></div>
+      </div>
+    </section>
+
+    <section class="blk">
+      <div class="num"><span>7</span><h2>Sonstiges</h2></div>
+      <p class="hint">Alles, was uns sonst noch helfen könnte.</p>
+      <div class="f full"><label>Was nervt Sie im Alltag am meisten?</label>
+        <textarea name="sonstiges" placeholder="z.B. ständiges Telefonieren wegen Terminen"></textarea></div>
+    </section>
+
+    <div class="actions">
+      <button type="submit" class="btn btn-primary" id="sendBtn">Angaben senden</button>
+      <button type="button" class="btn btn-ghost noprint" onclick="window.print()">🖨 Ausdrucken</button>
+    </div>
+    <div id="msg"></div>
+
+    <p class="privacy">Ihre Angaben werden ausschließlich zur Einrichtung Ihres ZeitZurück-Zugangs verwendet und nicht an Dritte weitergegeben.
+      Mehr dazu in der <a href="datenschutz.html">Datenschutzerklärung</a>. Verantwortlich: ZeitZurück.at ·
+      <a href="mailto:office@zeitzurueck.at">office@zeitzurueck.at</a></p>
+  </form>
+
+  <div class="done" id="done">
+    <div class="tick">✓</div>
+    <h2>Vielen Dank!</h2>
+    <p>Ihre Angaben sind bei uns angekommen. Wir melden uns innerhalb von zwei Werktagen mit den nächsten Schritten.</p>
+  </div>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    <div>© 2026 ZeitZurück.at · Ihr digitales Front Office</div>
+    <div><a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var WEBHOOK = "https://alvvyn.app.n8n.cloud/webhook/zeitzurueck-onboarding";
+  var form = document.getElementById('startForm');
+  var btn  = document.getElementById('sendBtn');
+  var msg  = document.getElementById('msg');
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var fd = new FormData(form), daten = {}, kanaele = [];
+    fd.forEach(function(v,k){
+      if(k === 'kanal'){ kanaele.push(v); return; }
+      daten[k] = (v||'').toString().trim();
+    });
+    daten.kanal = kanaele.join(', ');
+
+    if(!daten.firma || !daten.email){
+      msg.className='err'; msg.textContent='Bitte zumindest Firmenname und E-Mail ausfüllen.'; return;
+    }
+    btn.disabled = true; btn.textContent = 'Wird gesendet…';
+    msg.className=''; msg.textContent='';
+
+    fetch(WEBHOOK, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(daten)
+    })
+    .then(function(r){ if(!r.ok) throw new Error('Fehler'); return r.json().catch(function(){return {};}); })
+    .then(function(){
+      form.style.display='none';
+      document.getElementById('done').style.display='block';
+      window.scrollTo({top:0, behavior:'smooth'});
+    })
+    .catch(function(){
+      btn.disabled=false; btn.textContent='Angaben senden';
+      msg.className='err';
+      msg.textContent='Das hat leider nicht geklappt. Bitte noch einmal versuchen oder an office@zeitzurueck.at schreiben.';
+    });
+  });
+})();
+</script>
+</body>
+</html>
