@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>So läuft es ab — ZeitZurück.at</title>
+<style>
+  @font-face{font-family:'Poppins';font-weight:500;src:url('poppins-500.woff2') format('woff2')}
+  @font-face{font-family:'Poppins';font-weight:600;src:url('poppins-600.woff2') format('woff2')}
+  :root{--sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --petrol:#1A3A2B;--petrol-deep:#12281d;--ivory:#F7F4EB;--ivory-soft:#FBF9F3;
+    --gold:#C9A054;--beige:#d9cbb3;--ink:#14221b;--muted:#7d8a83}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:var(--sans);background:var(--petrol);color:var(--ivory);overflow:hidden;
+    display:flex;align-items:center;justify-content:center}
+  .stage{position:relative;width:100%;height:100%;max-width:940px;padding:22px 26px 62px;
+    display:flex;flex-direction:column}
+
+  .head{flex:none;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+  .head h1{font-family:'Poppins';font-size:clamp(15px,2.4vw,20px);font-weight:600;letter-spacing:.01em}
+  .head span{font-size:clamp(11px,1.7vw,13px);color:rgba(247,244,235,.55)}
+
+  .track{flex:1;position:relative;min-height:0}
+  .step{position:absolute;inset:0;display:flex;align-items:center;gap:clamp(16px,3.5vw,42px);
+    opacity:0;transform:translateY(14px);pointer-events:none;transition:opacity .55s ease,transform .55s ease}
+  .step.on{opacity:1;transform:none}
+  @media(max-width:640px){.step{flex-direction:column;justify-content:center;gap:16px;text-align:center}}
+
+  .art{flex:none;width:clamp(150px,30vw,250px);display:flex;align-items:center;justify-content:center}
+  .txt{flex:1;min-width:0}
+  .kicker{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:9px}
+  .kicker b{width:20px;height:20px;border-radius:50%;background:var(--gold);color:var(--petrol-deep);
+    font-size:11px;display:flex;align-items:center;justify-content:center;font-weight:700}
+  .txt h2{font-family:'Poppins';font-size:clamp(19px,3.4vw,29px);font-weight:600;line-height:1.16;margin-bottom:9px}
+  .txt p{font-size:clamp(13.5px,1.9vw,16px);color:rgba(247,244,235,.78);line-height:1.55;max-width:26em}
+  @media(max-width:640px){.txt p{margin-inline:auto}}
+  .who{display:inline-block;margin-top:13px;font-size:12px;padding:5px 12px;border-radius:999px;
+    background:rgba(247,244,235,.1);color:rgba(247,244,235,.75)}
+  .who.auto{background:rgba(201,160,84,.2);color:#e8cf9c}
+
+  /* ---------- Fortschritt ---------- */
+  .bar{position:absolute;left:26px;right:26px;bottom:26px;display:flex;gap:6px;align-items:center}
+  .dot{flex:1;height:3px;border-radius:2px;background:rgba(247,244,235,.18);cursor:pointer;position:relative;overflow:hidden}
+  .dot i{position:absolute;inset:0;width:0;background:var(--gold);border-radius:2px}
+  .dot.done i{width:100%}
+  .dot.act i{animation:fill var(--dur) linear forwards}
+  @keyframes fill{from{width:0}to{width:100%}}
+  .replay{position:absolute;right:26px;top:20px;background:rgba(247,244,235,.1);border:none;
+    color:var(--ivory);font-family:var(--sans);font-size:12px;padding:7px 14px;border-radius:999px;cursor:pointer}
+  .replay:hover{background:rgba(247,244,235,.2)}
+
+  /* ---------- Illustrationen ---------- */
+  svg{width:100%;height:auto;display:block}
+  .pop{animation:pop .5s ease both}
+  @keyframes pop{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
+  .step.on .d1{animation:pop .5s .15s ease both}
+  .step.on .d2{animation:pop .5s .35s ease both}
+  .step.on .d3{animation:pop .5s .55s ease both}
+  .step:not(.on) .d1,.step:not(.on) .d2,.step:not(.on) .d3{opacity:0}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="head">
+    <h1>Von der Anfrage bis zum Geld am Konto</h1>
+    <span>Alles, was ZeitZurück im Hintergrund übernimmt</span>
+  </div>
+  <button class="replay" id="replay">↻ Nochmal</button>
+
+  <div class="track" id="track">
+
+    <!-- 1 -->
+    <div class="step">
+      <div class="art">
+        <svg viewBox="0 0 200 150">
+          <rect class="d1" x="14" y="24" width="128" height="40" rx="13" fill="#FBF9F3"/>
+          <rect class="d1" x="28" y="38" width="76" height="5" rx="2.5" fill="#9aa8a0"/>
+          <rect class="d1" x="28" y="49" width="52" height="5" rx="2.5" fill="#c3ccc7"/>
+          <rect class="d2" x="58" y="78" width="128" height="34" rx="13" fill="#C9A054"/>
+          <rect class="d2" x="72" y="91" width="66" height="5" rx="2.5" fill="#12281d" opacity=".55"/>
+          <circle class="d3" cx="168" cy="40" r="15" fill="#2c5240"/>
+          <path class="d3" d="M162 40l4.5 4.5L175 36" stroke="#C9A054" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="txt">
+        <div class="kicker"><b>1</b> Anfrage</div>
+        <h2>Ein Kunde schreibt — um 22 Uhr.</h2>
+        <p>Über die Website oder WhatsApp. Kein Anruf, den Sie verpassen, keine Nachricht, die liegen bleibt.</p>
+        <span class="who">Der Kunde</span>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="step">
+      <div class="art">
+        <svg viewBox="0 0 200 150">
+          <rect class="d1" x="20" y="20" width="160" height="110" rx="16" fill="#FBF9F3"/>
+          <rect class="d1" x="34" y="36" width="60" height="6" rx="3" fill="#1A3A2B" opacity=".75"/>
+          <rect class="d2" x="34" y="56" width="112" height="5" rx="2.5" fill="#9aa8a0"/>
+          <rect class="d2" x="34" y="69" width="88" height="5" rx="2.5" fill="#c3ccc7"/>
+          <rect class="d3" x="34" y="90" width="46" height="20" rx="10" fill="#1A3A2B"/>
+          <rect class="d3" x="88" y="90" width="46" height="20" rx="10" fill="#e4ded1"/>
+        </svg>
+      </div>
+      <div class="txt">
+        <div class="kicker"><b>2</b> Rückfragen</div>
+        <h2>ZeitZurück fragt nach, was fehlt.</h2>
+        <p>Welches Möbel, welche Adresse, welche Besonderheiten — gebündelt in wenigen Fragen statt fünf E-Mails hin und her.</p>
+        <span class="who auto">Automatisch</span>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="step">
+      <div class="art">
+        <svg viewBox="0 0 200 150">
+          <rect class="d1" x="26" y="24" width="148" height="104" rx="14" fill="#FBF9F3"/>
+          <rect class="d1" x="26" y="24" width="148" height="24" rx="14" fill="#1A3A2B"/>
+          <rect class="d1" x="26" y="40" width="148" height="8" fill="#1A3A2B"/>
+          <g fill="#dfe5e1">
+            <rect class="d2" x="40" y="58" width="26" height="20" rx="5"/>
+            <rect class="d2" x="74" y="58" width="26" height="20" rx="5"/>
+            <rect class="d2" x="108" y="58" width="26" height="20" rx="5"/>
+            <rect class="d2" x="142" y="58" width="20" height="20" rx="5"/>
+            <rect class="d2" x="40" y="84" width="26" height="20" rx="5"/>
+            <rect class="d2" x="108" y="84" width="26" height="20" rx="5"/>
+            <rect class="d2" x="142" y="84" width="20" height="20" rx="5"/>
+          </g>
+          <rect class="d3" x="74" y="84" width="26" height="20" rx="5" fill="#C9A054"/>
+          <path class="d3" d="M80 94l4 4 8-8" stroke="#12281d" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="txt">
+        <div class="kicker"><b>3</b> Termin</div>
+        <h2>Ein freier Termin — in Ihrem Kalender.</h2>
+        <p>ZeitZurück kennt Ihre Arbeitszeiten und sieht Ihre Termine. Vorgeschlagen wird nur, was wirklich frei ist. Doppelbuchungen kann es nicht geben.</p>
+        <span class="who auto">Automatisch</span>
+      </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="step">
+      <div class="art">
+        <svg viewBox="0 0 200 150">
+          <rect class="d1" x="22" y="38" width="156" height="80" rx="12" fill="#FBF9F3"/>
+          <path class="d1" d="M22 48l78 44 78-44" stroke="#c3ccc7" stroke-width="4" fill="none" stroke-linejoin="round"/>
+          <circle class="d3" cx="152" cy="46" r="20" fill="#C9A054"/>
+          <path class="d3" d="M144 46l6 6 12-12" stroke="#12281d" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="txt">
+        <div class="kicker"><b>4</b> Bestätigung</div>
+        <h2>Beide wissen sofort Bescheid.</h2>
+        <p>Der Kunde bekommt seine Bestätigung, Sie die Info — samt Link zum Verschieben oder Absagen. Ohne dass Sie das Werkzeug aus der Hand legen.</p>
+        <span class="who auto">Automatisch</span>
+      </div>
+    </div>
+
+    <!-- 5 -->
+    <div class="step">
+      <div class="art">
+        <svg viewBox="0 0 200 150">
+          <rect class="d1" x="60" y="12" width="80" height="126" rx="14" fill="#FBF9F3"/>
+          <rect class="d1" x="60" y="12" width="80" height="26" rx="14" fill="#1A3A2B"/>
+          <rect class="d1" x="60" y="28" width="80" height="10" fill="#1A3A2B"/>
+          <rect class="d2" x="70" y="48" width="60" height="26" rx="7" fill="#eef1ee"/>
+          <rect class="d2" x="78" y="56" width="34" height="4" rx="2" fill="#9aa8a0"/>
+          <rect class="d2" x="78" y="64" width="24" height="4" rx="2" fill="#c3ccc7"/>
+          <rect class="d3" x="70" y="80" width="60" height="26" rx="7" fill="#f3ead8"/>
+          <rect class="d3" x="78" y="88" width="34" height="4" rx="2" fill="#b79553"/>
+          <rect class="d3" x="78" y="96" width="24" height="4" rx="2" fill="#d3bf90"/>
+        </svg>
+      </div>
+      <div class="txt">
+        <div class="kicker"><b>5</b> Ihr Betrieb</div>
+        <h2>Der Auftrag liegt schon in Ihrer App.</h2>
+        <p>Kunde, Adresse, Termin — alles ausgefüllt. Sie tippen nichts ab. Morgens ein Blick aufs Handy, und Sie wissen, was ansteht.</p>
+        <span class="who auto">Automatisch</span>
+      </div>
+    </div>
+
+    <!-- 6 -->
+    <div class="step">
+      <div class="art">
+        <svg viewBox="0 0 200 150">
+          <circle class="d1" cx="100" cy="75" r="46" fill="#FBF9F3"/>
+          <circle class="d2" cx="100" cy="75" r="46" fill="none" stroke="#C9A054" stroke-width="7"
+                  stroke-dasharray="289" stroke-dashoffset="72" transform="rotate(-90 100 75)" stroke-linecap="round"/>
+          <text class="d3" x="100" y="70" text-anchor="middle" font-family="Poppins,sans-serif" font-size="25" font-weight="600" fill="#1A3A2B">3</text>
+          <text class="d3" x="100" y="88" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#7d8a83">Stunden</text>
+        </svg>
+      </div>
+      <div class="txt">
+        <div class="kicker"><b>6</b> Erledigt</div>
+        <h2>Fertig? Ein Tipp, echte Stunden rein.</h2>
+        <p>Sie tragen ein, wie lange es wirklich gedauert hat. Das ist Ihr einziger Handgriff im ganzen Ablauf.</p>
+        <span class="who">Sie</span>
+      </div>
+    </div>
+
+    <!-- 7 -->
+    <div class="step">
+      <div class="art">
+        <svg viewBox="0 0 200 150">
+          <rect class="d1" x="46" y="14" width="108" height="122" rx="10" fill="#FBF9F3"/>
+          <rect class="d1" x="62" y="32" width="52" height="6" rx="3" fill="#1A3A2B" opacity=".8"/>
+          <rect class="d1" x="62" y="44" width="34" height="4" rx="2" fill="#c3ccc7"/>
+          <rect class="d2" x="62" y="66" width="76" height="4" rx="2" fill="#9aa8a0"/>
+          <rect class="d2" x="62" y="76" width="60" height="4" rx="2" fill="#c3ccc7"/>
+          <rect class="d2" x="62" y="86" width="68" height="4" rx="2" fill="#c3ccc7"/>
+          <rect class="d3" x="62" y="104" width="76" height="2" fill="#1A3A2B"/>
+          <rect class="d3" x="96" y="112" width="42" height="8" rx="4" fill="#C9A054"/>
+        </svg>
+      </div>
+      <div class="txt">
+        <div class="kicker"><b>7</b> Rechnung</div>
+        <h2>Die Rechnung schreibt sich selbst.</h2>
+        <p>Mit fortlaufender Nummer, Ihrem Layout und Ihren Bankdaten — als PDF beim Kunden, Kopie in Ihrer Buchhaltung. Kein Formular am Sonntagabend.</p>
+        <span class="who auto">Automatisch</span>
+      </div>
+    </div>
+
+    <!-- 8 -->
+    <div class="step">
+      <div class="art">
+        <svg viewBox="0 0 200 150">
+          <circle class="d1" cx="100" cy="75" r="48" fill="#FBF9F3"/>
+          <path class="d2" d="M78 76l14 14 30-31" stroke="#C9A054" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle class="d3" cx="158" cy="34" r="15" fill="#2c5240"/>
+          <path class="d3" d="M158 27v8l5 4" stroke="#C9A054" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="txt">
+        <div class="kicker"><b>8</b> Bezahlt</div>
+        <h2>Und wenn keiner zahlt, erinnert es.</h2>
+        <p>Nach 14 Tagen meldet sich ZeitZurück bei Ihnen, nicht umgekehrt. Erinnerung und Mahnung sind einen Knopfdruck entfernt.</p>
+        <span class="who auto">Automatisch</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="bar" id="bar"></div>
+</div>
+
+<script>
+(function(){
+  var DUR = 4200;
+  var steps = Array.prototype.slice.call(document.querySelectorAll('.step'));
+  var bar = document.getElementById('bar');
+  var timer = null, i = 0;
+
+  steps.forEach(function(_, n){
+    var d = document.createElement('div');
+    d.className = 'dot'; d.innerHTML = '<i></i>';
+    d.style.setProperty('--dur', DUR + 'ms');
+    d.addEventListener('click', function(){ go(n); });
+    bar.appendChild(d);
+  });
+  var dots = Array.prototype.slice.call(bar.children);
+
+  function paint(){
+    steps.forEach(function(s, n){ s.classList.toggle('on', n === i); });
+    dots.forEach(function(d, n){
+      d.classList.remove('act','done');
+      if(n < i) d.classList.add('done');
+      if(n === i){ d.querySelector('i').style.animation='none'; void d.offsetWidth;
+                   d.querySelector('i').style.animation=''; d.classList.add('act'); }
+    });
+  }
+  function go(n){ i = n; paint(); restart(); }
+  function next(){ i = (i + 1) % steps.length; paint(); }
+  function restart(){ clearInterval(timer); timer = setInterval(next, DUR); }
+
+  document.getElementById('replay').addEventListener('click', function(){ go(0); });
+
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    steps.forEach(function(s){ s.classList.add('on'); s.style.position='relative'; });
+    document.querySelector('.track').style.height='auto';
+    bar.style.display='none';
+  } else {
+    paint(); restart();
+  }
+})();
+</script>
+</body>
+</html>
