@@ -4,17 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- ===== SEO ===== -->
   <title>Live-Demo · So könnte Ihre Seite aussehen | ZeitZurück.at</title>
   <meta name="description" content="Live-Demo von ZeitZurück.at – so könnte die Website Ihres Betriebs aussehen. Probieren Sie den KI-Chat aus, der Anfragen aufnimmt und Termine findet.">
 
-  <!-- Open Graph -->
   <meta property="og:title" content="So könnte Ihre Seite aussehen – ZeitZurück.at Live-Demo">
   <meta property="og:description" content="Probieren Sie den ZeitZurück-Chat live aus – so nimmt er auf Ihrer eigenen Seite Anfragen auf.">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="de_AT">
 
-  <!-- Neutraler Platzhalter-Favicon (kein echtes Logo – in der Kundenversion ersetzt) -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%232E6F8E'/><circle cx='50' cy='50' r='17' fill='white'/></svg>">
 
   <style>
@@ -22,27 +19,22 @@
        ZEITZURÜCK — LIVE-DEMO (Musterbetrieb)
        Bewusst eigenständiges Design-System (kühles Schiefer-Blau),
        damit die Demo NICHT wie ein bestehender Kunde aussieht.
-       Alle Inhalte sind Platzhalter.
        ============================================================ */
-
     :root {
-      --ivory:       #F1F4F6;   /* kühler heller Hintergrund */
+      --ivory:       #F1F4F6;
       --ivory-deep:  #E4EAEE;
-      --ink:         #17222B;   /* tiefes Schiefer */
+      --ink:         #17222B;
       --ink-soft:    #4E5C66;
-      --brass:       #2E6F8E;   /* Akzent: Schiefer-Blau */
+      --brass:       #2E6F8E;
       --brass-soft:  #6FA0B5;
       --maxw: 62rem;
     }
-
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
     html { scroll-behavior: smooth; }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       *, *::before, *::after { animation: none !important; transition: none !important; }
     }
-
     body {
       background: var(--ivory);
       color: var(--ink);
@@ -51,298 +43,120 @@
       -webkit-font-smoothing: antialiased;
       text-rendering: optimizeLegibility;
     }
-
-    .wrap {
-      max-width: var(--maxw);
-      margin-inline: auto;
-      padding-inline: clamp(1.25rem, 5vw, 3rem);
-    }
-
-    .rule {
-      width: 5.5rem;
-      height: 1px;
-      background: var(--brass);
-      border: none;
-      margin: 1.4rem auto;
-    }
+    .wrap { max-width: var(--maxw); margin-inline: auto; padding-inline: clamp(1.25rem, 5vw, 3rem); }
+    .rule { width: 5.5rem; height: 1px; background: var(--brass); border: none; margin: 1.4rem auto; }
     .rule--left { margin-inline: 0; }
-
-    @keyframes rise {
-      from { opacity: 0; transform: translateY(14px); }
-      to   { opacity: 1; transform: none; }
-    }
+    @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
     .rise { animation: rise 0.9s ease both; }
     .rise-2 { animation-delay: 0.15s; }
     .rise-3 { animation-delay: 0.3s; }
 
-    /* ============================== HERO ============================== */
-    .hero {
-      display: grid;
-      place-content: center;
-      text-align: center;
-      padding-block: clamp(1.6rem, 4vh, 2.6rem) clamp(1.2rem, 2.5vh, 1.8rem);
-    }
+    .hero { display: grid; place-content: center; text-align: center; padding-block: clamp(1.6rem, 4vh, 2.6rem) clamp(1.2rem, 2.5vh, 1.8rem); }
+    .hero h1 { font-size: clamp(1.25rem, 4.6vw, 2.9rem); font-weight: 700; letter-spacing: clamp(0.06em, 0.9vw, 0.16em); text-transform: uppercase; white-space: nowrap; }
+    .hero .tagline { font-size: clamp(0.85rem, 2.4vw, 1.15rem); letter-spacing: clamp(0.28em, 1.2vw, 0.42em); text-transform: uppercase; color: var(--ink-soft); font-weight: 500; }
+    .hero .lead { max-width: 34rem; margin: 0.9rem auto 0; color: var(--ink-soft); font-size: 1rem; }
 
-    .hero h1 {
-      font-size: clamp(1.25rem, 4.6vw, 2.9rem);
-      font-weight: 700;
-      letter-spacing: clamp(0.06em, 0.9vw, 0.16em);
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-
-    .hero .tagline {
-      font-size: clamp(0.85rem, 2.4vw, 1.15rem);
-      letter-spacing: clamp(0.28em, 1.2vw, 0.42em);
-      text-transform: uppercase;
-      color: var(--ink-soft);
-      font-weight: 500;
-    }
-
-    .hero .lead {
-      max-width: 34rem;
-      margin: 0.9rem auto 0;
-      color: var(--ink-soft);
-      font-size: 1rem;
-    }
-
-    /* ============================== SECTIONS ============================== */
     section { padding-block: clamp(3.5rem, 9vh, 6rem); }
-
-    .kicker {
-      display: block;
-      font-size: 0.78rem;
-      letter-spacing: 0.34em;
-      text-transform: uppercase;
-      color: var(--brass);
-      font-weight: 600;
-      margin-bottom: 0.9rem;
-    }
-
-    h2 {
-      font-size: clamp(1.4rem, 3.5vw, 2rem);
-      font-weight: 700;
-      letter-spacing: 0.04em;
-    }
-
+    .kicker { display: block; font-size: 0.78rem; letter-spacing: 0.34em; text-transform: uppercase; color: var(--brass); font-weight: 600; margin-bottom: 0.9rem; }
+    h2 { font-size: clamp(1.4rem, 3.5vw, 2rem); font-weight: 700; letter-spacing: 0.04em; }
     .intro p { max-width: 40rem; color: var(--ink-soft); font-size: 1.08rem; }
 
-    /* ---------- Leistungen ---------- */
     .services { background: var(--ivory-deep); }
-
-    .service-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 1.1rem;
-      margin-top: 2.4rem;
-    }
+    .service-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.1rem; margin-top: 2.4rem; }
     @media (max-width: 860px) { .service-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     @media (max-width: 480px) { .service-grid { grid-template-columns: 1fr; } }
-
-    .card {
-      background: var(--ivory);
-      border: 1px solid rgba(46, 111, 142, 0.32);
-      border-radius: 0.9rem;
-      padding: 1.8rem 1.6rem;
-    }
+    .card { background: var(--ivory); border: 1px solid rgba(46, 111, 142, 0.32); border-radius: 0.9rem; padding: 1.8rem 1.6rem; }
     .card h3 { font-size: 1.02rem; letter-spacing: 0.06em; font-weight: 600; margin-bottom: 0.5rem; }
     .card p { color: var(--ink-soft); font-size: 0.95rem; }
-
     .services .note { margin-top: 1.6rem; font-size: 0.88rem; color: var(--ink-soft); font-style: italic; }
 
-    /* ---------- Ablauf ---------- */
-    .steps-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-      gap: 1.4rem;
-      margin-top: 2.4rem;
-      counter-reset: step;
-    }
+    .steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 1.4rem; margin-top: 2.4rem; counter-reset: step; }
     .step { text-align: center; }
-    .step::before {
-      counter-increment: step;
-      content: counter(step, decimal-leading-zero);
-      display: block;
-      font-size: 0.85rem;
-      letter-spacing: 0.2em;
-      color: var(--brass);
-      font-weight: 600;
-      margin-bottom: 0.6rem;
-    }
+    .step::before { counter-increment: step; content: counter(step, decimal-leading-zero); display: block; font-size: 0.85rem; letter-spacing: 0.2em; color: var(--brass); font-weight: 600; margin-bottom: 0.6rem; }
     .step h3 { font-size: 1rem; font-weight: 600; letter-spacing: 0.05em; }
 
-    /* ---------- Digital ---------- */
     .digital { background: var(--ivory-deep); }
     .digital p { max-width: 40rem; color: var(--ink-soft); font-size: 1.02rem; }
 
-    /* ---------- Einsatzgebiet ---------- */
     .area { text-align: center; }
-    .area p {
-      font-size: clamp(1.1rem, 3vw, 1.5rem);
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      font-weight: 500;
-    }
+    .area p { font-size: clamp(1.1rem, 3vw, 1.5rem); letter-spacing: 0.18em; text-transform: uppercase; font-weight: 500; }
 
-    /* ============================== CHAT-KONTAKT ============================== */
+    /* ============================== CHAT ============================== */
     .contact { background: var(--ivory-deep); }
     .contact-head { text-align: center; }
-
-    .chat-title {
-      text-align: center;
-      font-size: clamp(1.35rem, 3.2vw, 2rem);
-      font-weight: 700;
-      letter-spacing: 0.03em;
-      margin-bottom: 1.1rem;
-    }
-
+    .chat-title { text-align: center; font-size: clamp(1.35rem, 3.2vw, 2rem); font-weight: 700; letter-spacing: 0.03em; margin-bottom: 1.1rem; }
     .chat-log {
-      max-width: 38rem;
-      margin: 0 auto 1.2rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.8rem;
-      height: 15rem;
-      max-height: 42vh;
-      overflow-y: auto;
-      padding: 0.2rem;
+      max-width: 38rem; margin: 0 auto 1.2rem; display: flex; flex-direction: column; gap: 0.8rem;
+      height: 15rem; max-height: 42vh; overflow-y: auto; padding: 0.2rem;
     }
     .chat-log[hidden] { display: none; }
-
-    .msg {
-      max-width: 85%;
-      padding: 0.75rem 1.1rem;
-      font-size: 0.97rem;
-      line-height: 1.5;
-      white-space: pre-wrap;
-      animation: rise 0.4s ease both;
-    }
-    .msg--bot {
-      align-self: flex-start;
-      background: var(--ivory);
-      border-radius: 1.1rem;
-      border-bottom-left-radius: 0.3rem;
-    }
-    .msg--user {
-      align-self: flex-end;
-      background: var(--ink);
-      color: var(--ivory);
-      border-radius: 1.1rem;
-      border-bottom-right-radius: 0.3rem;
-    }
+    .msg { max-width: 85%; padding: 0.75rem 1.1rem; font-size: 0.97rem; line-height: 1.5; white-space: pre-wrap; animation: rise 0.4s ease both; }
+    .msg--bot { align-self: flex-start; background: var(--ivory); border-radius: 1.1rem; border-bottom-left-radius: 0.3rem; }
+    .msg--user { align-self: flex-end; background: var(--ink); color: var(--ivory); border-radius: 1.1rem; border-bottom-right-radius: 0.3rem; }
 
     .chat-bar {
-      max-width: 38rem;
-      margin: 0 auto;
-      position: relative;
-      display: block;
-      background: var(--ivory);
-      border: 1px solid rgba(46, 111, 142, 0.5);
-      border-radius: 1.2rem;
-      padding: 1.15rem 1.4rem 3.6rem;
-      box-shadow: 0 8px 24px rgba(23, 34, 43, 0.07);
+      max-width: 38rem; margin: 0 auto; position: relative; display: block;
+      background: var(--ivory); border: 1px solid rgba(46, 111, 142, 0.5); border-radius: 1.2rem;
+      padding: 1.15rem 1.4rem 3.6rem; box-shadow: 0 8px 24px rgba(23, 34, 43, 0.07);
       transition: border-color 0.2s ease;
     }
     .chat-bar:focus-within { border-color: var(--brass); }
     .chat-bar textarea {
-      width: 100%;
-      border: none;
-      background: transparent;
-      font-family: inherit;
-      font-size: 1rem;
-      line-height: 1.5;
-      color: var(--ink);
-      padding: 0;
-      min-width: 0;
-      resize: none;
-      overflow-y: auto;
-      max-height: 6rem;
+      width: 100%; border: none; background: transparent; font-family: inherit; font-size: 1rem;
+      line-height: 1.5; color: var(--ink); padding: 0; min-width: 0; resize: none;
+      overflow-y: auto; max-height: 6rem;
     }
     .chat-bar textarea:focus { outline: none; }
     .chat-bar button {
-      position: absolute;
-      right: 0.7rem;
-      bottom: 0.7rem;
-      width: 2.6rem;
-      height: 2.6rem;
-      border-radius: 0.85rem;
-      border: none;
-      background: var(--ink);
-      color: var(--ivory);
-      font-size: 1.25rem;
-      line-height: 1;
-      cursor: pointer;
-      transition: background 0.2s ease;
+      position: absolute; right: 0.7rem; bottom: 0.7rem; width: 2.6rem; height: 2.6rem;
+      border-radius: 0.85rem; border: none; background: var(--ink); color: var(--ivory);
+      font-size: 1.25rem; line-height: 1; cursor: pointer; transition: background 0.2s ease;
     }
     .chat-bar button:hover, .chat-bar button:focus-visible { background: var(--brass); }
     .chat-bar button:focus-visible { outline: 3px solid var(--brass); outline-offset: 2px; }
     .chat-bar button:disabled { opacity: 0.5; cursor: default; }
 
-    /* ---------- Vorschlags-Chips ---------- */
-    .chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      justify-content: center;
-      margin-top: 1.1rem;
-    }
+    .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-top: 1.1rem; }
     .chip {
-      border: 1px solid rgba(46, 111, 142, 0.55);
-      border-radius: 999px;
-      background: var(--ivory);
-      color: var(--ink);
-      font-family: inherit;
-      font-size: 0.85rem;
-      letter-spacing: 0.03em;
-      padding: 0.5rem 1.05rem;
-      cursor: pointer;
-      transition: background 0.2s ease, color 0.2s ease;
+      border: 1px solid rgba(46, 111, 142, 0.55); border-radius: 999px; background: var(--ivory);
+      color: var(--ink); font-family: inherit; font-size: 0.85rem; letter-spacing: 0.03em;
+      padding: 0.5rem 1.05rem; cursor: pointer; transition: background 0.2s ease, color 0.2s ease;
     }
     .chip:hover, .chip:focus-visible { background: var(--brass); border-color: var(--brass); color: var(--ivory); }
     .chip:focus-visible { outline: 3px solid var(--brass); outline-offset: 2px; }
-
-    .chat-hint {
-      text-align: center;
-      font-size: 0.8rem;
-      color: var(--ink-soft);
-      margin-top: 1.2rem;
-    }
+    .chat-hint { text-align: center; font-size: 0.8rem; color: var(--ink-soft); margin-top: 1.2rem; }
     .chat-hint a { color: var(--ink-soft); }
 
-    /* ---------- Footer ---------- */
-    footer {
-      background: var(--ink);
-      color: var(--ivory);
-      padding-block: 2.2rem;
-      font-size: 0.85rem;
+    /* ====================== ABLAUF (Erklärung) ====================== */
+    .ablauf { background: #17222B; color: #F1F4F6; }
+    .ablauf .head { text-align: center; max-width: 40rem; margin-inline: auto; }
+    .ablauf .kicker { color: #7FB3CB; }
+    .ablauf h2 { color: #F1F4F6; }
+    .ablauf .head p { color: rgba(241, 244, 246, 0.72); font-size: 1.02rem; margin-top: 0.9rem; }
+    .ablauf .rule { background: #7FB3CB; }
+    .frame {
+      margin: 2.4rem auto 0; max-width: 56rem; position: relative; width: 100%;
+      aspect-ratio: 16 / 9; border-radius: 1rem; overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.32); background: #1A3A2B;
     }
-    footer .wrap {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      justify-content: space-between;
-      align-items: center;
-    }
+    @media (max-width: 640px) { .frame { aspect-ratio: 4 / 5; } }
+    .frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
+    .ablauf .after { text-align: center; margin-top: 1.6rem; font-size: 0.92rem; color: rgba(241, 244, 246, 0.6); }
+
+    footer { background: var(--ink); color: var(--ivory); padding-block: 2.2rem; font-size: 0.85rem; }
+    footer .wrap { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; align-items: center; }
     footer .powered { opacity: 0.7; letter-spacing: 0.06em; }
-    footer nav a {
-      color: var(--ivory);
-      opacity: 0.85;
-      margin-left: 1.4rem;
-      text-decoration: none;
-      border-bottom: 1px solid transparent;
-    }
+    footer nav a { color: var(--ivory); opacity: 0.85; margin-left: 1.4rem; text-decoration: none; border-bottom: 1px solid transparent; }
     footer nav a:hover, footer nav a:focus-visible { border-color: var(--brass); opacity: 1; }
   </style>
 </head>
 
 <body>
-  <!-- ZeitZurück Live-Demo banner -->
   <div style="position:sticky;top:0;z-index:9999;background:#1A3A2B;color:#F7F4EB;text-align:center;padding:11px 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;font-size:14px;line-height:1.45">
     <strong>Live-Demo</strong> · So könnte Ihre Seite aussehen — probieren Sie den Chat unten aus.
     <a href="../" style="color:#C9A054;text-decoration:none;font-weight:600;white-space:nowrap;margin-left:6px">erstellt mit ZeitZurück.at ›</a>
   </div>
 
-  <!-- ============================== HERO ============================== -->
   <header class="hero wrap">
     <div>
       <h1 class="rise">Ihr Unternehmen</h1>
@@ -352,12 +166,9 @@
     </div>
   </header>
 
-  <!-- ============================== KONTAKT (CHAT) ============================== -->
   <section class="contact" id="kontakt" style="padding-block: clamp(1.4rem, 3vh, 2.4rem) clamp(2rem, 5vh, 3.5rem);">
     <div class="wrap">
-      <div class="contact-head">
-        <span class="kicker">Kontakt</span>
-      </div>
+      <div class="contact-head"><span class="kicker">Kontakt</span></div>
 
       <h2 class="chat-title rise-2" id="chatTitle">Wie können wir Ihnen helfen?</h2>
 
@@ -380,7 +191,22 @@
     </div>
   </section>
 
-  <!-- ============================== INTRO ============================== -->
+  <!-- ====================== ABLAUF ====================== -->
+  <section class="ablauf" id="ablauf">
+    <div class="wrap">
+      <div class="head">
+        <span class="kicker">Und dahinter?</span>
+        <h2>Der Chat ist nur der erste Schritt.</h2>
+        <hr class="rule" aria-hidden="true">
+        <p>Sie haben gerade ausprobiert, wie eine Anfrage hereinkommt. Was danach passiert – Termin, Bestätigung, Auftrag, Rechnung, Zahlung – läuft genauso automatisch weiter.</p>
+      </div>
+      <div class="frame">
+        <iframe src="../ablauf.html" title="So läuft es ab – von der Anfrage bis zur Zahlung" loading="lazy"></iframe>
+      </div>
+      <p class="after">Acht Schritte – sieben davon ohne Ihr Zutun.</p>
+    </div>
+  </section>
+
   <section class="intro" id="ueber">
     <div class="wrap">
       <span class="kicker">Worum es geht</span>
@@ -390,7 +216,6 @@
     </div>
   </section>
 
-  <!-- ============================== LEISTUNGEN (Platzhalter) ============================== -->
   <section class="services" id="leistungen">
     <div class="wrap">
       <span class="kicker">Leistungen</span>
@@ -398,30 +223,17 @@
       <hr class="rule rule--left" aria-hidden="true">
 
       <div class="service-grid">
-        <div class="card">
-          <h3>Ihr Hauptangebot</h3>
-          <p>Ihre wichtigste Leistung – in ein, zwei Sätzen beschrieben.</p>
-        </div>
-        <div class="card">
-          <h3>Beratung</h3>
-          <p>Persönliche Beratung, abgestimmt auf Ihre Kundinnen und Kunden.</p>
-        </div>
-        <div class="card">
-          <h3>Weiteres Angebot</h3>
-          <p>Platz für einen weiteren Schwerpunkt Ihres Betriebs.</p>
-        </div>
-        <div class="card">
-          <h3>Individuell nach Absprache</h3>
-          <p>Sie bieten etwas Besonderes an? Auch das findet hier seinen Platz.</p>
-        </div>
+        <div class="card"><h3>Ihr Hauptangebot</h3><p>Ihre wichtigste Leistung – in ein, zwei Sätzen beschrieben.</p></div>
+        <div class="card"><h3>Beratung</h3><p>Persönliche Beratung, abgestimmt auf Ihre Kundinnen und Kunden.</p></div>
+        <div class="card"><h3>Weiteres Angebot</h3><p>Platz für einen weiteren Schwerpunkt Ihres Betriebs.</p></div>
+        <div class="card"><h3>Individuell nach Absprache</h3><p>Sie bieten etwas Besonderes an? Auch das findet hier seinen Platz.</p></div>
       </div>
 
       <p class="note">Alle Inhalte sind Platzhalter – in Ihrer Version stehen hier Ihre echten Leistungen.</p>
     </div>
   </section>
 
-  <!-- ============================== ABLAUF ============================== -->
-  <section class="how" id="ablauf">
+  <section class="how" id="ablauf-kurz">
     <div class="wrap">
       <span class="kicker">So einfach geht’s</span>
       <h2>Von der Anfrage bis zum Abschluss.</h2>
@@ -436,7 +248,6 @@
     </div>
   </section>
 
-  <!-- ============================== DIGITAL ============================== -->
   <section class="digital" id="digital">
     <div class="wrap">
       <span class="kicker">Auch digital</span>
@@ -446,7 +257,6 @@
     </div>
   </section>
 
-  <!-- ============================== EINSATZGEBIET ============================== -->
   <section class="area" id="gebiet">
     <div class="wrap">
       <span class="kicker">Einsatzgebiet</span>
@@ -454,7 +264,6 @@
     </div>
   </section>
 
-  <!-- ============================== FOOTER ============================== -->
   <footer>
     <div class="wrap">
       <p>© 2026 ZeitZurück.at · Live-Demo (Musterbetrieb)<br>
@@ -469,9 +278,6 @@
   <script>
     /* ============================================================
        ZeitZurück Live-Demo — KI-Chat → n8n (sandboxed)
-       Serverseitiger Workflow: "ZeitZurück – Demo-Chat (Testsite)".
-       Diese Seite sendet nur {sessionId, message} und zeigt die Antwort.
-       Keine echten Buchungen, keine E-Mails an Besucher.
        ============================================================ */
     (function () {
       var WEBHOOK_URL = "https://alvvyn.app.n8n.cloud/webhook/demo-chat";
@@ -495,7 +301,6 @@
         log.scrollTop = log.scrollHeight;
         return el;
       }
-
       function autoGrow() {
         input.style.height = "auto";
         input.style.height = Math.min(input.scrollHeight, 96) + "px";
