@@ -21,7 +21,16 @@
   .head h1{font-family:'Poppins';font-size:clamp(15px,2.4vw,20px);font-weight:600;letter-spacing:.01em}
   .head span{font-size:clamp(11px,1.7vw,13px);color:rgba(247,244,235,.55)}
 
-  .track{flex:1;position:relative;min-height:0}
+  .track{flex:1;position:relative;min-height:0;cursor:pointer}
+
+  /* Klick irgendwohin = Pause / Weiter, mit kurzer Rückmeldung */
+  .flash{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.7);
+    width:96px;height:96px;border-radius:50%;background:rgba(18,40,29,.72);
+    display:flex;align-items:center;justify-content:center;font-size:38px;
+    color:var(--ivory);opacity:0;pointer-events:none;z-index:4}
+  .flash.go{animation:flashOut .65s ease-out forwards}
+  @keyframes flashOut{0%{opacity:1;transform:translate(-50%,-50%) scale(.7)}
+    100%{opacity:0;transform:translate(-50%,-50%) scale(1.35)}}
   .step{position:absolute;inset:0;display:flex;align-items:center;gap:clamp(16px,3.5vw,42px);
     opacity:0;visibility:hidden;transform:translateY(14px);pointer-events:none}
   .step.on{opacity:1;visibility:visible;transform:none;animation:stepIn .5s ease both}
@@ -80,6 +89,7 @@
   </div>
 
   <div class="track" id="track">
+    <div class="flash" id="flash"></div>
 
     <!-- 1 -->
     <div class="step">
@@ -306,7 +316,21 @@
     }
   }
 
-  pauseBtn.addEventListener('click', function(){ setPaused(!paused); });
+  /* Kurze Rueckmeldung in der Mitte, damit man den Klick spuert */
+  var flash = document.getElementById('flash');
+  function zeigen(sym){
+    flash.textContent = sym;
+    flash.classList.remove('go'); void flash.offsetWidth; flash.classList.add('go');
+  }
+
+  pauseBtn.addEventListener('click', function(){ setPaused(!paused); zeigen(paused ? '⏸' : '▶'); });
+
+  /* Klick irgendwo ins Bild pausiert bzw. laeuft weiter.
+     Nur die Steuerung und die Fortschrittsbalken bleiben ausgenommen. */
+  document.getElementById('track').addEventListener('click', function(){
+    setPaused(!paused);
+    zeigen(paused ? '⏸' : '▶');
+  });
   document.getElementById('replay').addEventListener('click', function(){
     paused = false;
     pauseBtn.textContent = '⏸ Pause';
