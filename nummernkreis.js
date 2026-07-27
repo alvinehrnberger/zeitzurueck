@@ -205,4 +205,257 @@
     start();
   }
 
+  /* ============================================================
+     5) Zeiten — Arbeitszeiten, Urlaub, Einstellungen
+     Bisher stand das alles im Code der Slot-Engine. Ab jetzt
+     aendert es der Betrieb selbst, ohne Anruf.
+     ============================================================ */
+
+  var TAGE = ['', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'];
+  var Z = { zeiten: [], sperren: [], einst: null, geladen: false };
+
+  function scr() { return document.getElementById('screen'); }
+  function betriebId() { try { return betrieb ? betrieb.id : null; } catch (e) { return null; } }
+  function hhmm(t) { return (t || '').toString().slice(0, 5); }
+  function heute() { return new Date().toISOString().slice(0, 10); }
+
+  var css2 = document.createElement('style');
+  css2.textContent =
+    '.zt-block{margin:0 0 26px}' +
+    '.zt-block h3{font-size:15px;font-weight:600;margin:0 0 3px}' +
+    '.zt-block .zt-sub{font-size:13px;opacity:.6;margin:0 0 12px;line-height:1.45}' +
+    '.zt-tag{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid rgba(26,58,43,.10)}' +
+    '.zt-tag:last-child{border-bottom:0}' +
+    '.zt-tag .nm{flex:1;min-width:0;font-size:14.5px}' +
+    '.zt-tag.aus .nm{opacity:.42}' +
+    '.zt-tag input[type=time]{border:1px solid rgba(26,58,43,.18);border-radius:9px;padding:7px 9px;' +
+      'font-size:14px;font-family:inherit;background:#fff;color:inherit;width:104px}' +
+    '.zt-tag.aus input[type=time]{opacity:.35}' +
+    '.zt-sw{position:relative;width:42px;height:24px;flex:none;cursor:pointer}' +
+    '.zt-sw input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer}' +
+    '.zt-sw i{position:absolute;inset:0;border-radius:999px;background:rgba(26,58,43,.20);transition:background .2s}' +
+    '.zt-sw i:after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;' +
+      'background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.25)}' +
+    '.zt-sw input:checked + i{background:#2f9e6f}' +
+    '.zt-sw input:checked + i:after{transform:translateX(18px)}' +
+    '.zt-feld{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:10px}' +
+    '.zt-feld input{flex:1;min-width:130px;border:1px solid rgba(26,58,43,.18);border-radius:10px;' +
+      'padding:11px 12px;font-size:15px;font-family:inherit;background:#fff;color:inherit}' +
+    '.zt-sperre{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid rgba(26,58,43,.10)}' +
+    '.zt-sperre .txt{flex:1;min-width:0}' +
+    '.zt-sperre .txt b{display:block;font-size:14.5px;font-weight:600}' +
+    '.zt-sperre .txt span{font-size:12.5px;opacity:.6}' +
+    '.zt-weg{background:none;border:0;color:#c0473b;font-size:13px;cursor:pointer;padding:6px;font-family:inherit}' +
+    '.zt-leer{font-size:13.5px;opacity:.55;padding:10px 0}' +
+    '.zt-hinweis{background:rgba(201,160,84,.13);border-left:3px solid #C9A054;border-radius:0 10px 10px 0;' +
+      'padding:11px 14px;font-size:13px;line-height:1.5;margin-top:6px}';
+  document.head.appendChild(css2);
+
+  async function zeitenLaden() {
+    var id = betriebId();
+    if (!id) return;
+    try {
+      var a = await sb.from('betrieb_zeiten').select('*').eq('betrieb_id', id).order('wochentag');
+      var b = await sb.from('betrieb_sperren').select('*').eq('betrieb_id', id)
+                      .eq('aktiv', true).gte('bis_datum', heute()).order('von_datum');
+      var c = await sb.from('betrieb_einstellungen').select('*').eq('betrieb_id', id).maybeSingle();
+      Z.zeiten = (a.data || []).map(function (r) {
+        return { id: r.id, betrieb_id: r.betrieb_id, wochentag: r.wochentag,
+                 von: hhmm(r.von), bis: hhmm(r.bis), aktiv: r.aktiv };
+      });
+      Z.sperren = b.data || [];
+      Z.einst = (c && c.data) || null;
+    } catch (e) {
+      Z.fehler = e.message;
+    }
+    for (var w = 1; w <= 7; w++) {
+      if (!Z.zeiten.some(function (z) { return z.wochentag === w; })) {
+        Z.zeiten.push({ betrieb_id: id, wochentag: w, von: '09:00', bis: '17:00', aktiv: false });
+      }
+    }
+    Z.zeiten.sort(function (x, y) { return x.wochentag - y.wochentag; });
+    Z.geladen = true;
+  }
+
+  function zeitenZeichnen() {
+    var e = Z.einst || {};
+    var tage = Z.zeiten.map(function (z) {
+      return '<div class="zt-tag' + (z.aktiv ? '' : ' aus') + '" data-tag="' + z.wochentag + '">' +
+        '<label class="zt-sw"><input type="checkbox" data-feld="aktiv"' + (z.aktiv ? ' checked' : '') + '><i></i></label>' +
+        '<span class="nm">' + TAGE[z.wochentag] + '</span>' +
+        '<input type="time" data-feld="von" value="' + z.von + '">' +
+        '<input type="time" data-feld="bis" value="' + z.bis + '">' +
+      '</div>';
+    }).join('');
+
+    var sperren = Z.sperren.length
+      ? Z.sperren.map(function (s) {
+          var gleich = s.von_datum === s.bis_datum;
+          return '<div class="zt-sperre">' +
+            '<div class="txt"><b>' + (s.grund ? esc(s.grund) : 'Frei') + '</b>' +
+            '<span>' + deDate(s.von_datum) + (gleich ? '' : ' bis ' + deDate(s.bis_datum)) + '</span></div>' +
+            '<button class="zt-weg" onclick="sperreLoeschen(\'' + s.id + '\')">Entfernen</button>' +
+          '</div>';
+        }).join('')
+      : '<div class="zt-leer">Keine freien Tage eingetragen.</div>';
+
+    scr().innerHTML =
+      '<div style="padding:4px 2px">' +
+
+      '<div class="zt-block">' +
+        '<h3>Arbeitszeiten</h3>' +
+        '<p class="zt-sub">Nur innerhalb dieser Zeiten schlägt der Chat Termine vor. Tag ausschalten heißt: an dem Tag wird nichts gebucht.</p>' +
+        tage +
+        '<div class="cta" style="position:static;padding:14px 0 0">' +
+          '<button class="btn btn-primary" onclick="zeitenSpeichern()">Arbeitszeiten speichern</button>' +
+        '</div>' +
+      '</div>' +
+
+      '<div class="zt-block">' +
+        '<h3>Urlaub &amp; freie Tage</h3>' +
+        '<p class="zt-sub">Trage ein, wann du nicht da bist. An diesen Tagen bekommst du keine Termine.</p>' +
+        '<div class="zt-feld">' +
+          '<input type="date" id="ztVon" value="' + heute() + '">' +
+          '<input type="date" id="ztBis" value="' + heute() + '">' +
+        '</div>' +
+        '<div class="zt-feld">' +
+          '<input type="text" id="ztGrund" placeholder="Kroatien, Feiertag, Werkstatt zu …">' +
+        '</div>' +
+        '<div class="cta" style="position:static;padding:0 0 16px">' +
+          '<button class="btn btn-dark" onclick="sperreAnlegen()">Freie Tage eintragen</button>' +
+        '</div>' +
+        sperren +
+      '</div>' +
+
+      '<div class="zt-block">' +
+        '<h3>Feineinstellung</h3>' +
+        '<p class="zt-sub">Wie viel Vorlauf du brauchst und wie lang ein Termin normalerweise dauert.</p>' +
+        '<div class="rows">' +
+          '<div class="row"><span class="k">Vorlauf</span><span class="v">' +
+            '<input type="number" id="ztVorlauf" min="0" max="336" value="' + (e.vorlauf_stunden != null ? e.vorlauf_stunden : 24) + '" style="width:70px;border:1px solid rgba(26,58,43,.18);border-radius:8px;padding:6px 8px;font-family:inherit"> Stunden</span></div>' +
+          '<div class="row"><span class="k">Termindauer</span><span class="v">' +
+            '<input type="number" id="ztDauer" min="15" max="480" step="15" value="' + (e.termin_minuten != null ? e.termin_minuten : 60) + '" style="width:70px;border:1px solid rgba(26,58,43,.18);border-radius:8px;padding:6px 8px;font-family:inherit"> Minuten</span></div>' +
+          '<div class="row"><span class="k">Puffer dazwischen</span><span class="v">' +
+            '<input type="number" id="ztPuffer" min="0" max="240" step="5" value="' + (e.puffer_minuten != null ? e.puffer_minuten : 15) + '" style="width:70px;border:1px solid rgba(26,58,43,.18);border-radius:8px;padding:6px 8px;font-family:inherit"> Minuten</span></div>' +
+        '</div>' +
+        '<div class="cta" style="position:static;padding:14px 0 0">' +
+          '<button class="btn btn-ghost" onclick="einstellungenSpeichern()">Einstellungen speichern</button>' +
+        '</div>' +
+      '</div>' +
+
+      '<div class="zt-hinweis"><b>Noch nicht scharf geschaltet.</b> Diese Angaben werden gespeichert, aber der Terminfinder rechnet vorläufig noch mit den fest hinterlegten Zeiten. Der Umbau kommt als Nächstes.</div>' +
+
+      (Z.fehler ? '<div class="alert" style="margin-top:14px">Konnte nicht laden: ' + esc(Z.fehler) + '</div>' : '') +
+      '</div>';
+
+    scr().querySelectorAll('.zt-tag').forEach(function (reihe) {
+      var tag = Number(reihe.getAttribute('data-tag'));
+      reihe.querySelectorAll('input').forEach(function (inp) {
+        inp.addEventListener('change', function () {
+          var satz = Z.zeiten.find(function (z) { return z.wochentag === tag; });
+          if (!satz) return;
+          var feld = inp.getAttribute('data-feld');
+          if (feld === 'aktiv') { satz.aktiv = inp.checked; reihe.classList.toggle('aus', !inp.checked); }
+          else { satz[feld] = inp.value; }
+        });
+      });
+    });
+  }
+
+  window.zeitenSpeichern = async function () {
+    var id = betriebId(); if (!id) return;
+    try {
+      var reihen = Z.zeiten.map(function (z) {
+        return { betrieb_id: id, wochentag: z.wochentag, von: z.von, bis: z.bis, aktiv: z.aktiv };
+      });
+      var r = await sb.from('betrieb_zeiten').upsert(reihen, { onConflict: 'betrieb_id,wochentag' });
+      if (r.error) throw r.error;
+      await zeitenLaden(); zeitenZeichnen();
+      alert('Arbeitszeiten gespeichert.');
+    } catch (e) { alert('Konnte nicht speichern: ' + e.message); }
+  };
+
+  window.sperreAnlegen = async function () {
+    var id = betriebId(); if (!id) return;
+    var von = document.getElementById('ztVon').value;
+    var bis = document.getElementById('ztBis').value;
+    var grund = document.getElementById('ztGrund').value.trim();
+    if (!von || !bis) { alert('Bitte Von und Bis ausfüllen.'); return; }
+    if (bis < von) { alert('Das Enddatum liegt vor dem Startdatum.'); return; }
+    try {
+      var r = await sb.from('betrieb_sperren').insert({
+        betrieb_id: id, von_datum: von, bis_datum: bis,
+        grund: grund || null, quelle: 'app', aktiv: true
+      });
+      if (r.error) throw r.error;
+      await zeitenLaden(); zeitenZeichnen();
+    } catch (e) { alert('Konnte nicht speichern: ' + e.message); }
+  };
+
+  window.sperreLoeschen = async function (sperrId) {
+    if (!confirm('Diese freien Tage wieder freigeben?')) return;
+    try {
+      var r = await sb.from('betrieb_sperren').update({ aktiv: false }).eq('id', sperrId);
+      if (r.error) throw r.error;
+      await zeitenLaden(); zeitenZeichnen();
+    } catch (e) { alert('Konnte nicht speichern: ' + e.message); }
+  };
+
+  window.einstellungenSpeichern = async function () {
+    var id = betriebId(); if (!id) return;
+    try {
+      var r = await sb.from('betrieb_einstellungen').upsert({
+        betrieb_id: id,
+        vorlauf_stunden: Number(document.getElementById('ztVorlauf').value) || 24,
+        termin_minuten: Number(document.getElementById('ztDauer').value) || 60,
+        puffer_minuten: Number(document.getElementById('ztPuffer').value) || 15,
+        aktualisiert_am: new Date().toISOString()
+      }, { onConflict: 'betrieb_id' });
+      if (r.error) throw r.error;
+      await zeitenLaden(); zeitenZeichnen();
+      alert('Einstellungen gespeichert.');
+    } catch (e) { alert('Konnte nicht speichern: ' + e.message); }
+  };
+
+  /* ---- Tab einhaengen ---- */
+  var meinTab = null;
+
+  window.zeitenOeffnen = async function () {
+    var leiste = document.querySelector('.tabs');
+    if (leiste) [].forEach.call(leiste.children, function (k) { k.classList.remove('on'); });
+    if (meinTab) meinTab.classList.add('on');
+    var b = document.getElementById('backBtn'); if (b) b.style.display = 'none';
+    var f = document.getElementById('fab'); if (f) f.style.display = 'none';
+    scr().innerHTML = '<div style="padding:24px 2px;opacity:.6;font-size:14px">Zeiten werden geladen …</div>';
+    await zeitenLaden();
+    zeitenZeichnen();
+  };
+
+  function tabEinhaengen() {
+    var leiste = document.querySelector('.tabs');
+    if (!leiste || meinTab) return;
+    if (leiste.querySelector('[data-zeiten]')) return;
+    meinTab = document.createElement('div');
+    meinTab.className = 'tab';
+    meinTab.setAttribute('data-zeiten', '1');
+    meinTab.textContent = 'Zeiten';
+    meinTab.addEventListener('click', function () { window.zeitenOeffnen(); });
+    leiste.appendChild(meinTab);
+
+    // Wenn der Nutzer auf Auftraege oder Rechnungen wechselt, muss unser Tab abgeben.
+    var origSetTab = window.setTab;
+    if (typeof origSetTab === 'function' && !origSetTab.__zt) {
+      window.setTab = function () {
+        if (meinTab) meinTab.classList.remove('on');
+        var f = document.getElementById('fab'); if (f) f.style.display = '';
+        return origSetTab.apply(this, arguments);
+      };
+      window.setTab.__zt = true;
+    }
+  }
+
+  var tabBeob = new MutationObserver(function () { tabEinhaengen(); });
+  tabBeob.observe(document.body, { childList: true, subtree: true });
+  tabEinhaengen();
+
 })();
