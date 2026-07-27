@@ -231,6 +231,20 @@
     } catch (e) { }
   }
 
+  /* Beispieltexte im Formular: neutral halten.
+     Ein fremder Betrieb soll hier nicht Katrins Namen lesen. */
+  var BEISPIELE = {
+    'Katrin Ehrnberger': 'Vor- und Nachname',
+    'Möbelmontage – Kleiderschrank PAX': 'z. B. Kleiderschrank montieren',
+    'Straße 1, 3012 Wolfsgraben': 'Straße, PLZ, Ort'
+  };
+  function beispieleNeutral() {
+    document.querySelectorAll('input[placeholder], textarea[placeholder]').forEach(function (f) {
+      var neu = BEISPIELE[f.getAttribute('placeholder')];
+      if (neu) f.setAttribute('placeholder', neu);
+    });
+  }
+
   var wartet = false;
   var beob = new MutationObserver(function () {
     if (wartet) return;
@@ -239,12 +253,14 @@
       wartet = false;
       hallo();
       verwaltenSichtbar();
+      beispieleNeutral();
     });
   });
 
   function start() {
     hallo();
     verwaltenSichtbar();
+    beispieleNeutral();
     beob.observe(document.body, { childList: true, subtree: true, characterData: true });
   }
 
