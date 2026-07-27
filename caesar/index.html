@@ -60,6 +60,9 @@
   @media(max-width:960px){.hero-grid{grid-template-columns:1fr;gap:2.6rem}}
   .titel{font-size:clamp(3.1rem,9vw,6.4rem);line-height:.95;letter-spacing:.16em;font-weight:400;
     text-transform:uppercase;color:var(--creme)}
+  /* Das C aus dem Logo wird zum ersten Buchstaben des Wortes */
+  .titel .logo-c{font-style:italic;font-weight:400;font-size:1.18em;line-height:0;
+    letter-spacing:0;margin-right:.06em;display:inline-block;transform:translateY(.045em)}
   .unter{font-size:clamp(.7rem,1.6vw,.84rem);letter-spacing:.44em;text-transform:uppercase;color:var(--gold);
     margin-top:1.1rem}
   .strich{width:4.5rem;height:1px;background:var(--gold);opacity:.7;margin:1.8rem 0}
@@ -92,9 +95,11 @@
   .tippt span{width:6px;height:6px;border-radius:50%;background:var(--grau);animation:blinken 1.2s infinite both}
   .tippt span:nth-child(2){animation-delay:.2s}.tippt span:nth-child(3){animation-delay:.4s}
   @keyframes blinken{0%,80%,100%{opacity:.2}40%{opacity:1}}
-  .chips{display:flex;flex-wrap:wrap;gap:.5rem;padding:0 1.4rem 1rem}
+  .chips{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;padding:0 1.4rem 1rem}
+  @media(max-width:420px){.chips{grid-template-columns:1fr}}
   .chip{font-size:.73rem;color:var(--creme-weich);border:1px solid var(--linie);border-radius:2px;background:transparent;
-    padding:.5rem .85rem;cursor:pointer;font-family:inherit;transition:border-color .25s,color .25s}
+    padding:.6rem .85rem;cursor:pointer;font-family:inherit;text-align:left;line-height:1.35;
+    transition:border-color .25s,color .25s}
   .chip:hover,.chip:focus-visible{border-color:var(--gold);color:var(--gold)}
   .chat-form{display:flex;gap:.6rem;align-items:center;padding:.7rem;border-top:1px solid var(--linie)}
   .chat-form input{flex:1;border:1px solid var(--linie);border-radius:3px;background:var(--schwarz);color:var(--creme);
@@ -185,7 +190,7 @@
   <div class="wrap">
     <div class="hero-grid">
       <div>
-        <h1 class="titel zeig">Caesar</h1>
+        <h1 class="titel zeig"><span class="logo-c">C</span>aesar</h1>
         <div class="unter zeig">Handmade Guitars · Wien</div>
         <div class="strich zeig"></div>
         <p class="lead zeig">Jede Gitarre entsteht hier von Hand — ein Instrument, das es kein zweites Mal gibt. Gebaut von Alexander Höller in Wien.</p>
@@ -348,7 +353,7 @@
   var sitzung = 'caesar-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,9);
   var laeuft = false;
 
-  var GRUSS = 'Servus! Ich bin der Assistent von Alexander. Erzähl mir, was du spielst und was dir vorschwebt — ein neues Instrument, eine Reparatur oder ein Umbau. Ich sammle alles und Alexander meldet sich persönlich bei dir.';
+  var GRUSS = 'Hallo! Erzähl mir, was du spielst und was dir vorschwebt — ein neues Instrument, eine Reparatur oder ein Umbau. Ich nehme alles auf, und Alexander meldet sich persönlich bei dir.';
   var OFFLINE = 'Ich erreiche die Werkstatt gerade nicht. Schreib bitte direkt an hoeller@caesarhandmadeguitars.at — Alexander meldet sich.';
 
   function blase(text, wer){
