@@ -46,7 +46,7 @@
   .wortmarke{font-family:"Cormorant Garamond",Georgia,serif;font-size:1.06rem;letter-spacing:.32em;
     text-transform:uppercase;display:inline-flex;align-items:baseline;white-space:nowrap}
   .wortmarke i{font-style:italic;font-size:1.8em;line-height:0;letter-spacing:normal;color:var(--gold);
-    margin-right:-.16em;display:inline-block;transform:translateY(.03em)}
+    margin-right:.02em;display:inline-block;transform:translateY(.03em)}
   footer .wortmarke{font-size:.98rem}
   .nav-links{display:flex;gap:clamp(1.1rem,2.4vw,2.3rem)}
   .nav-links a{font-size:.7rem;letter-spacing:.24em;text-transform:uppercase;color:var(--creme-weich);
@@ -67,8 +67,11 @@
   /* Das C aus dem Logo wird zum ersten Buchstaben des Wortes */
   /* Das Tracking des Wortes wirkt auch hinter dem C — deshalb hier zurueckziehen,
      sonst steht der Buchstabe allein statt als Teil des Wortes. */
+  /* Der Abstand C-A soll genauso gross wirken wie A-E.
+     Das Tracking des Wortes wirkt hinter dem C mit, das C ist aber groesser
+     gesetzt - deshalb wird hier fein nachjustiert statt pauschal zurueckgezogen. */
   .titel .logo-c{font-style:italic;font-weight:400;font-size:1.16em;line-height:0;
-    letter-spacing:normal;margin-right:-.10em;display:inline-block;transform:translateY(.04em)}
+    letter-spacing:normal;margin-right:.05em;display:inline-block;transform:translateY(.04em)}
   .unter{font-size:clamp(.7rem,1.6vw,.84rem);letter-spacing:.44em;text-transform:uppercase;color:var(--gold);
     margin-top:1.1rem}
   .strich{width:4.5rem;height:1px;background:var(--gold);opacity:.7;margin:1.8rem 0}
