@@ -107,17 +107,26 @@
     padding:.6rem .85rem;cursor:pointer;font-family:inherit;text-align:left;line-height:1.35;
     transition:border-color .25s,color .25s}
   .chip:hover,.chip:focus-visible{border-color:var(--gold);color:var(--gold)}
+  .chip.ja{border-color:var(--gold);color:var(--gold)}
   .chat-form{display:flex;gap:.6rem;align-items:center;padding:.7rem;border-top:1px solid var(--linie)}
-  .chat-form input{flex:1;border:1px solid var(--linie);border-radius:11px;background:var(--schwarz);color:var(--creme);
-    padding:.85rem 1.1rem;font-size:.97rem;font-family:inherit;min-width:0;transition:border-color .25s}
-  .chat-form input::placeholder{color:var(--grau)}
-  .chat-form input:focus{outline:none;border-color:var(--gold)}
+  .chat-form textarea{flex:1;border:1px solid var(--linie);border-radius:11px;background:var(--schwarz);color:var(--creme);
+    padding:.85rem 1.1rem;font-size:.97rem;font-family:inherit;line-height:1.45;min-width:0;resize:none;
+    max-height:8.5rem;overflow-y:auto;transition:border-color .25s}
+  .chat-form textarea::placeholder{color:var(--grau)}
+  .chat-form textarea:focus{outline:none;border-color:var(--gold)}
   .chat-form button{border:none;border-radius:11px;background:var(--gold);color:var(--schwarz);padding:.85rem 1.4rem;
     font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;font-weight:600;cursor:pointer;font-family:inherit;
     transition:background .25s}
   .chat-form button:hover{background:var(--creme)}
   .chat-form button:disabled{opacity:.45;cursor:default}
   .chat-notiz{margin-top:.9rem;font-size:.72rem;color:var(--grau)}
+
+  .chat{transition:border-color .5s ease, transform .6s cubic-bezier(.2,.7,.2,1)}
+  .chat.acht{border-color:var(--gold)}
+  @keyframes stupser{0%,100%{transform:translateY(0)}26%{transform:translateY(-7px)}
+    55%{transform:translateY(0)}72%{transform:translateY(-3px)}}
+  .chat.stupser{animation:stupser 1.5s cubic-bezier(.2,.7,.2,1)}
+  @media (prefers-reduced-motion:reduce){.chat.stupser{animation:none}}
 
   /* ABSCHNITTE */
   section{padding-block:clamp(4rem,9vh,6.5rem);position:relative;scroll-margin-top:4.5rem}
@@ -246,7 +255,7 @@
             <button class="chip" type="button">Ich hab eine Idee im Kopf</button>
           </div>
           <form class="chat-form" id="chatForm">
-            <input type="text" id="chatInput" autocomplete="off" placeholder="Schreib mir …" aria-label="Deine Nachricht" required>
+            <textarea id="chatInput" rows="1" autocomplete="off" placeholder="Schreib mir …" aria-label="Deine Nachricht"></textarea>
             <button type="submit" id="chatSend">Senden</button>
           </form>
         </div>
@@ -506,7 +515,7 @@
   var sitzung = 'caesar-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,9);
   var laeuft = false;
 
-  var GRUSS = 'Hallo! Erzähl mir, was du spielst und was dir vorschwebt — ein neues Instrument, eine Reparatur oder ein Umbau. Ich nehme alles auf, und Alexander meldet sich persönlich bei dir.';
+  var GRUSS = 'Hallo! Wie kann ich dir helfen?';
   var OFFLINE = 'Ich erreiche die Werkstatt gerade nicht. Schreib bitte direkt an hoeller@caesarhandmadeguitars.at — Alexander meldet sich.';
 
   function blase(text, wer){
@@ -539,22 +548,62 @@
       body: JSON.stringify({ message:text, sessionId:sitzung, seite:'caesar', lang:'de' })
     })
     .then(function(r){ return r.json(); })
-    .then(function(j){ tippt(false); blase((j && j.reply) ? j.reply : OFFLINE, 'bot'); })
+    .then(function(j){ tippt(false); var a = (j && j.reply) ? j.reply : OFFLINE; blase(a, 'bot'); chipsSetzen(a); })
     .catch(function(){ tippt(false); blase(OFFLINE, 'bot'); })
-    .then(function(){ laeuft = false; senden.disabled = false; feld.focus({preventScroll:true}); });
+    .then(function(){ laeuft = false; senden.disabled = false; feld.style.height='auto'; feld.focus({preventScroll:true}); });
   }
   form.addEventListener('submit', function(e){ e.preventDefault(); fragen(feld.value); });
+
+  /* Enter sendet, Umschalt+Enter macht einen Absatz */
+  feld.addEventListener('keydown', function(e){
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); fragen(feld.value); }
+  });
+  function mitwachsen(){ feld.style.height = 'auto'; feld.style.height = Math.min(feld.scrollHeight, 136) + 'px'; }
+  feld.addEventListener('input', mitwachsen);
+
+  /* Schnellantworten, wenn der Chat um Bestaetigung bittet */
+  var standardChips = chips.innerHTML;
+  function chipsSetzen(text){
+    var t = (text || '').toLowerCase();
+    if (t.indexOf('passt das so') > -1 || (t.indexOf('passt das') > -1 && t.indexOf('?') > -1)) {
+      chips.innerHTML =
+        '<button class="chip ja" type="button">Passt so</button>' +
+        '<button class="chip" type="button">Ich möchte etwas ändern</button>';
+    } else if (chips.innerHTML.indexOf('Passt so') > -1) {
+      chips.innerHTML = standardChips;
+    }
+  }
   chips.addEventListener('click', function(e){
     var b = e.target.closest('.chip');
     if (b) fragen(b.textContent);
   });
+  var chatKasten = document.querySelector('.chat');
+  var beruehrt = false;
+  ['pointerdown','input','focusin'].forEach(function(ev){
+    chatKasten.addEventListener(ev, function(){ beruehrt = true; chatKasten.classList.remove('stupser'); });
+  });
+  function aufmerksam(){
+    chatKasten.classList.add('acht');
+    setTimeout(function(){ chatKasten.classList.remove('acht'); }, 900);
+  }
   document.querySelectorAll('.js-chat').forEach(function(b){
     b.addEventListener('click', function(){
       feld.focus({preventScroll:true});
       var r = feld.getBoundingClientRect();
       if (r.top < 70 || r.bottom > window.innerHeight) feld.scrollIntoView({behavior: sanft?'auto':'smooth', block:'center'});
+      aufmerksam();
+      if (!sanft) { chatKasten.classList.add('stupser'); setTimeout(function(){ chatKasten.classList.remove('stupser'); }, 1600); }
     });
   });
+  /* Einmaliger dezenter Hinweis, falls der Besucher den Chat uebersieht */
+  if (!sanft) setTimeout(function(){
+    if (beruehrt) return;
+    var r = chatKasten.getBoundingClientRect();
+    if (r.top < window.innerHeight && r.bottom > 0) {
+      chatKasten.classList.add('stupser');
+      setTimeout(function(){ chatKasten.classList.remove('stupser'); }, 1600);
+    }
+  }, 2800);
   blase(GRUSS, 'bot');
 })();
 </script>
