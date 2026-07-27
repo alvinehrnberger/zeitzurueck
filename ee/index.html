@@ -96,9 +96,9 @@
     .chip:hover,.chip:focus-visible { border-color:var(--accent); color:var(--white); }
     .chip:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
     .chat-form { display:flex; gap:.6rem; align-items:center; padding:.7rem; border-top:1px solid var(--line); }
-    .chat-form input { flex:1; border:1px solid var(--line); border-radius:12px; background:var(--black); color:var(--white); padding:.85rem 1.1rem; font-size:.97rem; font-family:inherit; min-width:0; transition:border-color .25s; }
-    .chat-form input::placeholder { color:var(--gray); }
-    .chat-form input:focus { outline:none; border-color:var(--accent); }
+    .chat-form textarea { flex:1; border:1px solid var(--line); border-radius:12px; background:var(--black); color:var(--white); padding:.85rem 1.1rem; font-size:.97rem; font-family:inherit; line-height:1.45; min-width:0; resize:none; max-height:8.5rem; overflow-y:auto; transition:border-color .25s; }
+    .chat-form textarea::placeholder { color:var(--gray); }
+    .chat-form textarea:focus { outline:none; border-color:var(--accent); }
     .chat-form button { border:none; border-radius:12px; background:var(--white); color:var(--black); padding:.85rem 1.4rem; font-size:.72rem; letter-spacing:.16em; text-transform:uppercase; font-family:"Sora"; font-weight:500; cursor:pointer; transition:background .25s,color .25s; }
     .chat-form button:hover,.chat-form button:focus-visible { background:var(--accent); color:var(--white); }
     .chat-form button:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
