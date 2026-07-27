@@ -335,13 +335,60 @@
           </div>
         </div>
         <div class="f"><label>Wunschfarben</label><input type="text" name="farben" placeholder="z.B. dunkelgrün, warmes Beige"></div>
-        <div class="f full"><label>Haben Sie schon eine Domain?</label>
-          <input type="text" name="domain" placeholder="z.B. ja, meinbetrieb.at — oder: nein, bitte vorschlagen"></div>
       </div>
     </section>
 
     <section class="blk">
-      <div class="num"><span>7</span><h2>Sonstiges</h2></div>
+      <div class="num"><span>7</span><h2>Technik &amp; Zugänge</h2></div>
+      <p class="hint">Klingt trocken, entscheidet aber, wie schnell wir starten können. Wenn Sie etwas nicht wissen: „weiß ich nicht" ankreuzen — wir finden es gemeinsam heraus.</p>
+
+      <div class="grid">
+        <div class="f full"><label>Haben Sie schon eine Domain?</label>
+          <input type="text" name="domain" placeholder="z.B. meinbetrieb.at — oder: nein, bitte vorschlagen"></div>
+        <div class="f"><label>Bei wem ist die Domain registriert?</label>
+          <input type="text" name="domain_anbieter" placeholder="z.B. World4You, GoDaddy, Hosttech"></div>
+        <div class="f"><label>Kommen Sie dort in Ihr Konto hinein?</label>
+          <div class="radios">
+            <label><input type="radio" name="domain_zugang" value="ja"> Ja</label>
+            <label><input type="radio" name="domain_zugang" value="nein"> Nein</label>
+            <label><input type="radio" name="domain_zugang" value="unklar"> Weiß ich nicht</label>
+          </div>
+        </div>
+        <div class="f full"><label>Wo liegt Ihre jetzige Website, falls es eine gibt?</label>
+          <input type="text" name="hosting" placeholder="z.B. WordPress bei World4You, Wix, Jimdo, oder: keine Website"></div>
+      </div>
+
+      <div class="grid">
+        <div class="f full"><label>Wie lautet Ihre geschäftliche E-Mail-Adresse?</label>
+          <input type="text" name="mail_adresse" placeholder="z.B. office@meinbetrieb.at — oder eine Gmail-/GMX-Adresse"></div>
+        <div class="f full"><label>Bei welchem Anbieter läuft diese E-Mail?</label>
+          <input type="text" name="mail_anbieter" placeholder="z.B. World4You, Google Workspace, GMX, A1"></div>
+      </div>
+
+      <div class="grid">
+        <div class="f full"><label>Welchen Kalender führen Sie heute? <span class="req">*</span></label>
+          <div class="radios">
+            <label><input type="radio" name="kalender" value="Google" required> Google</label>
+            <label><input type="radio" name="kalender" value="Apple"> Apple / iCloud</label>
+            <label><input type="radio" name="kalender" value="Outlook"> Outlook</label>
+            <label><input type="radio" name="kalender" value="Papier"> Papier</label>
+            <label><input type="radio" name="kalender" value="keiner"> Gar keinen</label>
+          </div>
+          <div class="note">Wir tragen Termine direkt in Ihren Kalender ein. Wenn Sie bisher Apple oder Papier nutzen, ist das kein Problem — wir richten das gemeinsam ein.</div>
+        </div>
+        <div class="f full"><label>Haben Sie ein Google-Konto für den Betrieb?</label>
+          <div class="radios stack">
+            <label><input type="radio" name="google_konto" value="ja"> Ja, geschäftlich — und ich habe die Zugangsdaten</label>
+            <label><input type="radio" name="google_konto" value="privat"> Nur ein privates, das ich nicht dafür nutzen möchte</label>
+            <label><input type="radio" name="google_konto" value="nein"> Nein — bitte richtet uns eines ein</label>
+            <label><input type="radio" name="google_konto" value="unklar"> Weiß ich nicht</label>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="blk">
+      <div class="num"><span>8</span><h2>Sonstiges</h2></div>
       <p class="hint">Alles, was uns sonst noch helfen könnte.</p>
       <div class="f full"><label>Was nervt Sie im Alltag am meisten?</label>
         <textarea name="sonstiges" placeholder="z.B. ständiges Telefonieren wegen Terminen"></textarea></div>
