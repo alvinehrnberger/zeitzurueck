@@ -55,11 +55,23 @@
   input:focus,textarea:focus,select:focus{border-color:var(--petrol);box-shadow:0 0 0 3px rgba(26,58,43,.08)}
   .radios{display:flex;gap:18px;flex-wrap:wrap;padding-top:4px}
   .radios label{display:flex;align-items:center;gap:7px;font-size:14.5px;color:var(--ink);font-weight:400;margin:0;cursor:pointer}
+  .radios.stack{flex-direction:column;gap:9px}
   .checks{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   @media(max-width:640px){.checks{grid-template-columns:1fr}}
   .checks label{display:flex;align-items:flex-start;gap:8px;font-size:14.5px;color:var(--ink);font-weight:400;margin:0;cursor:pointer}
   .note{background:var(--ivory-soft);border-left:3px solid var(--gold);border-radius:0 10px 10px 0;
     padding:12px 16px;font-size:13.5px;color:var(--muted);margin-top:10px}
+
+  /* Weichenstellung */
+  .weiche{background:#fff;border:2px solid var(--gold);border-radius:16px;padding:20px 22px;margin-top:30px}
+  .weiche h2{font-family:'Poppins';font-size:17px;font-weight:600;color:var(--petrol);margin-bottom:4px}
+  .weiche p{font-size:13.5px;color:var(--muted);margin-bottom:12px}
+  .weiche .radios label{font-size:15px}
+
+  /* Zweig-Abschnitte: am Bildschirm nur der passende */
+  .zweig{display:none}
+  .zweig.an{display:block}
+  .zweigkopf{display:none}
 
   .actions{margin:36px 0 10px;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
   .btn{border:none;border-radius:999px;padding:15px 30px;font-family:'Poppins';font-weight:600;
@@ -104,7 +116,6 @@
     .grid{gap:3mm}
     .f{margin-bottom:3.5mm}
     label{font-size:8.5pt;color:#555}
-    /* Eingabefelder werden zu Schreiblinien */
     input[type=text],input[type=email],input[type=tel],select{
       border:0;border-bottom:0.6pt solid #999;border-radius:0;padding:1mm 0 0.5mm;
       height:7mm;background:none;font-size:10pt}
@@ -112,6 +123,13 @@
     .radios label,.checks label{font-size:9pt}
     input[type=radio],input[type=checkbox]{width:3.2mm;height:3.2mm}
     .note{background:none;border-left:2pt solid #C9A054;font-size:8.5pt;padding:2mm 3mm}
+    .weiche{border:1pt solid #1A3A2B;border-radius:3mm;padding:4mm;margin-top:5mm}
+    .weiche h2{font-size:11pt}
+    .weiche p{font-size:8.5pt}
+    /* Auf Papier stehen BEIDE Zweige drin, klar beschriftet */
+    .zweig{display:block !important;border-left:2pt solid #ddd;padding-left:4mm;margin-top:3mm}
+    .zweigkopf{display:block !important;font-family:'Poppins';font-size:9.5pt;font-weight:600;
+      color:#1A3A2B;margin-bottom:2mm;text-transform:uppercase;letter-spacing:.04em}
     .actions,#msg,.done,.noprint{display:none !important}
     .privacy{font-size:7.5pt;margin-top:5mm}
     footer{background:none;color:#666;border-top:0.6pt solid #ccc;margin-top:6mm;padding:3mm 0;font-size:8pt}
@@ -156,6 +174,17 @@
 
   <form id="startForm">
 
+    <!-- ===== WEICHE ===== -->
+    <div class="weiche">
+      <h2>Zuerst eine Frage, die alles andere bestimmt</h2>
+      <p>Danach zeigen wir Ihnen nur die Fragen, die zu Ihrem Betrieb passen.</p>
+      <div class="radios stack">
+        <label><input type="radio" name="modell" value="mobil" required> <span><b>Ich fahre zum Kunden.</b> Montage, Reparatur, Service vor Ort.</span></label>
+        <label><input type="radio" name="modell" value="werkstatt"> <span><b>Der Kunde kommt zu mir.</b> Werkstatt, Studio, Atelier, Ladenlokal.</span></label>
+        <label><input type="radio" name="modell" value="beides"> <span><b>Beides,</b> je nach Auftrag.</span></label>
+      </div>
+    </div>
+
     <section class="blk">
       <div class="num"><span>1</span><h2>Ihr Betrieb</h2></div>
       <p class="hint">Diese Angaben erscheinen auf Ihrer Website, im Impressum und auf Rechnungen.</p>
@@ -183,6 +212,13 @@
         <div class="f"><label>E-Mail für Anfragen <span class="req">*</span></label><input type="email" name="email" required></div>
         <div class="f"><label>Telefonnummer</label><input type="tel" name="telefon"></div>
         <div class="f full"><label>Bestehende Website (falls vorhanden)</label><input type="text" name="website" placeholder="www.…"></div>
+        <div class="f full"><label>In welcher Sprache schreiben Ihre Kunden?</label>
+          <div class="radios">
+            <label><input type="radio" name="sprache" value="Deutsch"> Nur Deutsch</label>
+            <label><input type="radio" name="sprache" value="Deutsch und Englisch"> Deutsch und Englisch</label>
+            <label><input type="radio" name="sprache" value="mehr"> Auch andere Sprachen</label>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -191,13 +227,38 @@
       <p class="hint">Damit der Chat richtig beraten und einschätzen kann.</p>
       <div class="grid">
         <div class="f full"><label>Was bieten Sie an? <span class="req">*</span></label>
-          <textarea name="leistungen" placeholder="Ihre wichtigsten Leistungen — je Zeile eine" required></textarea></div>
-        <div class="f"><label>Stundensatz</label><input type="text" name="stundensatz" placeholder="z.B. 50 €"></div>
-        <div class="f"><label>Anfahrt / Pauschalen</label><input type="text" name="pauschalen" placeholder="z.B. 20 € Anfahrt"></div>
-        <div class="f full"><label>Wie lange dauert ein typischer Auftrag?</label>
-          <textarea name="dauern" placeholder="z.B. Kleiderschrank 2–3 Std, Küche 1 Tag"></textarea></div>
+          <textarea name="leistungen" placeholder="Ihre wichtigsten Leistungen oder Produkte — je Zeile eine" required></textarea></div>
         <div class="f full"><label>Was machen Sie ausdrücklich NICHT?</label>
           <input type="text" name="nicht" placeholder="z.B. keine Elektro-, Wasser- oder Gasarbeiten"></div>
+      </div>
+
+      <!-- Zweig A: fährt zum Kunden -->
+      <div class="zweig" data-zweig="mobil">
+        <div class="zweigkopf">Nur ausfüllen, wenn Sie zum Kunden fahren</div>
+        <div class="grid">
+          <div class="f"><label>Stundensatz</label><input type="text" name="stundensatz" placeholder="z.B. 50 €"></div>
+          <div class="f"><label>Anfahrt / Pauschalen</label><input type="text" name="pauschalen" placeholder="z.B. 20 € Anfahrt"></div>
+          <div class="f full"><label>Wie lange dauert ein typischer Auftrag?</label>
+            <textarea name="dauern" placeholder="z.B. Kleiderschrank 2–3 Std, Küche 1 Tag"></textarea></div>
+          <div class="f full"><label>Einsatzgebiet</label><input type="text" name="gebiet" placeholder="z.B. Wien &amp; Niederösterreich"></div>
+        </div>
+      </div>
+
+      <!-- Zweig B: Kunde kommt in die Werkstatt -->
+      <div class="zweig" data-zweig="werkstatt">
+        <div class="zweigkopf">Nur ausfüllen, wenn der Kunde zu Ihnen kommt</div>
+        <div class="grid">
+          <div class="f full"><label>Ihre Produkte oder Stufen mit Festpreis</label>
+            <textarea name="festpreise" placeholder="Je Zeile eine — z.B.&#10;Stage One · 2 Treiber · ab 690 €&#10;Stage Pro · 4 Treiber · ab 1.190 €"></textarea></div>
+          <div class="f"><label>Verlangen Sie eine Anzahlung?</label>
+            <input type="text" name="anzahlung" placeholder="z.B. 50 % bei Auftrag, Rest bei Abholung"></div>
+          <div class="f"><label>Wie lange dauert die Fertigung?</label>
+            <input type="text" name="fertigungsdauer" placeholder="z.B. 3–4 Wochen"></div>
+          <div class="f full"><label>Welche Ausführungen oder Varianten gibt es?</label>
+            <textarea name="varianten" placeholder="z.B. Finishes: Abalone, Night Blue, Silver Foil … oder Hölzer, Farben, Gravuren"></textarea></div>
+          <div class="f full"><label>Wie weit sind Sie derzeit ausgebucht?</label>
+            <input type="text" name="auslastung" placeholder="z.B. nächster freier Termin in 2 Wochen"></div>
+        </div>
       </div>
     </section>
 
@@ -207,9 +268,27 @@
       <div class="grid">
         <div class="f full"><label>An welchen Tagen und zu welchen Zeiten arbeiten Sie? <span class="req">*</span></label>
           <textarea name="zeiten" placeholder="z.B. Mo–Do ab 17:00, Fr ab 12:00, Sa &amp; So 10:00–22:00" required></textarea></div>
-        <div class="f"><label>Vorlauf vor einem Termin</label><input type="text" name="vorlauf" placeholder="z.B. mindestens 48 Stunden"></div>
-        <div class="f"><label>Fahrzeit zwischen Aufträgen</label><input type="text" name="puffer" placeholder="z.B. 45 Minuten"></div>
-        <div class="f full"><label>Einsatzgebiet</label><input type="text" name="gebiet" placeholder="z.B. Wien &amp; Niederösterreich"></div>
+        <div class="f full"><label>Vorlauf vor einem Termin</label><input type="text" name="vorlauf" placeholder="z.B. mindestens 48 Stunden"></div>
+      </div>
+
+      <div class="zweig" data-zweig="mobil">
+        <div class="zweigkopf">Nur ausfüllen, wenn Sie zum Kunden fahren</div>
+        <div class="grid">
+          <div class="f full"><label>Wie viel Zeit brauchen Sie zwischen zwei Aufträgen?</label>
+            <input type="text" name="puffer" placeholder="z.B. 45 Minuten Fahrzeit"></div>
+        </div>
+      </div>
+
+      <div class="zweig" data-zweig="werkstatt">
+        <div class="zweigkopf">Nur ausfüllen, wenn der Kunde zu Ihnen kommt</div>
+        <div class="grid">
+          <div class="f full"><label>Adresse Ihrer Werkstatt / Ihres Studios</label>
+            <input type="text" name="werkstatt_adresse" placeholder="falls anders als die Firmenadresse"></div>
+          <div class="f full"><label>Welche Terminarten gibt es, und wie lange dauern sie?</label>
+            <textarea name="terminarten" placeholder="Je Zeile eine — z.B.&#10;Ohrabdruck · 45 Minuten&#10;Anpassung und Abholung · 30 Minuten"></textarea></div>
+          <div class="f full"><label>Wie viele Kunden können gleichzeitig da sein?</label>
+            <input type="text" name="parallel" placeholder="z.B. nur einer — ich arbeite allein"></div>
+        </div>
       </div>
     </section>
 
@@ -234,18 +313,19 @@
       <div class="num"><span>6</span><h2>Kommunikation &amp; Auftritt</h2></div>
       <p class="hint">So klingt und wirkt Ihr Betrieb nach außen.</p>
       <div class="grid">
+        <div class="f full"><label>Wie sollen Ihre Kunden angesprochen werden? <span class="req">*</span></label>
+          <div class="radios">
+            <label><input type="radio" name="ansprache" value="Sie" required> Per Sie</label>
+            <label><input type="radio" name="ansprache" value="Du"> Per Du</label>
+          </div>
+          <div class="note">Bitte so, wie Sie selbst mit Ihren Kunden reden. Der Chat ist Ihr Vorzimmer — er soll klingen wie Sie, nicht wie eine Behörde.</div>
+        </div>
         <div class="f full"><label>Über welche Kanäle sollen Kunden Sie erreichen?</label>
           <div class="checks">
             <label><input type="checkbox" name="kanal" value="Website-Chat"> Chat auf der Website</label>
             <label><input type="checkbox" name="kanal" value="WhatsApp"> WhatsApp</label>
             <label><input type="checkbox" name="kanal" value="E-Mail"> E-Mail</label>
             <label><input type="checkbox" name="kanal" value="Telefon"> Telefon</label>
-          </div>
-        </div>
-        <div class="f full"><label>Wie sollen Ihre Kunden angesprochen werden?</label>
-          <div class="radios">
-            <label><input type="radio" name="ansprache" value="Sie"> Per Sie</label>
-            <label><input type="radio" name="ansprache" value="Du"> Per Du</label>
           </div>
         </div>
         <div class="f"><label>Haben Sie ein Logo?</label>
@@ -300,6 +380,21 @@
   var btn  = document.getElementById('sendBtn');
   var msg  = document.getElementById('msg');
 
+  /* ---- Weiche: nur die passenden Abschnitte zeigen ---- */
+  function zweigeZeigen(){
+    var gewaehlt = form.querySelector('input[name="modell"]:checked');
+    var wert = gewaehlt ? gewaehlt.value : null;
+    form.querySelectorAll('.zweig').forEach(function(z){
+      var z_name = z.getAttribute('data-zweig');
+      var an = (wert === 'beides') || (wert === z_name);
+      z.classList.toggle('an', !!an);
+    });
+  }
+  form.querySelectorAll('input[name="modell"]').forEach(function(r){
+    r.addEventListener('change', zweigeZeigen);
+  });
+  zweigeZeigen();
+
   form.addEventListener('submit', function(e){
     e.preventDefault();
     var fd = new FormData(form), daten = {}, kanaele = [];
@@ -311,6 +406,9 @@
 
     if(!daten.firma || !daten.email){
       msg.className='err'; msg.textContent='Bitte zumindest Firmenname und E-Mail ausfüllen.'; return;
+    }
+    if(!daten.modell){
+      msg.className='err'; msg.textContent='Bitte oben angeben, ob Sie zum Kunden fahren oder der Kunde zu Ihnen kommt.'; return;
     }
     btn.disabled = true; btn.textContent = 'Wird gesendet…';
     msg.className=''; msg.textContent='';
