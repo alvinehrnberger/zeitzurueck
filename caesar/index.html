@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Caesar Handmade Guitars — Alexander Höller, Wien</title>
+<meta name="description" content="Caesar Handmade Guitars — von Hand gebaute Gitarren aus Wien. Alexander Höller, Custom Guitar Builder.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%230B0B0B'/><text x='50' y='72' font-size='62' text-anchor='middle' font-family='Georgia,serif' font-style='italic' fill='%23D8BC85'>C</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     CAESAR HANDMADE GUITARS
+     Farben von der Visitenkarte abgenommen:
+     Schwarz #0B0B0B · Creme #EFE7D8 · Gold #D8BC85 · Rotbraun #6B3A28
+     Schrift: Cormorant Garamond (Display) + Inter (Text)
+     ============================================================ */
+  :root{
+    --schwarz:#0B0B0B; --kohle:#131313; --kohle-2:#1A1917;
+    --creme:#EFE7D8; --creme-weich:rgba(239,231,216,.72); --grau:rgba(239,231,216,.45);
+    --gold:#D8BC85; --gold-tief:#A98B52; --holz:#6B3A28;
+    --linie:rgba(239,231,216,.10); --linie-zart:rgba(239,231,216,.055);
+    --r:14px; --maxw:74rem;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
+  body{background:var(--schwarz);color:var(--creme);font-family:"Inter",-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-weight:300;line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  ::selection{background:var(--holz);color:var(--creme)}
+  .wrap{max-width:var(--maxw);margin-inline:auto;padding-inline:clamp(1.4rem,5vw,4rem)}
+  h1,h2,h3,.serif{font-family:"Cormorant Garamond",Georgia,serif;font-weight:400}
+  a{color:inherit}
+  @keyframes auf{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+  .zeig{opacity:0}.zeig.da{animation:auf 1s cubic-bezier(.2,.7,.2,1) both}
+
+  /* NAV */
+  .nav{position:fixed;inset:0 0 auto 0;z-index:50;display:flex;align-items:center;justify-content:space-between;
+    padding:1.2rem clamp(1.4rem,5vw,4rem);border-bottom:1px solid transparent;transition:background .4s,border-color .4s,padding .4s}
+  .nav.fest{background:rgba(11,11,11,.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--linie);padding-block:.85rem}
+  .marke{display:flex;align-items:center;gap:.85rem;text-decoration:none}
+  .marke .c{font-family:"Cormorant Garamond",Georgia,serif;font-style:italic;font-size:2rem;line-height:1;color:var(--gold)}
+  .marke .name{font-family:"Cormorant Garamond",Georgia,serif;font-size:1.05rem;letter-spacing:.34em;text-transform:uppercase}
+  .nav-links{display:flex;gap:clamp(1.1rem,2.4vw,2.3rem)}
+  .nav-links a{font-size:.7rem;letter-spacing:.24em;text-transform:uppercase;color:var(--creme-weich);
+    text-decoration:none;transition:color .25s}
+  .nav-links a:hover,.nav-links a:focus-visible{color:var(--gold)}
+  @media(max-width:760px){.nav-links{display:none}}
+
+  /* HERO */
+  .hero{position:relative;min-height:100svh;display:grid;align-items:center;padding-block:7.5rem 3.5rem;overflow:hidden}
+  .hero::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+    background:radial-gradient(80% 70% at 78% 34%, rgba(107,58,40,.30), transparent 62%),
+               radial-gradient(60% 55% at 10% 92%, rgba(216,188,133,.05), transparent 60%)}
+  .hero .wrap{position:relative;z-index:2;width:100%}
+  .hero-grid{display:grid;grid-template-columns:1fr .9fr;gap:clamp(2rem,5vw,4.5rem);align-items:center}
+  @media(max-width:960px){.hero-grid{grid-template-columns:1fr;gap:2.6rem}}
+  .titel{font-size:clamp(3.1rem,9vw,6.4rem);line-height:.95;letter-spacing:.16em;font-weight:400;
+    text-transform:uppercase;color:var(--creme)}
+  .unter{font-size:clamp(.7rem,1.6vw,.84rem);letter-spacing:.44em;text-transform:uppercase;color:var(--gold);
+    margin-top:1.1rem}
+  .strich{width:4.5rem;height:1px;background:var(--gold);opacity:.7;margin:1.8rem 0}
+  .lead{max-width:29rem;color:var(--creme-weich);font-size:1.03rem}
+  .knoepfe{display:flex;gap:1rem;flex-wrap:wrap;margin-top:2.4rem}
+  .btn{display:inline-flex;align-items:center;gap:.6rem;padding:.95rem 2.1rem;font-size:.72rem;letter-spacing:.2em;
+    text-transform:uppercase;text-decoration:none;cursor:pointer;font-family:inherit;font-weight:500;
+    border:1px solid var(--linie);border-radius:2px;color:var(--creme);background:transparent;
+    transition:border-color .3s,background .3s,color .3s}
+  .btn:hover,.btn:focus-visible{border-color:var(--gold);color:var(--gold)}
+  .btn--voll{background:var(--gold);border-color:var(--gold);color:var(--schwarz)}
+  .btn--voll:hover,.btn--voll:focus-visible{background:var(--creme);border-color:var(--creme);color:var(--schwarz)}
+
+  /* CHAT */
+  .chat{background:var(--kohle);border:1px solid var(--linie);border-radius:var(--r);display:flex;flex-direction:column;
+    overflow:hidden;box-shadow:0 40px 90px rgba(0,0,0,.6)}
+  .chat-kopf{padding:1rem 1.4rem;border-bottom:1px solid var(--linie);display:flex;align-items:center;gap:.7rem;
+    font-size:.68rem;letter-spacing:.24em;text-transform:uppercase;color:var(--creme-weich)}
+  .chat-kopf .punkt{width:6px;height:6px;border-radius:50%;background:var(--gold);flex:none;
+    box-shadow:0 0 0 3px rgba(216,188,133,.14);animation:pulsen 2.4s ease-in-out infinite}
+  @keyframes pulsen{0%,100%{opacity:1}50%{opacity:.3}}
+  .chat-kopf .rechts{margin-left:auto;letter-spacing:.14em;color:var(--grau);font-size:.62rem}
+  .chat-log{padding:1.4rem;display:flex;flex-direction:column;gap:.85rem;min-height:15rem;max-height:21rem;overflow-y:auto}
+  .chat-log::-webkit-scrollbar{width:6px}.chat-log::-webkit-scrollbar-thumb{background:var(--linie);border-radius:3px}
+  .msg{max-width:88%;padding:.8rem 1.05rem;font-size:.95rem;line-height:1.55;border-radius:10px;white-space:pre-wrap;
+    animation:auf .4s ease both}
+  .msg--bot{align-self:flex-start;background:var(--schwarz);border-left:2px solid var(--gold);color:var(--creme)}
+  .msg--du{align-self:flex-end;background:var(--creme);color:var(--schwarz)}
+  .tippt{align-self:flex-start;display:flex;gap:4px;padding:.9rem 1.05rem;background:var(--schwarz);border-left:2px solid var(--gold)}
+  .tippt span{width:6px;height:6px;border-radius:50%;background:var(--grau);animation:blinken 1.2s infinite both}
+  .tippt span:nth-child(2){animation-delay:.2s}.tippt span:nth-child(3){animation-delay:.4s}
+  @keyframes blinken{0%,80%,100%{opacity:.2}40%{opacity:1}}
+  .chips{display:flex;flex-wrap:wrap;gap:.5rem;padding:0 1.4rem 1rem}
+  .chip{font-size:.73rem;color:var(--creme-weich);border:1px solid var(--linie);border-radius:2px;background:transparent;
+    padding:.5rem .85rem;cursor:pointer;font-family:inherit;transition:border-color .25s,color .25s}
+  .chip:hover,.chip:focus-visible{border-color:var(--gold);color:var(--gold)}
+  .chat-form{display:flex;gap:.6rem;align-items:center;padding:.7rem;border-top:1px solid var(--linie)}
+  .chat-form input{flex:1;border:1px solid var(--linie);border-radius:3px;background:var(--schwarz);color:var(--creme);
+    padding:.85rem 1.1rem;font-size:.97rem;font-family:inherit;min-width:0;transition:border-color .25s}
+  .chat-form input::placeholder{color:var(--grau)}
+  .chat-form input:focus{outline:none;border-color:var(--gold)}
+  .chat-form button{border:none;border-radius:3px;background:var(--gold);color:var(--schwarz);padding:.85rem 1.4rem;
+    font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;font-weight:600;cursor:pointer;font-family:inherit;
+    transition:background .25s}
+  .chat-form button:hover{background:var(--creme)}
+  .chat-form button:disabled{opacity:.45;cursor:default}
+  .chat-notiz{margin-top:.9rem;font-size:.72rem;color:var(--grau)}
+
+  /* ABSCHNITTE */
+  section{padding-block:clamp(4rem,9vh,6.5rem);position:relative;scroll-margin-top:4.5rem}
+  .kicker{display:block;font-size:.66rem;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);margin-bottom:1.2rem}
+  h2{font-size:clamp(2rem,4.6vw,3.1rem);line-height:1.12;letter-spacing:.02em}
+  .fliess{max-width:38rem;margin-top:1.2rem;color:var(--creme-weich);font-size:1.01rem}
+
+  .credo{text-align:center;border-block:1px solid var(--linie-zart);background:var(--kohle-2)}
+  .credo p{font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(1.6rem,4vw,2.8rem);line-height:1.35;
+    max-width:44rem;margin-inline:auto;font-weight:300;font-style:italic}
+  .credo em{font-style:normal;color:var(--gold)}
+
+  /* LEISTUNGEN */
+  .karten{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-top:2.8rem;background:var(--linie-zart);
+    border:1px solid var(--linie-zart)}
+  @media(max-width:860px){.karten{grid-template-columns:1fr}}
+  .karte{background:var(--schwarz);padding:2.2rem 1.8rem;display:flex;flex-direction:column}
+  .karte .nr{font-family:"Cormorant Garamond",Georgia,serif;font-size:2.2rem;color:var(--gold-tief);line-height:1;margin-bottom:1rem}
+  .karte h3{font-size:1.5rem;margin-bottom:.6rem}
+  .karte p{font-size:.92rem;color:var(--creme-weich)}
+  .karte .ab{margin-top:auto;padding-top:1.4rem;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+
+  /* WERKSTATT-SCHRITTE */
+  .schritte{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:1px;margin-top:2.8rem;
+    background:var(--linie-zart);border:1px solid var(--linie-zart);counter-reset:s}
+  .schritt{background:var(--kohle-2);padding:2.1rem 1.6rem}
+  .schritt::before{counter-increment:s;content:counter(s,decimal-leading-zero);display:block;
+    font-family:"Cormorant Garamond",Georgia,serif;font-size:1.5rem;color:var(--gold-tief);margin-bottom:1rem}
+  .schritt h3{font-size:1.25rem;margin-bottom:.4rem}
+  .schritt p{font-size:.87rem;color:var(--creme-weich)}
+
+  /* KONTAKT */
+  .kontakt-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,5vw,4rem)}
+  @media(max-width:760px){.kontakt-grid{grid-template-columns:1fr}}
+  .liste{list-style:none;margin-top:1.8rem}
+  .liste li{padding:1.05rem 0;border-top:1px solid var(--linie);display:flex;flex-direction:column;gap:.15rem}
+  .liste li:last-child{border-bottom:1px solid var(--linie)}
+  .liste .lbl{font-size:.62rem;letter-spacing:.26em;text-transform:uppercase;color:var(--grau)}
+  .liste a,.liste span.wert{color:var(--creme);text-decoration:none;font-size:1.03rem}
+  .liste a:hover{color:var(--gold)}
+  .sozial{display:flex;gap:1.4rem;margin-top:1.6rem;flex-wrap:wrap}
+  .sozial a{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--creme-weich);text-decoration:none;
+    border-bottom:1px solid var(--linie);padding-bottom:3px;transition:color .25s,border-color .25s}
+  .sozial a:hover{color:var(--gold);border-color:var(--gold)}
+
+  footer{border-top:1px solid var(--linie);padding-block:2.8rem}
+  footer .wrap{display:flex;flex-wrap:wrap;gap:1.3rem;justify-content:space-between;align-items:center}
+  footer .meta{font-size:.74rem;color:var(--grau)}
+  footer nav a{color:var(--creme-weich);font-size:.72rem;margin-left:1.3rem;text-decoration:none}
+  footer nav a:hover{color:var(--gold)}
+  .signatur{display:block;margin-top:.5rem;font-size:.6rem;letter-spacing:.1em;color:var(--grau);opacity:.8}
+  .signatur a{color:var(--grau);text-decoration:none}
+
+  /* Muster-Hinweis - vor dem Live-Gang entfernen */
+  .muster{position:fixed;left:0;right:0;bottom:0;z-index:60;background:rgba(107,58,40,.22);
+    border-top:1px solid rgba(216,188,133,.28);backdrop-filter:blur(10px);color:var(--creme-weich);
+    font-size:.68rem;letter-spacing:.05em;text-align:center;padding:.55rem 1rem}
+  .muster b{color:var(--creme);font-weight:500}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <a class="marke" href="#top" aria-label="Caesar Handmade Guitars">
+    <span class="c">C</span><span class="name">Caesar</span>
+  </a>
+  <div class="nav-links">
+    <a href="#werkstatt">Werkstatt</a>
+    <a href="#leistungen">Leistungen</a>
+    <a href="#ablauf">Ablauf</a>
+    <a href="#kontakt">Kontakt</a>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <h1 class="titel zeig">Caesar</h1>
+        <div class="unter zeig">Handmade Guitars · Wien</div>
+        <div class="strich zeig"></div>
+        <p class="lead zeig">Jede Gitarre entsteht hier von Hand — ein Instrument, das es kein zweites Mal gibt. Gebaut von Alexander Höller in Wien.</p>
+        <div class="knoepfe zeig">
+          <button class="btn btn--voll js-chat" type="button">Anfrage starten</button>
+          <a class="btn" href="#leistungen">Was hier entsteht</a>
+        </div>
+      </div>
+      <div class="zeig">
+        <div class="chat">
+          <div class="chat-kopf"><span class="punkt" aria-hidden="true"></span> Caesar <span class="rechts">antwortet sofort</span></div>
+          <div class="chat-log" id="chatLog" aria-live="polite"></div>
+          <div class="chips" id="chips">
+            <button class="chip" type="button">Was kostet eine Custom-Gitarre?</button>
+            <button class="chip" type="button">Kannst du meine Gitarre reparieren?</button>
+            <button class="chip" type="button">Wie lange dauert ein Bau?</button>
+            <button class="chip" type="button">Ich hab eine Idee im Kopf</button>
+          </div>
+          <form class="chat-form" id="chatForm">
+            <input type="text" id="chatInput" autocomplete="off" placeholder="Schreib mir …" aria-label="Deine Nachricht" required>
+            <button type="submit" id="chatSend">Senden</button>
+          </form>
+        </div>
+        <p class="chat-notiz">Frag alles, zu jeder Zeit — auch um zwei Uhr nachts nach dem Gig.</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="credo">
+  <div class="wrap">
+    <p class="zeig">Eine Gitarre ist kein Produkt. <em>Sie ist ein Werkzeug, das zu einem Menschen passen muss.</em></p>
+  </div>
+</section>
+
+<section id="leistungen">
+  <div class="wrap">
+    <span class="kicker zeig">Leistungen</span>
+    <h2 class="zeig">Was hier entsteht.</h2>
+    <p class="fliess zeig">Vom kompletten Neubau bis zur Gitarre, die seit Jahren im Koffer liegt und wieder spielbar werden soll.</p>
+    <!-- PLATZHALTER: Leistungen und Preise sind erfunden, bis Alexander sie bestaetigt -->
+    <div class="karten zeig">
+      <div class="karte">
+        <div class="nr">I</div>
+        <h3>Custom-Bau</h3>
+        <p>Deine Gitarre, von der Holzauswahl bis zum letzten Bund. Form, Hölzer, Pickups, Finish — alles wird gemeinsam festgelegt.</p>
+        <div class="ab">Preis nach Gespräch*</div>
+      </div>
+      <div class="karte">
+        <div class="nr">II</div>
+        <h3>Reparatur &amp; Setup</h3>
+        <p>Halseinstellung, Bundierung, Elektronik, Lackschäden. Auch an Instrumenten, die nicht von hier stammen.</p>
+        <div class="ab">Preis nach Befund*</div>
+      </div>
+      <div class="karte">
+        <div class="nr">III</div>
+        <h3>Umbau &amp; Refinish</h3>
+        <p>Andere Pickups, neue Mechaniken, ein anderes Finish. Aus einem Instrument, das fast passt, eines das passt.</p>
+        <div class="ab">Preis nach Gespräch*</div>
+      </div>
+    </div>
+    <p class="fliess zeig" style="font-size:.85rem;color:var(--grau);font-style:italic">*Jede Arbeit ist anders. Schreib im Chat, was dir vorschwebt — dann bekommst du eine ehrliche Einschätzung statt einer Preisliste.</p>
+  </div>
+</section>
+
+<section id="werkstatt">
+  <div class="wrap">
+    <span class="kicker zeig">Die Werkstatt</span>
+    <h2 class="zeig">Von Hand, in Wien.</h2>
+    <div class="schritte">
+      <div class="schritt zeig"><h3>Holz</h3><p>Ausgesucht, nicht bestellt. Jedes Stück klingt anders, und das hört man später.</p></div>
+      <div class="schritt zeig"><h3>Korpus &amp; Hals</h3><p>Gefräst, geschliffen, angepasst — bis die Gitarre in der Hand verschwindet.</p></div>
+      <div class="schritt zeig"><h3>Elektronik</h3><p>Pickups und Schaltung nach deinem Klangbild, nicht nach Katalog.</p></div>
+      <div class="schritt zeig"><h3>Finish</h3><p>Lack oder Öl, Schicht für Schicht, mit der Zeit die es braucht.</p></div>
+      <div class="schritt zeig"><h3>Setup</h3><p>Eingestellt auf deine Saitenlage, deinen Anschlag, deine Stimmung.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="ablauf" class="credo" style="text-align:left">
+  <div class="wrap">
+    <span class="kicker zeig">Der Ablauf</span>
+    <h2 class="zeig">Von der Idee zum Instrument.</h2>
+    <div class="schritte" style="background:var(--linie-zart)">
+      <div class="schritt zeig" style="background:var(--schwarz)"><h3>Gespräch</h3><p>Du erzählst, was du spielst und was dir an deinem jetzigen Instrument fehlt.</p></div>
+      <div class="schritt zeig" style="background:var(--schwarz)"><h3>Entwurf</h3><p>Form, Hölzer, Hardware, Finish — festgehalten, bevor gesägt wird.</p></div>
+      <div class="schritt zeig" style="background:var(--schwarz)"><h3>Werkstatt</h3><p>Der Bau. Du bekommst Bilder, wenn du sie willst.</p></div>
+      <div class="schritt zeig" style="background:var(--schwarz)"><h3>Übergabe</h3><p>Wir spielen sie gemeinsam an und stellen nach, bis sie sitzt.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="kontakt">
+  <div class="wrap">
+    <div class="kontakt-grid">
+      <div>
+        <span class="kicker zeig">Kontakt</span>
+        <h2 class="zeig">Leegasse 9/4,<br>1140 Wien.</h2>
+        <div class="strich zeig"></div>
+        <p class="fliess zeig">Alexander Höller baut jede Gitarre selbst. Am schnellsten geht es über den Chat — der läuft auch, wenn gerade gehobelt wird.</p>
+        <div class="sozial zeig">
+          <a href="https://www.instagram.com/caesarhandmadeguitars" target="_blank" rel="noopener">Instagram</a>
+          <a href="https://www.facebook.com/CaesarHandmadeGuitars/" target="_blank" rel="noopener">Facebook</a>
+          <a href="https://www.youtube.com/channel/UCw3uOsC8zrBSu5NKxbU48PA" target="_blank" rel="noopener">YouTube</a>
+        </div>
+      </div>
+      <div>
+        <ul class="liste">
+          <li class="zeig"><span class="lbl">Werkstatt</span><span class="wert">Leegasse 9/4, 1140 Wien</span></li>
+          <li class="zeig"><span class="lbl">E-Mail</span><a href="mailto:hoeller@caesarhandmadeguitars.at">hoeller@caesarhandmadeguitars.at</a></li>
+          <li class="zeig"><span class="lbl">Telefon</span><a href="tel:+436766175124">+43 676 617 51 24</a></li>
+          <li class="zeig"><span class="lbl">Web</span><a href="https://www.caesarhandmadeguitars.at" target="_blank" rel="noopener">caesarhandmadeguitars.at</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <div class="marke"><span class="c">C</span><span class="name">Caesar</span></div>
+      <span class="signatur">Powered by <a href="https://alvinehrnberger.github.io/zeitzurueck/" target="_blank" rel="noopener">ZeitZurück</a></span>
+    </div>
+    <p class="meta">© 2026 Caesar Handmade Guitars e.U. · Alexander Höller · Wien</p>
+    <nav aria-label="Rechtliches">
+      <a href="impressum.html">Impressum</a>
+      <a href="datenschutz.html">Datenschutz</a>
+    </nav>
+  </div>
+</footer>
+
+<div class="muster"><b>Entwurf für Alexander</b> — Leistungen, Preise und Texte sind Vorschläge und noch nicht abgestimmt. Fotos und Logo folgen.</div>
+
+<script>
+(function(){
+  /* Nav + Einblenden */
+  var nav = document.getElementById('nav');
+  function scrollen(){ nav.classList.toggle('fest', window.scrollY > 40); }
+  scrollen(); window.addEventListener('scroll', scrollen, {passive:true});
+
+  var sanft = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var teile = document.querySelectorAll('.zeig');
+  if (sanft || !('IntersectionObserver' in window)) {
+    teile.forEach(function(el){ el.classList.add('da'); });
+  } else {
+    var io = new IntersectionObserver(function(e){
+      e.forEach(function(x){ if(x.isIntersecting){ x.target.classList.add('da'); io.unobserve(x.target); } });
+    }, {threshold:.12, rootMargin:'0px 0px -8% 0px'});
+    teile.forEach(function(el,i){ el.style.animationDelay = (Math.min(i%6,5)*0.06)+'s'; io.observe(el); });
+  }
+
+  /* ---------------- Chat ---------------- */
+  var WEBHOOK = "https://alvvyn.app.n8n.cloud/webhook/caesar-chat";
+  var log = document.getElementById('chatLog');
+  var form = document.getElementById('chatForm');
+  var feld = document.getElementById('chatInput');
+  var senden = document.getElementById('chatSend');
+  var chips = document.getElementById('chips');
+  var sitzung = 'caesar-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,9);
+  var laeuft = false;
+
+  var GRUSS = 'Servus! Ich bin der Assistent von Alexander. Erzähl mir, was du spielst und was dir vorschwebt — ein neues Instrument, eine Reparatur oder ein Umbau. Ich sammle alles und Alexander meldet sich persönlich bei dir.';
+  var OFFLINE = 'Ich erreiche die Werkstatt gerade nicht. Schreib bitte direkt an hoeller@caesarhandmadeguitars.at — Alexander meldet sich.';
+
+  function blase(text, wer){
+    var d = document.createElement('div');
+    d.className = 'msg msg--' + wer;
+    d.textContent = text;
+    log.appendChild(d);
+    log.scrollTop = log.scrollHeight;
+    return d;
+  }
+  function tippt(an){
+    var el = document.getElementById('tippt');
+    if (an){
+      if (el) return;
+      el = document.createElement('div');
+      el.className = 'tippt'; el.id = 'tippt';
+      el.innerHTML = '<span></span><span></span><span></span>';
+      log.appendChild(el); log.scrollTop = log.scrollHeight;
+    } else if (el) { el.remove(); }
+  }
+  function fragen(text){
+    text = (text||'').trim();
+    if (laeuft || !text) return;
+    laeuft = true; senden.disabled = true;
+    blase(text, 'du');
+    feld.value = '';
+    tippt(true);
+    fetch(WEBHOOK, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ message:text, sessionId:sitzung, seite:'caesar', lang:'de' })
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(j){ tippt(false); blase((j && j.reply) ? j.reply : OFFLINE, 'bot'); })
+    .catch(function(){ tippt(false); blase(OFFLINE, 'bot'); })
+    .then(function(){ laeuft = false; senden.disabled = false; feld.focus({preventScroll:true}); });
+  }
+  form.addEventListener('submit', function(e){ e.preventDefault(); fragen(feld.value); });
+  chips.addEventListener('click', function(e){
+    var b = e.target.closest('.chip');
+    if (b) fragen(b.textContent);
+  });
+  document.querySelectorAll('.js-chat').forEach(function(b){
+    b.addEventListener('click', function(){
+      feld.focus({preventScroll:true});
+      var r = feld.getBoundingClientRect();
+      if (r.top < 70 || r.bottom > window.innerHeight) feld.scrollIntoView({behavior: sanft?'auto':'smooth', block:'center'});
+    });
+  });
+  blase(GRUSS, 'bot');
+})();
+</script>
+</body>
+</html>
