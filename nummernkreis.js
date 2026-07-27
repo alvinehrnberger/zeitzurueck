@@ -248,17 +248,25 @@
     '.zt-weg{background:none;border:0;color:#c0473b;font-size:13px;cursor:pointer;padding:6px;font-family:inherit}' +
     '.zt-leer{font-size:13.5px;opacity:.55;padding:10px 0}' +
     '.zt-hinweis{background:rgba(201,160,84,.13);border-left:3px solid #C9A054;border-radius:0 10px 10px 0;' +
-      'padding:11px 14px;font-size:13px;line-height:1.5;margin-top:6px}';
+      'padding:11px 14px;font-size:13px;line-height:1.5;margin-top:6px}' +
+    /* Nicht die .cta des Hauptmenues verwenden - die klebt fix am Bildschirmrand. */
+    '.zt-cta{padding:14px 0 0}' +
+    '.zt-cta .btn{width:100%;justify-content:center}';
   document.head.appendChild(css2);
 
   async function zeitenLaden() {
     var id = betriebId();
     if (!id) return;
+    Z.fehler = null;
     try {
       var a = await sb.from('betrieb_zeiten').select('*').eq('betrieb_id', id).order('wochentag');
       var b = await sb.from('betrieb_sperren').select('*').eq('betrieb_id', id)
                       .eq('aktiv', true).gte('bis_datum', heute()).order('von_datum');
       var c = await sb.from('betrieb_einstellungen').select('*').eq('betrieb_id', id).maybeSingle();
+      // Supabase wirft nicht, es liefert error zurueck. Ohne diese Zeile
+      // saehe ein fehlendes Tabellen-Setup wie ein leeres Formular aus.
+      var problem = (a && a.error) || (b && b.error) || (c && c.error);
+      if (problem) throw problem;
       Z.zeiten = (a.data || []).map(function (r) {
         return { id: r.id, betrieb_id: r.betrieb_id, wochentag: r.wochentag,
                  von: hhmm(r.von), bis: hhmm(r.bis), aktiv: r.aktiv };
@@ -306,7 +314,7 @@
         '<h3>Arbeitszeiten</h3>' +
         '<p class="zt-sub">Nur innerhalb dieser Zeiten schlägt der Chat Termine vor. Tag ausschalten heißt: an dem Tag wird nichts gebucht.</p>' +
         tage +
-        '<div class="cta" style="position:static;padding:14px 0 0">' +
+        '<div class="zt-cta">' +
           '<button class="btn btn-primary" onclick="zeitenSpeichern()">Arbeitszeiten speichern</button>' +
         '</div>' +
       '</div>' +
@@ -321,7 +329,7 @@
         '<div class="zt-feld">' +
           '<input type="text" id="ztGrund" placeholder="Kroatien, Feiertag, Werkstatt zu …">' +
         '</div>' +
-        '<div class="cta" style="position:static;padding:0 0 16px">' +
+        '<div class="zt-cta" style="padding-bottom:16px">' +
           '<button class="btn btn-dark" onclick="sperreAnlegen()">Freie Tage eintragen</button>' +
         '</div>' +
         sperren +
@@ -338,7 +346,7 @@
           '<div class="row"><span class="k">Puffer dazwischen</span><span class="v">' +
             '<input type="number" id="ztPuffer" min="0" max="240" step="5" value="' + (e.puffer_minuten != null ? e.puffer_minuten : 15) + '" style="width:70px;border:1px solid rgba(26,58,43,.18);border-radius:8px;padding:6px 8px;font-family:inherit"> Minuten</span></div>' +
         '</div>' +
-        '<div class="cta" style="position:static;padding:14px 0 0">' +
+        '<div class="zt-cta">' +
           '<button class="btn btn-ghost" onclick="einstellungenSpeichern()">Einstellungen speichern</button>' +
         '</div>' +
       '</div>' +
