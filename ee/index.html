@@ -269,7 +269,7 @@
               <button class="chip" type="button" data-i18n="chat.chip4">I'm touring — can you help?</button>
             </div>
             <form class="chat-form" id="chatForm">
-              <input type="text" id="chatInput" autocomplete="off" data-i18n-ph="chat.ph" placeholder="Write to us…" aria-label="Your message" required>
+              <textarea id="chatInput" rows="1" autocomplete="off" data-i18n-ph="chat.ph" placeholder="Write to us…" aria-label="Your message"></textarea>
               <button type="submit" id="chatSend" data-i18n="chat.send">Send</button>
             </form>
           </div>
@@ -496,7 +496,7 @@
         "chat.sub":"Replies instantly","chat.send":"Send","chat.ph":"Write to us…",
         "chat.cap":"Ask anything, any hour — the Evolution Ears chat never closes.",
         "chat.chip1":"What does a pair cost?","chat.chip2":"Which model suits me?","chat.chip3":"How does ordering work?","chat.chip4":"I'm touring — can you help?",
-        "chat.greet":"Welcome to Evolution Ears. Tell me how and where you play or listen — I'll suggest the right model and we can put a time in the diary for your ear impression here in Vienna.",
+        "chat.greet":"Hello! How can we help?",
         "chat.offline":"I can't reach the studio right now. Please write to office@evolution-ears.at — Roland will come back to you personally.",
         "manifesto":"Pure sound. <em>Perfect fit.</em>",
         "insp.kicker":"Inspiration","insp.h2":"Endless finishes.<br>Every pair, one of one.",
@@ -547,11 +547,11 @@
         "hero.h1":"Hear<br><span class='thin'>for you.</span>",
         "hero.lead":"Jeder Monitor entsteht aus einem Abdruck Ihres eigenen Ohrs und wird von Hand gefertigt — ein Präzisionsinstrument und ein Schmuckstück, gemacht für niemanden sonst.",
         "hero.cta1":"Beginnen","hero.cta2":"Inspiration entdecken","hero.scroll":"Scrollen",
-        "chat.sub":"Antwortet sofort","chat.send":"Senden","chat.ph":"Schreiben Sie uns…",
-        "chat.cap":"Fragen Sie alles, zu jeder Zeit — der Evolution Ears Chat ist immer offen.",
-        "chat.chip1":"Was kostet ein Paar?","chat.chip2":"Welches Modell passt zu mir?","chat.chip3":"Wie funktioniert die Bestellung?","chat.chip4":"Ich bin auf Tour — können Sie helfen?",
-        "chat.greet":"Willkommen bei Evolution Ears. Erzählen Sie mir, wie und wo Sie spielen oder hören — ich schlage Ihnen das passende Modell vor, und wir halten gleich einen Termin für den Ohrabdruck bei uns in Wien fest.",
-        "chat.offline":"Ich erreiche das Studio gerade nicht. Schreiben Sie uns bitte an office@evolution-ears.at — Roland meldet sich persönlich.",
+        "chat.sub":"Antwortet sofort","chat.send":"Senden","chat.ph":"Schreib uns…",
+        "chat.cap":"Frag alles, zu jeder Zeit — der Evolution Ears Chat ist immer offen.",
+        "chat.chip1":"Was kostet ein Paar?","chat.chip2":"Welches Modell passt zu mir?","chat.chip3":"Wie funktioniert die Bestellung?","chat.chip4":"Ich bin auf Tour — könnt ihr helfen?",
+        "chat.greet":"Hallo! Wie können wir dir helfen?",
+        "chat.offline":"Ich erreiche das Studio gerade nicht. Schreib uns bitte an office@evolution-ears.at — Roland meldet sich persönlich.",
         "manifesto":"Reiner Klang. <em>Perfekter Sitz.</em>",
         "insp.kicker":"Inspiration","insp.h2":"Unendliche Finishes.<br>Jedes Paar ein Unikat.",
         "insp.lead":"Es gibt keinen festen Katalog. Abalone, Folie, Perlmutt, Farbe, Gravur — bringen Sie eine Idee, wir bauen sie. Hier ein paar, die wir gefertigt haben, als Anregung.",
@@ -733,10 +733,19 @@
         })
         .then(function(){
           busy = false; send.disabled = false;
+          input.style.height = "auto";
           input.focus({ preventScroll:true });
         });
       }
       form.addEventListener("submit", function(e){ e.preventDefault(); fragen(input.value); });
+      /* Enter sendet, Umschalt+Enter macht einen Absatz */
+      input.addEventListener("keydown", function(e){
+        if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); fragen(input.value); }
+      });
+      input.addEventListener("input", function(){
+        input.style.height = "auto";
+        input.style.height = Math.min(input.scrollHeight, 136) + "px";
+      });
       chips.addEventListener("click", function(e){
         var b = e.target.closest(".chip");
         if (b) fragen(b.textContent);
