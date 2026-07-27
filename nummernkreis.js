@@ -159,11 +159,60 @@
       '<span class="mk-c">›</span>';
   }
 
+  /* Merken, dass eine Rechnung schon rausgegangen ist.
+     Ohne das steht beim zweiten Hinschauen wieder "Senden" da,
+     und man weiss nicht, ob der Kunde sie hat. */
+  function gesendetZeigen(rechnungId) {
+    var inv = null;
+    try { inv = rechnungen.find(function (i) { return i.id === rechnungId; }); } catch (e) { }
+    if (!inv || !inv.gesendet_am) return;
+
+    var s = document.getElementById('screen');
+    if (!s) return;
+
+    // Knopf umbenennen: es ist ein erneutes Senden, kein erstes.
+    s.querySelectorAll('.cta .btn').forEach(function (b) {
+      if (/senden/i.test(b.textContent) && !/erneut/i.test(b.textContent)) {
+        b.textContent = '✉ Erneut senden';
+        b.classList.remove('btn-dark', 'btn-primary');
+        b.classList.add('btn-ghost');
+      }
+    });
+
+    // Und sichtbar machen, wann sie rausgegangen ist.
+    if (s.querySelector('[data-gesendet]')) return;
+    var reihen = s.querySelector('.rows');
+    if (reihen) {
+      var z = document.createElement('div');
+      z.className = 'row';
+      z.setAttribute('data-gesendet', '1');
+      z.innerHTML = '<span class="k">Verschickt</span><span class="v" style="color:var(--ok)">am ' +
+                    deDate(inv.gesendet_am) + '</span>';
+      reihen.appendChild(z);
+    }
+  }
+
   var origShowInvoice = window.showInvoice;
   if (typeof origShowInvoice === 'function') {
-    window.showInvoice = function () {
+    window.showInvoice = function (id) {
       var r = origShowInvoice.apply(this, arguments);
       verwaltenSichtbar();
+      gesendetZeigen(id);
+      return r;
+    };
+  }
+
+  /* Nach dem Versand festhalten, wann es passiert ist. */
+  var origSendDoc = window.sendDoc;
+  if (typeof origSendDoc === 'function') {
+    window.sendDoc = async function (rec, empfaenger, art) {
+      var r = await origSendDoc.apply(this, arguments);
+      try {
+        if (rec && rec.id) {
+          await sb.from('rechnungen').update({ gesendet_am: isoDate() }).eq('id', rec.id);
+          await loadData();
+        }
+      } catch (e) { /* Versand hat geklappt, nur die Notiz nicht */ }
       return r;
     };
   }
