@@ -41,9 +41,13 @@
     padding:1.2rem clamp(1.4rem,5vw,4rem);border-bottom:1px solid transparent;transition:background .4s,border-color .4s,padding .4s}
   .nav.fest{background:rgba(11,11,11,.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
     border-bottom:1px solid var(--linie);padding-block:.85rem}
-  .marke{display:flex;align-items:center;gap:.85rem;text-decoration:none}
-  .marke .c{font-family:"Cormorant Garamond",Georgia,serif;font-style:italic;font-size:2rem;line-height:1;color:var(--gold)}
-  .marke .name{font-family:"Cormorant Garamond",Georgia,serif;font-size:1.05rem;letter-spacing:.34em;text-transform:uppercase}
+  .marke{display:inline-flex;align-items:baseline;text-decoration:none;color:var(--creme)}
+  /* Wortmarke: das Logo-C ist der erste Buchstabe, nicht ein Zeichen davor */
+  .wortmarke{font-family:"Cormorant Garamond",Georgia,serif;font-size:1.06rem;letter-spacing:.32em;
+    text-transform:uppercase;display:inline-flex;align-items:baseline;white-space:nowrap}
+  .wortmarke i{font-style:italic;font-size:1.85em;line-height:0;letter-spacing:0;color:var(--gold);
+    margin-right:.10em;display:inline-block;transform:translateY(.04em)}
+  footer .wortmarke{font-size:.98rem}
   .nav-links{display:flex;gap:clamp(1.1rem,2.4vw,2.3rem)}
   .nav-links a{font-size:.7rem;letter-spacing:.24em;text-transform:uppercase;color:var(--creme-weich);
     text-decoration:none;transition:color .25s}
@@ -134,6 +138,34 @@
   .karte p{font-size:.92rem;color:var(--creme-weich)}
   .karte .ab{margin-top:auto;padding-top:1.4rem;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
 
+  /* ARBEITEN — Slider */
+  .galerie{background:var(--kohle-2);border-block:1px solid var(--linie-zart)}
+  .gal-kopf{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem 2rem;flex-wrap:wrap}
+  .gal-kopf .fliess{margin-top:0}
+  .gal-buehne{position:relative;margin-top:1.8rem}
+  .gal-spur{display:flex;gap:1px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;
+    background:var(--linie-zart);border:1px solid var(--linie-zart);-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .gal-spur::-webkit-scrollbar{height:0;display:none}
+  .stueck{flex:0 0 clamp(14rem,22vw,17rem);scroll-snap-align:start;background:var(--schwarz);
+    padding:1.7rem 1.4rem 1.5rem;display:flex;flex-direction:column;align-items:center;text-align:center;
+    transition:background .4s}
+  .stueck:hover{background:#0e0d0c}
+  .stueck .bild{width:100%;aspect-ratio:4/5;margin-bottom:1rem;display:grid;place-items:center;overflow:hidden}
+  .stueck .bild svg,.stueck .bild img{width:100%;height:100%;object-fit:cover;
+    filter:drop-shadow(0 20px 34px rgba(0,0,0,.7))}
+  .stueck .nr{font-size:.66rem;letter-spacing:.26em;text-transform:uppercase;color:var(--gold-tief);margin-bottom:.45rem}
+  .stueck h3{font-size:1.28rem;margin-bottom:.35rem}
+  .stueck p{font-size:.82rem;color:var(--creme-weich)}
+  .gal-pfeil{position:absolute;top:50%;transform:translateY(-50%);z-index:4;width:2.8rem;height:2.8rem;
+    border-radius:50%;border:1px solid var(--linie);background:rgba(11,11,11,.75);backdrop-filter:blur(8px);
+    color:var(--creme);font-size:1.2rem;line-height:1;cursor:pointer;display:grid;place-items:center;
+    transition:border-color .25s,background .25s}
+  .gal-pfeil:hover{border-color:var(--gold);color:var(--gold)}
+  .gal-pfeil.zurueck{left:-.8rem}.gal-pfeil.vor{right:-.8rem}
+  .gal-pfeil[hidden]{display:none}
+  @media(max-width:680px){.gal-pfeil{display:none}}
+  .gal-hinweis{margin-top:.8rem;font-size:.66rem;letter-spacing:.24em;text-transform:uppercase;color:var(--grau)}
+
   /* WERKSTATT-SCHRITTE */
   .schritte{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:1px;margin-top:2.8rem;
     background:var(--linie-zart);border:1px solid var(--linie-zart);counter-reset:s}
@@ -176,11 +208,12 @@
 
 <nav class="nav" id="nav">
   <a class="marke" href="#top" aria-label="Caesar Handmade Guitars">
-    <span class="c">C</span><span class="name">Caesar</span>
+    <span class="wortmarke"><i>C</i>aesar</span>
   </a>
   <div class="nav-links">
-    <a href="#werkstatt">Werkstatt</a>
     <a href="#leistungen">Leistungen</a>
+    <a href="#arbeiten">Arbeiten</a>
+    <a href="#werkstatt">Werkstatt</a>
     <a href="#ablauf">Ablauf</a>
     <a href="#kontakt">Kontakt</a>
   </div>
@@ -256,6 +289,91 @@
   </div>
 </section>
 
+<!-- ============ ARBEITEN ============
+     PLATZHALTER-BILDER. Jede Karte ersetzt du so:
+       <div class="bild"><img src="fotos/01.jpg" alt="Beschreibung"></div>
+     Format 4:5 hochkant, dunkler Hintergrund, gleicher Winkel.
+     Bitte Originaldateien von Alexander, nicht die Instagram-Versionen. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <path id="korpus" d="M100 22 C126 22 140 34 146 52 C152 70 150 92 156 110 C163 131 160 152 146 166
+    C132 180 112 182 100 176 C88 182 68 180 54 166 C40 152 37 131 44 110 C50 92 48 70 54 52 C60 34 74 22 100 22 Z"/>
+  <path id="hals" d="M92 8 h16 v20 h-16 Z"/>
+  <linearGradient id="f-flame" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5a2f16"/><stop offset=".38" stop-color="#b8763a"/><stop offset=".62" stop-color="#7d4520"/><stop offset="1" stop-color="#4a2612"/></linearGradient>
+  <radialGradient id="f-sunburst" cx=".5" cy=".45" r=".62"><stop offset="0" stop-color="#dfa64a"/><stop offset=".55" stop-color="#a4491f"/><stop offset="1" stop-color="#25100a"/></radialGradient>
+  <linearGradient id="f-esche" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c9a878"/><stop offset=".5" stop-color="#e3cba3"/><stop offset="1" stop-color="#ab8b5f"/></linearGradient>
+  <linearGradient id="f-nitro" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#141414"/><stop offset=".5" stop-color="#33312f"/><stop offset="1" stop-color="#0d0d0d"/></linearGradient>
+  <linearGradient id="f-walnuss" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2e1b10"/><stop offset=".5" stop-color="#6a4227"/><stop offset="1" stop-color="#3a2314"/></linearGradient>
+  <linearGradient id="f-korina" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8a6a3e"/><stop offset=".5" stop-color="#c2a06a"/><stop offset="1" stop-color="#7a5a32"/></linearGradient>
+  <linearGradient id="f-seafoam" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4d7a6d"/><stop offset=".5" stop-color="#86b3a4"/><stop offset="1" stop-color="#3d6155"/></linearGradient>
+  <linearGradient id="f-cherry" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3d0f10"/><stop offset=".5" stop-color="#8e2226"/><stop offset="1" stop-color="#4a1214"/></linearGradient>
+  <linearGradient id="f-vintage" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b9ac8e"/><stop offset=".5" stop-color="#e8dfc6"/><stop offset="1" stop-color="#a89b7d"/></linearGradient>
+  <linearGradient id="f-graphit" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2a2d31"/><stop offset=".5" stop-color="#5c6167"/><stop offset="1" stop-color="#232629"/></linearGradient>
+  <linearGradient id="f-honig" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8a5a1c"/><stop offset=".5" stop-color="#d99f3f"/><stop offset="1" stop-color="#6f4415"/></linearGradient>
+  <radialGradient id="glanz" cx=".33" cy=".24" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".26"/><stop offset=".42" stop-color="#fff" stop-opacity=".06"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+</defs></svg>
+
+<section class="galerie" id="arbeiten">
+  <div class="wrap">
+    <div class="gal-kopf">
+      <div>
+        <span class="kicker zeig">Arbeiten</span>
+        <h2 class="zeig">Jede eine für sich.</h2>
+      </div>
+      <p class="fliess zeig">Ein paar Instrumente, die diese Werkstatt verlassen haben. Keines gleicht dem anderen — das ist der Punkt.</p>
+    </div>
+
+    <div class="gal-buehne">
+      <button class="gal-pfeil zurueck" type="button" aria-label="Zurück" id="galZurueck">‹</button>
+      <div class="gal-spur" id="galSpur">
+
+        <div class="stueck zeig">
+          <div class="bild"><svg viewBox="0 0 200 190"><use href="#hals" fill="#3a2a1c"/><use href="#korpus" fill="url(#f-flame)"/><use href="#korpus" fill="url(#glanz)"/></svg></div>
+          <span class="nr">01</span><h3>Flame Maple</h3><p>Geriegelter Ahorn, Öl-Finish.</p>
+        </div>
+        <div class="stueck zeig">
+          <div class="bild"><svg viewBox="0 0 200 190"><use href="#hals" fill="#3a2a1c"/><use href="#korpus" fill="url(#f-sunburst)"/><use href="#korpus" fill="url(#glanz)"/></svg></div>
+          <span class="nr">02</span><h3>Sunburst</h3><p>Von Hand gespritzt, Rand nach innen.</p>
+        </div>
+        <div class="stueck zeig">
+          <div class="bild"><svg viewBox="0 0 200 190"><use href="#hals" fill="#3a2a1c"/><use href="#korpus" fill="url(#f-esche)"/><use href="#korpus" fill="url(#glanz)"/></svg></div>
+          <span class="nr">03</span><h3>Esche natur</h3><p>Offenporig, das Holz bleibt spürbar.</p>
+        </div>
+        <div class="stueck zeig">
+          <div class="bild"><svg viewBox="0 0 200 190"><use href="#hals" fill="#2a2016"/><use href="#korpus" fill="url(#f-nitro)"/><use href="#korpus" fill="url(#glanz)"/></svg></div>
+          <span class="nr">04</span><h3>Schwarz Nitro</h3><p>Dünner Nitrolack, altert mit.</p>
+        </div>
+        <div class="stueck zeig">
+          <div class="bild"><svg viewBox="0 0 200 190"><use href="#hals" fill="#3a2a1c"/><use href="#korpus" fill="url(#f-walnuss)"/><use href="#korpus" fill="url(#glanz)"/></svg></div>
+          <span class="nr">05</span><h3>Nussbaum</h3><p>Dunkel, warm, schwer im besten Sinn.</p>
+        </div>
+        <div class="stueck zeig">
+          <div class="bild"><svg viewBox="0 0 200 190"><use href="#hals" fill="#3a2a1c"/><use href="#korpus" fill="url(#f-korina)"/><use href="#korpus" fill="url(#glanz)"/></svg></div>
+          <span class="nr">06</span><h3>Korina</h3><p>Leicht gebaut, offener Ton.</p>
+        </div>
+        <div class="stueck zeig">
+          <div class="bild"><svg viewBox="0 0 200 190"><use href="#hals" fill="#3a2a1c"/><use href="#korpus" fill="url(#f-seafoam)"/><use href="#korpus" fill="url(#glanz)"/></svg></div>
+          <span class="nr">07</span><h3>Sea Foam</h3><p>Farbe nach Wunsch, hier ein Klassiker.</p>
+        </div>
+        <div class="stueck zeig">
+          <div class="bild"><svg viewBox="0 0 200 190"><use href="#hals" fill="#2a2016"/><use href="#korpus" fill="url(#f-cherry)"/><use href="#korpus" fill="url(#glanz)"/></svg></div>
+          <span class="nr">08</span><h3>Cherry</h3><p>Tiefes Rot unter Klarlack.</p>
+        </div>
+        <div class="stueck zeig">
+          <div class="bild"><svg viewBox="0 0 200 190"><use href="#hals" fill="#3a2a1c"/><use href="#korpus" fill="url(#f-vintage)"/><use href="#korpus" fill="url(#glanz)"/></svg></div>
+          <span class="nr">09</span><h3>Vintage White</h3><p>Angegilbt, als hätte sie Jahre hinter sich.</p>
+        </div>
+        <div class="stueck zeig">
+          <div class="bild"><svg viewBox="0 0 200 190"><use href="#hals" fill="#2a2016"/><use href="#korpus" fill="url(#f-honig)"/><use href="#korpus" fill="url(#glanz)"/></svg></div>
+          <span class="nr">10</span><h3>Honigburst</h3><p>Warmer Verlauf, Maserung bleibt sichtbar.</p>
+        </div>
+
+      </div>
+      <button class="gal-pfeil vor" type="button" aria-label="Weiter" id="galVor">›</button>
+    </div>
+    <p class="gal-hinweis">Wischen zum Blättern →</p>
+  </div>
+</section>
+
 <section id="werkstatt">
   <div class="wrap">
     <span class="kicker zeig">Die Werkstatt</span>
@@ -312,7 +430,7 @@
 <footer>
   <div class="wrap">
     <div>
-      <div class="marke"><span class="c">C</span><span class="name">Caesar</span></div>
+      <div class="marke"><span class="wortmarke"><i>C</i>aesar</span></div>
       <span class="signatur">Powered by <a href="https://alvinehrnberger.github.io/zeitzurueck/" target="_blank" rel="noopener">ZeitZurück</a></span>
     </div>
     <p class="meta">© 2026 Caesar Handmade Guitars e.U. · Alexander Höller · Wien</p>
@@ -341,6 +459,27 @@
       e.forEach(function(x){ if(x.isIntersecting){ x.target.classList.add('da'); io.unobserve(x.target); } });
     }, {threshold:.12, rootMargin:'0px 0px -8% 0px'});
     teile.forEach(function(el,i){ el.style.animationDelay = (Math.min(i%6,5)*0.06)+'s'; io.observe(el); });
+  }
+
+  /* Galerie-Pfeile */
+  var spur = document.getElementById('galSpur'),
+      zurueck = document.getElementById('galZurueck'),
+      vor = document.getElementById('galVor');
+  if (spur) {
+    var schritt = function(){
+      var k = spur.querySelector('.stueck');
+      return k ? k.getBoundingClientRect().width + 1 : 240;
+    };
+    var pfeile = function(){
+      var ueber = spur.scrollWidth - spur.clientWidth > 4;
+      zurueck.hidden = !ueber || spur.scrollLeft <= 2;
+      vor.hidden = !ueber || spur.scrollLeft >= (spur.scrollWidth - spur.clientWidth - 2);
+    };
+    zurueck.addEventListener('click', function(){ spur.scrollBy({left:-schritt()*2, behavior:'smooth'}); });
+    vor.addEventListener('click', function(){ spur.scrollBy({left: schritt()*2, behavior:'smooth'}); });
+    spur.addEventListener('scroll', pfeile, {passive:true});
+    window.addEventListener('resize', pfeile);
+    setTimeout(pfeile, 200);
   }
 
   /* ---------------- Chat ---------------- */
