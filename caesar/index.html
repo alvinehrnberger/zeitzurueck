@@ -76,7 +76,7 @@
   .knoepfe{display:flex;gap:1rem;flex-wrap:wrap;margin-top:2.4rem}
   .btn{display:inline-flex;align-items:center;gap:.6rem;padding:.95rem 2.1rem;font-size:.72rem;letter-spacing:.2em;
     text-transform:uppercase;text-decoration:none;cursor:pointer;font-family:inherit;font-weight:500;
-    border:1px solid var(--linie);border-radius:2px;color:var(--creme);background:transparent;
+    border:1px solid var(--linie);border-radius:10px;color:var(--creme);background:transparent;
     transition:border-color .3s,background .3s,color .3s}
   .btn:hover,.btn:focus-visible{border-color:var(--gold);color:var(--gold)}
   .btn--voll{background:var(--gold);border-color:var(--gold);color:var(--schwarz)}
@@ -103,16 +103,16 @@
   @keyframes blinken{0%,80%,100%{opacity:.2}40%{opacity:1}}
   .chips{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;padding:0 1.4rem 1rem}
   @media(max-width:420px){.chips{grid-template-columns:1fr}}
-  .chip{font-size:.73rem;color:var(--creme-weich);border:1px solid var(--linie);border-radius:2px;background:transparent;
+  .chip{font-size:.73rem;color:var(--creme-weich);border:1px solid var(--linie);border-radius:10px;background:transparent;
     padding:.6rem .85rem;cursor:pointer;font-family:inherit;text-align:left;line-height:1.35;
     transition:border-color .25s,color .25s}
   .chip:hover,.chip:focus-visible{border-color:var(--gold);color:var(--gold)}
   .chat-form{display:flex;gap:.6rem;align-items:center;padding:.7rem;border-top:1px solid var(--linie)}
-  .chat-form input{flex:1;border:1px solid var(--linie);border-radius:3px;background:var(--schwarz);color:var(--creme);
+  .chat-form input{flex:1;border:1px solid var(--linie);border-radius:11px;background:var(--schwarz);color:var(--creme);
     padding:.85rem 1.1rem;font-size:.97rem;font-family:inherit;min-width:0;transition:border-color .25s}
   .chat-form input::placeholder{color:var(--grau)}
   .chat-form input:focus{outline:none;border-color:var(--gold)}
-  .chat-form button{border:none;border-radius:3px;background:var(--gold);color:var(--schwarz);padding:.85rem 1.4rem;
+  .chat-form button{border:none;border-radius:11px;background:var(--gold);color:var(--schwarz);padding:.85rem 1.4rem;
     font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;font-weight:600;cursor:pointer;font-family:inherit;
     transition:background .25s}
   .chat-form button:hover{background:var(--creme)}
@@ -132,7 +132,7 @@
 
   /* LEISTUNGEN */
   .karten{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-top:2.8rem;background:var(--linie-zart);
-    border:1px solid var(--linie-zart)}
+    border:1px solid var(--linie-zart);border-radius:var(--r);overflow:hidden}
   @media(max-width:860px){.karten{grid-template-columns:1fr}}
   .karte{background:var(--schwarz);padding:2.2rem 1.8rem;display:flex;flex-direction:column}
   .karte .nr{font-family:"Cormorant Garamond",Georgia,serif;font-size:2.2rem;color:var(--gold-tief);line-height:1;margin-bottom:1rem}
@@ -145,16 +145,15 @@
   .gal-kopf{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem 2rem;flex-wrap:wrap}
   .gal-kopf .fliess{margin-top:0}
   .gal-buehne{position:relative;margin-top:1.8rem}
-  .gal-spur{display:flex;gap:1px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;
-    background:var(--linie-zart);border:1px solid var(--linie-zart);-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .gal-spur{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;
+    -webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px}
   .gal-spur::-webkit-scrollbar{height:0;display:none}
-  .stueck{flex:0 0 clamp(14rem,22vw,17rem);scroll-snap-align:start;background:var(--schwarz);
-    padding:1.7rem 1.4rem 1.5rem;display:flex;flex-direction:column;align-items:center;text-align:center;
-    transition:background .4s}
-  .stueck:hover{background:#0e0d0c}
+  .stueck{flex:0 0 clamp(14rem,22vw,17rem);scroll-snap-align:start;background:transparent;
+    display:flex;flex-direction:column;align-items:center;text-align:center}
+  
   .stueck .bild{width:100%;aspect-ratio:4/5;margin-bottom:1rem;display:grid;place-items:center;overflow:hidden}
   .stueck .bild svg,.stueck .bild img{width:100%;height:100%;object-fit:cover;display:block}
-  .stueck .bild{border-radius:2px;background:#0f0f0f}
+  .stueck .bild{border-radius:var(--r);overflow:hidden;background:#0f0f0f}
   .stueck .nr{font-size:.66rem;letter-spacing:.26em;text-transform:uppercase;color:var(--gold-tief);margin-bottom:.45rem}
   /* Die Bilder sprechen fuer sich. Beschriftungen bleiben aus, bis Alexander
      sagt, wie die Instrumente heissen — erfundene Finish-Namen kommen hier nicht rein. */
@@ -172,7 +171,7 @@
 
   /* WERKSTATT-SCHRITTE */
   .schritte{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:1px;margin-top:2.8rem;
-    background:var(--linie-zart);border:1px solid var(--linie-zart);counter-reset:s}
+    background:var(--linie-zart);border:1px solid var(--linie-zart);border-radius:var(--r);overflow:hidden;counter-reset:s}
   .schritt{background:var(--kohle-2);padding:2.1rem 1.6rem}
   .schritt::before{counter-increment:s;content:counter(s,decimal-leading-zero);display:block;
     font-family:"Cormorant Garamond",Georgia,serif;font-size:1.5rem;color:var(--gold-tief);margin-bottom:1rem}
