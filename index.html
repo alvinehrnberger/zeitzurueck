@@ -178,7 +178,7 @@
   @media(max-width:520px){.ref-card{flex-basis:82vw}}
 
   /* PACKAGES */
-  .pkgs{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:22px}
+  .pkgs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;margin:22px auto 0;max-width:780px}
   .pkg{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px 22px;position:relative;display:flex;flex-direction:column}
   .pkg.featured{border:2px solid var(--gold);box-shadow:var(--shadow)}
   .pkg .tag{position:absolute;top:-13px;left:26px;background:var(--gold);color:var(--petrol-deep);font-size:12px;font-weight:600;padding:5px 13px;border-radius:999px}
@@ -245,7 +245,7 @@
       <a href="#how">So funktioniert's</a>
       <a href="#pakete">Preis</a>
       <a href="#case">Referenz</a>
-      <a href="einrichtung">Setup-Pauschale</a>
+      <a href="einrichtung">Einrichtung</a>
       <a href="app">Login</a>
       <a href="#rechner" class="btn btn-primary">Potenzial berechnen</a>
     </div>
@@ -310,11 +310,9 @@
     <div class="pkgs" id="pkgs"></div>
     <div id="taxNote" style="text-align:center;margin-top:14px;font-size:13px;color:rgba(244,240,231,.6)"></div>
     <div class="pkg-setup">
-      <strong>Einmalige Einrichtung</strong><br>
-      Einzelunternehmer, Domain und Kalender vorhanden — <strong>999 €</strong><br>
-      Domain, Geschäfts-E-Mail und WhatsApp müssen neu eingerichtet werden — <strong>ca. 1.300 €</strong><br>
-      Mehrere Mitarbeiter mit eigenen Kalendern — <strong>ab ca. 1.600 €</strong><br>
-      Ihre Zahl bekommen Sie im Erstgespräch. Sie ändert sich danach nicht. <a href="einrichtung">Alle Leistungen ansehen ›</a>
+      Die Einrichtung ist einmalig und enthält alles: Website, Konten, Kalender, WhatsApp, Rechtstexte und Einschulung.
+      Sie sehen Ihre Zahl vor dem Start — danach ändert sie sich nicht.
+      <a href="einrichtung">Alle Leistungen ansehen ›</a>
     </div>
   </div>
 </section>
@@ -450,10 +448,12 @@ const CONFIG = {
     { t:"Bestätigung", d:"Kunde und Betrieb erhalten die Bestätigung." }
   ],
   packages: [
-    { name:"Anfragen &amp; Termine", price:59, desc:"Für Betriebe, die ihre Rechnungen selbst schreiben — oder eine Registrierkasse haben.",
+    { name:"Anfragen &amp; Termine", price:59, setup:749,
+      desc:"Ihre Kunden fragen an, ZeitZurück nimmt auf und bucht den Termin. Die Rechnung schreiben Sie weiterhin selbst.",
       features:["Website-Chat","WhatsApp-Kanal","Termine im Kalender","Automatische Bestätigung","Kunde verschiebt oder sagt selbst ab"] },
-    { name:"Das ganze Büro", price:89, desc:"ZeitZurück übernimmt auch das Papier danach.", featured:true,
-      features:["Alles aus Anfragen &amp; Termine","Aufträge und Zeiten in Ihrer App","Rechnung schreiben und versenden","Übersicht offener Rechnungen"] }
+    { name:"Von der Anfrage bis zur Rechnung", price:89, setup:990, featured:true,
+      desc:"Alles davon — und danach Auftrag, Zeiten und Rechnung in Ihrer App.",
+      features:["Alles aus Anfragen &amp; Termine","Aufträge und Zeiten in Ihrer App","Rechnung schreiben und versenden","Rechnung geht direkt an den Kunden","Übersicht offener Rechnungen"] }
   ]
 };
 
@@ -467,6 +467,7 @@ document.getElementById('pkgs').innerHTML = CONFIG.packages.map(p=>`
   <div class="pkg ${p.featured?'featured':''}">
         <div class="name">${p.name}</div>
     <div class="price">${p.price} €<span>/Monat</span></div>
+    <a class="setup-line" href="einrichtung">+ einmalig ${p.setup} € Einrichtung ›</a>
     <div class="desc">${p.desc}</div>
     <ul>${p.features.map(f=>`<li>${f}</li>`).join('')}</ul>
     <button type="button" class="btn ${p.featured?'btn-primary':'btn-dark'} pkg-select" data-pkg="${p.name}" style="justify-content:center;border:none;cursor:pointer;font-family:inherit;font-size:15px;width:100%">Auswählen</button>
