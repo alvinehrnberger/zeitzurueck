@@ -257,6 +257,9 @@
     .links{gap:20px !important}
     .links a{font-size:14px !important;letter-spacing:-.005em}
     @media(max-width:1120px){.links{gap:15px !important}.links a{font-size:13.5px !important}}
+
+    #how{scroll-margin-top:92px}
+    .video-embed{background:#0d1f17}
 </style>
 </head>
 <body>
@@ -758,6 +761,18 @@ start();
     if(e.target.closest("#ablaufBox .zu") || e.target===box){ zu(); }
   });
   document.addEventListener("keydown", function(e){ if(e.key==="Escape") zu(); });
+})();
+</script>
+<script>
+(function(){
+  var v=document.querySelector("#how iframe"); if(!v||!("IntersectionObserver" in window)) return;
+  var quelle=v.getAttribute("src"), laeuft=false;
+  new IntersectionObserver(function(ev){
+    ev.forEach(function(e){
+      if(e.isIntersecting && !laeuft){ laeuft=true; v.src=quelle+"?t="+Date.now(); }
+      if(!e.isIntersecting){ laeuft=false; }
+    });
+  }, {threshold:.35}).observe(document.getElementById("how"));
 })();
 </script>
 </body>
