@@ -213,7 +213,7 @@
      fährt eine Kamera weich mit dem Licht mit. */
   var buehneEl = document.getElementById("buehne");
   var handy = false, camX = B / 2, camY = H / 2, zielX = camX, zielY = camY;
-  var AUSSCHNITT = 620;
+  var AUSSCHNITT = 430;
 
   function pruefeGeraet(){
     var neu = (buehneEl.clientWidth || window.innerWidth) < 760;
@@ -227,8 +227,9 @@
     if (!handy) return;
     var br = buehneEl.clientWidth || 1, ho = buehneEl.clientHeight || 1;
     var KW = AUSSCHNITT, KH = KW * (ho / br);
-    var x = Math.max(-60, Math.min(B - KW + 60, camX - KW / 2));
-    var y = Math.max(-40, Math.min(H - KH + 40, camY - KH / 2));
+    var x = Math.max(-70, Math.min(B - KW + 70, camX - KW / 2));
+    var y = (KH >= H) ? (H - KH) / 2
+                      : Math.max(-50, Math.min(H - KH + 50, camY - KH / 2));
     svg.setAttribute("viewBox", x.toFixed(1) + " " + y.toFixed(1) + " " + KW + " " + KH.toFixed(1));
   }
   function kameraSchleife(){
