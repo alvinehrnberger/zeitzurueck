@@ -454,7 +454,6 @@ const CONFIG = {
       features:["Website-Chat","WhatsApp-Kanal","Termine im Kalender","Automatische Bestätigung","Kunde verschiebt oder sagt selbst ab"] },
     { name:"Das ganze Büro", price:89, desc:"ZeitZurück übernimmt auch das Papier danach.", featured:true,
       features:["Alles aus Anfragen &amp; Termine","Aufträge und Zeiten in Ihrer App","Rechnung schreiben und versenden","Übersicht offener Rechnungen"] }
-  ] }
   ]
 };
 
@@ -466,8 +465,7 @@ document.getElementById('steps').innerHTML = CONFIG.steps.map((s,i)=>`
 
 document.getElementById('pkgs').innerHTML = CONFIG.packages.map(p=>`
   <div class="pkg ${p.featured?'featured':''}">
-    ${p.tag?`<div class="tag">${p.tag}</div>`:''}
-    <div class="name">${p.name}</div>
+        <div class="name">${p.name}</div>
     <div class="price">${p.price} €<span>/Monat</span></div>
     <div class="desc">${p.desc}</div>
     <ul>${p.features.map(f=>`<li>${f}</li>`).join('')}</ul>
