@@ -216,7 +216,7 @@
   var AUSSCHNITT = 620;
 
   function pruefeGeraet(){
-    var neu = window.innerWidth < 760;
+    var neu = (buehneEl.clientWidth || window.innerWidth) < 760;
     if (neu !== handy){
       handy = neu;
       if (!handy) svg.setAttribute("viewBox", "0 0 " + B + " " + H);
