@@ -208,6 +208,40 @@
   var svg = document.getElementById("leinwand");
   svg.setAttribute("viewBox", "0 0 " + B + " " + H);
 
+  /* ---------- Kamera ----------
+     Auf dem Handy passt die ganze Tafel nicht. Statt alles zu verkleinern,
+     fährt eine Kamera weich mit dem Licht mit. */
+  var buehneEl = document.getElementById("buehne");
+  var handy = false, camX = B / 2, camY = H / 2, zielX = camX, zielY = camY;
+  var AUSSCHNITT = 620;
+
+  function pruefeGeraet(){
+    var neu = window.innerWidth < 760;
+    if (neu !== handy){
+      handy = neu;
+      if (!handy) svg.setAttribute("viewBox", "0 0 " + B + " " + H);
+    }
+    return handy;
+  }
+  function blende(){
+    if (!handy) return;
+    var br = buehneEl.clientWidth || 1, ho = buehneEl.clientHeight || 1;
+    var KW = AUSSCHNITT, KH = KW * (ho / br);
+    var x = Math.max(-60, Math.min(B - KW + 60, camX - KW / 2));
+    var y = Math.max(-40, Math.min(H - KH + 40, camY - KH / 2));
+    svg.setAttribute("viewBox", x.toFixed(1) + " " + y.toFixed(1) + " " + KW + " " + KH.toFixed(1));
+  }
+  function kameraSchleife(){
+    if (pruefeGeraet()){
+      camX += (zielX - camX) * .085;
+      camY += (zielY - camY) * .085;
+      blende();
+    }
+    requestAnimationFrame(kameraSchleife);
+  }
+  window.addEventListener("resize", function(){ pruefeGeraet(); blende(); });
+  requestAnimationFrame(kameraSchleife);
+
   function el(t, a){ var e = document.createElementNS(NS, t); for (var k in a) e.setAttribute(k, a[k]); return e; }
 
   var gBahn = document.getElementById("bahnen");
@@ -350,6 +384,7 @@
   function setzePaket(x, y, farbe){
     paket.setAttribute("cx", x); paket.setAttribute("cy", y);
     halo.setAttribute("cx", x);  halo.setAttribute("cy", y);
+    zielX = x; zielY = y;                       /* Kamera folgt dem Licht */
     if (farbe) halo.setAttribute("fill", farbe);
     spur.unshift({ x:x, y:y });
     if (spur.length > schweif.length) spur.pop();
@@ -473,6 +508,7 @@
   function start(){
     sichtbar(true);
     idx = 0;
+    camX = zielX = stationen[0].x - 150; camY = zielY = stationen[0].y;
     fahre(0, 1100, ankunft);
   }
 
