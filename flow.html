@@ -72,20 +72,20 @@
   }
   .sym{fill:none;stroke:rgba(247,244,235,.55);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;
        transition:stroke .5s cubic-bezier(.33,0,.2,1)}
-  .name{font-size:13px;font-weight:600;text-anchor:middle;fill:rgba(247,244,235,.94);letter-spacing:-.006em}
-  .zusatz{font-size:11.5px;text-anchor:middle;fill:rgba(247,244,235,.44)}
-  .nr{font-size:10.5px;text-anchor:middle;fill:rgba(247,244,235,.3);font-weight:600;letter-spacing:.06em}
+  .name{font-size:16.5px;font-weight:600;text-anchor:middle;fill:rgba(247,244,235,.94);letter-spacing:-.006em}
+  .zusatz{font-size:14px;text-anchor:middle;fill:rgba(247,244,235,.46)}
+  .nr{font-size:12px;text-anchor:middle;fill:rgba(247,244,235,.3);font-weight:600;letter-spacing:.06em}
 
   /* Spurbeschriftung */
-  .spurtitel{font-size:12.5px;font-weight:700;letter-spacing:.17em;opacity:.25;transition:opacity .8s}
+  .spurtitel{font-size:15px;font-weight:700;letter-spacing:.17em;opacity:.25;transition:opacity .8s}
   .spurtitel.an{opacity:1}
-  .spurtext{font-size:12.5px;fill:rgba(247,244,235,.44);opacity:0;transition:opacity .8s}
+  .spurtext{font-size:14.5px;fill:rgba(247,244,235,.44);opacity:0;transition:opacity .8s}
   .spurtext.an{opacity:1}
 
   .marke{opacity:0;transition:opacity .8s}
   .marke.an{opacity:1}
   .marke-rahmen{fill:rgba(201,160,84,.09);stroke:rgba(201,160,84,.4);stroke-width:1.2;rx:11}
-  .marke-tx{font-size:11.5px;font-weight:600;text-anchor:middle;fill:var(--gold)}
+  .marke-tx{font-size:13.5px;font-weight:600;text-anchor:middle;fill:var(--gold)}
 
   .ende{
     position:absolute;inset:0;
@@ -187,7 +187,7 @@
   var H = kurz ? 440 : 830;
   var YA = kurz ? 225 : 215;
   var YB = 635;
-  var X0 = 296, DX = 170, RK = 36;
+  var X0 = 300, DX = 174, RK = 41;
 
   var reihen = [];
   reihen.push({ titel:"FRONT OFFICE", z1:"Von der ersten Nachricht", z2:"bis zum gebuchten Termin.",
@@ -305,14 +305,14 @@
     var g = el("g", { "class":"knoten" });
     g.appendChild(el("circle", { cx:s.x, cy:s.y, r:36, "class":"ring", stroke:s.farbe }));
     g.appendChild(el("rect", { x:s.x - RK, y:s.y - RK, width:RK * 2, height:RK * 2, rx:24, "class":"huelle" }));
-    var u = el("use", { href:"#" + s.d.sym, x:s.x - 15, y:s.y - 15, width:30, height:30, "class":"sym" });
+    var u = el("use", { href:"#" + s.d.sym, x:s.x - 19, y:s.y - 19, width:38, height:38, "class":"sym" });
     u.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", "#" + s.d.sym);
     g.appendChild(u);
-    var nr = el("text", { x:s.x, y:s.y + RK + 21, "class":"nr" });
-    nr.textContent = String((idx % 6) + 1).padStart(2, "0");
+    var nr = el("text", { x:s.x, y:s.y + RK + 24, "class":"nr" });
+    nr.textContent = String(stationen.filter(function(q,j){ return q.reihe === s.reihe && j <= idx; }).length).padStart(2, "0");
     g.appendChild(nr);
-    var n = el("text", { x:s.x, y:s.y + RK + 42, "class":"name" }); n.textContent = s.d.name; g.appendChild(n);
-    var z = el("text", { x:s.x, y:s.y + RK + 61, "class":"zusatz" }); z.textContent = s.d.zusatz; g.appendChild(z);
+    var n = el("text", { x:s.x, y:s.y + RK + 49, "class":"name" }); n.textContent = s.d.name; g.appendChild(n);
+    var z = el("text", { x:s.x, y:s.y + RK + 71, "class":"zusatz" }); z.textContent = s.d.zusatz; g.appendChild(z);
     gKn.appendChild(g);
     return { g:g, sym:u, station:s };
   });
@@ -321,8 +321,8 @@
   var markeEls = reihen.map(function(r, ri){
     var g = el("g", { "class":"marke" });
     if (ri !== 0 || reihen.length < 2){ gMk.appendChild(g); return g; }
-    var xm = X0 + (r.knoten.length - 1) * DX + RK + 96, tx = "Hier endet Front Office";
-    var w = tx.length * 6.4 + 26;
+    var xm = X0 + (r.knoten.length - 1) * DX + RK + 106, tx = "Hier endet Front Office";
+    var w = tx.length * 7.3 + 28;
     g.appendChild(el("rect", { x:xm - w / 2, y:r.y - 17, width:w, height:34, "class":"marke-rahmen" }));
     var t = el("text", { x:xm, y:r.y + 4.5, "class":"marke-tx", fill:r.farbe }); t.textContent = tx;
     g.appendChild(t);
