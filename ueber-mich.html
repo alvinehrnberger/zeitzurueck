@@ -41,9 +41,9 @@
   @media(max-width:600px){#toTop{right:16px;bottom:16px;width:42px;height:42px}}
 
     .um{position:relative;overflow:hidden;padding:8px 0 24px}
-    .um-strang{position:absolute;left:0;right:0;top:0;bottom:0;width:100%;height:100%;pointer-events:none}
+    .um-strang{position:absolute;left:-14%;top:0;width:128%;height:100%;pointer-events:none;overflow:visible}
     .um-innen{display:grid;grid-template-columns:minmax(0,.86fr) minmax(0,1fr);gap:52px;align-items:center;position:relative}
-    .um-bild{border-radius:22px;overflow:hidden;box-shadow:0 26px 64px rgba(18,40,29,.26)}
+    .um-bild{position:relative;z-index:2;border-radius:22px;overflow:hidden;box-shadow:0 26px 64px rgba(18,40,29,.26)}
     .um-bild img{width:100%;height:auto;display:block}
     .um-text p{margin:0 0 16px;font-size:16.5px;line-height:1.72}
     .um-sig{margin-top:26px;font-weight:600;font-size:15.5px}
@@ -64,9 +64,9 @@
 
 <main>
   <div class="wrap um">
-    <svg class="um-strang" viewBox="0 0 1240 400" preserveAspectRatio="none" aria-hidden="true">
-      <path d="M -60 300 C 250 300, 330 130, 620 145 S 1010 300, 1300 200" fill="none" stroke="#C9A054" stroke-width="1.6" opacity=".22"/>
-      <circle r="3.6" fill="#C9A054" opacity=".8"><animateMotion dur="16s" repeatCount="indefinite" path="M -60 300 C 250 300, 330 130, 620 145 S 1010 300, 1300 200"/></circle>
+    <svg class="um-strang" viewBox="0 0 1240 330" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M -30 92 C 90 92, 128 214, 214 236 C 320 262, 470 250, 560 214 C 700 158, 830 196, 1270 152" fill="none" stroke="#C9A054" stroke-width="1.6" opacity=".22"/>
+      <circle r="3.6" fill="#C9A054" opacity=".8"><animateMotion dur="16s" repeatCount="indefinite" path="M -30 92 C 90 92, 128 214, 214 236 C 320 262, 470 250, 560 214 C 700 158, 830 196, 1270 152"/></circle>
     </svg>
     <h2 style="margin:0 0 26px;max-width:22ch">Gebaut, weil Büroarbeit nicht Ihre eigentliche Arbeit sein sollte.</h2>
     <div class="um-innen">
