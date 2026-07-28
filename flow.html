@@ -4,68 +4,86 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
-<title>ZeitZurück — Ablauf</title>
+<title>ZeitZurück — So läuft es</title>
 <style>
   :root{
     --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
-    --petrol-deep:#12281d;
+    --bg:#0d1f17;
     --ivory:#F7F4EB;
     --gold:#C9A054;
+    --sand:#E3D5B8;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
   body{
-    font-family:var(--sans);background:var(--petrol-deep);color:var(--ivory);
+    font-family:var(--sans);
+    background:
+      radial-gradient(1100px 620px at 22% 8%, rgba(201,160,84,.10), transparent 62%),
+      radial-gradient(900px 620px at 82% 96%, rgba(227,213,184,.07), transparent 60%),
+      var(--bg);
+    color:var(--ivory);
     display:flex;flex-direction:column;overflow:hidden;cursor:pointer;user-select:none;
   }
-  .kopf{padding:20px 24px 6px;flex:0 0 auto}
-  .kopf .klein{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-weight:600}
-  .kopf h1{font-size:19px;font-weight:600;margin-top:5px;letter-spacing:-.01em}
+  .kopf{padding:22px 30px 4px;flex:0 0 auto}
+  .kopf h1{font-size:19px;font-weight:600;letter-spacing:-.012em}
+  .kopf h1 em{font-style:normal;color:var(--gold)}
   .buehne{flex:1 1 auto;min-height:0;position:relative}
   svg{width:100%;height:100%;display:block}
-
   .fuss{
-    flex:0 0 auto;padding:6px 24px 18px;font-size:12.5px;color:rgba(247,244,235,.5);
-    display:flex;justify-content:space-between;align-items:center;gap:10px;
+    flex:0 0 auto;padding:2px 30px 16px;font-size:12px;color:rgba(247,244,235,.42);
+    display:flex;justify-content:space-between;align-items:center;
   }
-  .hinweis{opacity:0;transition:opacity .4s}
+  .hinweis{opacity:0;transition:opacity .5s}
   .hinweis.an{opacity:1}
-
-  .ende{
-    position:absolute;inset:0;background:rgba(18,40,29,.94);
-    display:flex;flex-direction:column;align-items:center;justify-content:center;
-    text-align:center;padding:30px;gap:9px;
-    opacity:0;pointer-events:none;transition:opacity .55s;
-  }
-  .ende.an{opacity:1}
-  .ende .gross{font-size:24px;font-weight:600;letter-spacing:-.015em;line-height:1.32;max-width:560px}
-  .ende .klein{font-size:14.5px;color:rgba(247,244,235,.62)}
-
   .pause{
-    position:absolute;top:16px;right:20px;font-size:11px;letter-spacing:.1em;
-    text-transform:uppercase;color:rgba(247,244,235,.45);opacity:0;transition:opacity .25s;z-index:3;
+    position:absolute;top:18px;right:26px;font-size:10.5px;letter-spacing:.12em;
+    text-transform:uppercase;color:rgba(247,244,235,.4);opacity:0;transition:opacity .3s;z-index:4;
   }
   .pause.an{opacity:1}
 
-  /* SVG-Teile */
-  .kante{fill:none;stroke:rgba(247,244,235,.16);stroke-width:2}
-  .kante-an{fill:none;stroke:var(--gold);stroke-width:2.4;stroke-linecap:round}
-  .kasten{fill:rgba(247,244,235,.05);stroke:rgba(247,244,235,.13);stroke-width:1.5;rx:16}
-  .knoten.an .kasten{fill:rgba(247,244,235,.11);stroke:rgba(201,160,84,.65)}
-  .knoten{opacity:.34;transition:opacity .45s}
-  .knoten.an{opacity:1}
-  .kasten{transition:fill .45s,stroke .45s}
-  .sym{font-size:26px;text-anchor:middle;dominant-baseline:central}
-  .name{font-size:13px;font-weight:600;text-anchor:middle;fill:var(--ivory);letter-spacing:-.005em}
-  .zusatz{font-size:11.5px;text-anchor:middle;fill:rgba(247,244,235,.5)}
-  .badge-bg{fill:rgba(201,160,84,.2);rx:7;opacity:0;transition:opacity .4s}
-  .badge-tx{font-size:11px;font-weight:600;text-anchor:middle;fill:var(--gold);opacity:0;transition:opacity .4s}
-  .knoten.an .badge-bg,.knoten.an .badge-tx{opacity:1}
+  /* Bahnen */
+  .bahn{fill:none;stroke:rgba(247,244,235,.09);stroke-width:2.2;stroke-linecap:round}
+  .bahn-hell{fill:none;stroke-width:2.6;stroke-linecap:round;opacity:.9}
 
-  @media (max-width:520px){
-    .kopf{padding:16px 18px 4px}
-    .kopf h1{font-size:17px}
-    .fuss{padding:4px 18px 14px}
+  /* Knoten */
+  .knoten{opacity:.3;transition:opacity .7s cubic-bezier(.3,0,.2,1)}
+  .knoten.an{opacity:1}
+  .huelle{
+    fill:rgba(247,244,235,.035);stroke:rgba(247,244,235,.11);stroke-width:1.4;
+    transition:fill .7s,stroke .7s;
+  }
+  .knoten.an .huelle{fill:rgba(247,244,235,.07)}
+  .sym{fill:none;stroke:rgba(247,244,235,.55);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;
+       transition:stroke .7s}
+  .name{font-size:13px;font-weight:600;text-anchor:middle;fill:rgba(247,244,235,.94);letter-spacing:-.006em}
+  .zusatz{font-size:11.5px;text-anchor:middle;fill:rgba(247,244,235,.44)}
+  .nr{font-size:10.5px;text-anchor:middle;fill:rgba(247,244,235,.3);font-weight:600;letter-spacing:.06em}
+
+  /* Spurbeschriftung */
+  .spurtitel{font-size:12.5px;font-weight:700;letter-spacing:.17em;opacity:.25;transition:opacity .8s}
+  .spurtitel.an{opacity:1}
+  .spurtext{font-size:12.5px;fill:rgba(247,244,235,.44);opacity:0;transition:opacity .8s}
+  .spurtext.an{opacity:1}
+
+  .marke{opacity:0;transition:opacity .8s}
+  .marke.an{opacity:1}
+  .marke-rahmen{fill:rgba(201,160,84,.09);stroke:rgba(201,160,84,.4);stroke-width:1.2;rx:11}
+  .marke-tx{font-size:11.5px;font-weight:600;text-anchor:middle;fill:var(--gold)}
+
+  .ende{
+    position:absolute;inset:0;
+    background:radial-gradient(700px 420px at 50% 50%, rgba(13,31,23,.9), rgba(13,31,23,.98));
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:34px;gap:11px;opacity:0;pointer-events:none;transition:opacity .7s;
+  }
+  .ende.an{opacity:1}
+  .ende .gross{font-size:25px;font-weight:600;letter-spacing:-.018em;line-height:1.34;max-width:600px}
+  .ende .klein{font-size:14.5px;color:rgba(247,244,235,.6)}
+
+  @media (max-width:560px){
+    .kopf{padding:16px 18px 2px}
+    .kopf h1{font-size:16px}
+    .fuss{padding:2px 18px 12px}
   }
 </style>
 </head>
@@ -73,26 +91,43 @@
 <div class="pause" id="pause">Pausiert</div>
 
 <div class="kopf">
-  <div class="klein">Der Ablauf</div>
-  <h1 id="kopfzeile">Von der Anfrage bis zum Termin</h1>
+  <h1 id="kopfzeile">So arbeitet <em>ZeitZurück</em> — von der ersten Anfrage bis zum Termin.</h1>
 </div>
 
 <div class="buehne" id="buehne">
   <svg id="leinwand" preserveAspectRatio="xMidYMid meet">
     <defs>
-      <pattern id="raster" width="26" height="26" patternUnits="userSpaceOnUse">
-        <circle cx="1.4" cy="1.4" r="1.4" fill="rgba(247,244,235,.055)"></circle>
-      </pattern>
-      <filter id="leuchten" x="-120%" y="-120%" width="340%" height="340%">
-        <feGaussianBlur stdDeviation="7" result="b"></feGaussianBlur>
+      <filter id="weich" x="-200%" y="-200%" width="500%" height="500%">
+        <feGaussianBlur stdDeviation="9"></feGaussianBlur>
+      </filter>
+      <filter id="fein" x="-200%" y="-200%" width="500%" height="500%">
+        <feGaussianBlur stdDeviation="3.2" result="b"></feGaussianBlur>
         <feMerge><feMergeNode in="b"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge>
       </filter>
+
+      <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H10l-5 4v-4H4z"/></symbol>
+      <symbol id="i-idee" viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/></symbol>
+      <symbol id="i-kal" viewBox="0 0 24 24"><path d="M4 6h16v14H4z"/><path d="M8 3v5M16 3v5M4 11h16"/></symbol>
+      <symbol id="i-uhr" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6"/><path d="M12 7.2V12l3.2 2.1"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6"/><path d="M8.2 12.2l2.6 2.6 5-5.6"/></symbol>
+      <symbol id="i-brief" viewBox="0 0 24 24"><path d="M3 6h18v12H3z"/><path d="M3 7.2l9 6.2 9-6.2"/></symbol>
+      <symbol id="i-liste" viewBox="0 0 24 24"><path d="M9 4h6v2.6H9z"/><path d="M6.4 5.4H5v15h14v-15h-1.4"/><path d="M9 11h6M9 15h4"/></symbol>
+      <symbol id="i-hammer" viewBox="0 0 24 24"><path d="M3 20.4l7.4-7.4"/><path d="M9.4 8.2l3.4-3.4 3.6 3.6-3.4 3.4z"/><path d="M12.6 12.8l6.4 6.4"/></symbol>
+      <symbol id="i-doku" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="M9 12.5h6M9 16.5h4"/></symbol>
+      <symbol id="i-flieger" viewBox="0 0 24 24"><path d="M21 3.6L3 11.2l7 2.8 2.8 7z"/><path d="M21 3.6L10 14"/></symbol>
+      <symbol id="i-karte" viewBox="0 0 24 24"><path d="M3 6h18v12H3z"/><path d="M3 10h18"/><path d="M6.5 14.4h3"/></symbol>
+      <symbol id="i-chart" viewBox="0 0 24 24"><path d="M5 20V12M10 20V5M15 20v-6M20 20v-10"/></symbol>
     </defs>
-    <rect id="hintergrund" fill="url(#raster)"></rect>
-    <g id="kanten"></g>
+
+    <g id="bahnen"></g>
+    <g id="beschriftung"></g>
     <g id="knoten"></g>
-    <circle id="paket" r="7" fill="#C9A054" filter="url(#leuchten)" opacity="0"></circle>
+    <g id="marken"></g>
+    <g id="schweif"></g>
+    <circle id="halo" r="17" fill="#C9A054" filter="url(#weich)" opacity="0"></circle>
+    <circle id="paket" r="5.4" fill="#FFF6E2" filter="url(#fein)" opacity="0"></circle>
   </svg>
+
   <div class="ende" id="ende">
     <div class="gross" id="endeGross"></div>
     <div class="klein" id="endeKlein"></div>
@@ -106,174 +141,328 @@
 
 <script>
 (function(){
-  var SVGNS = "http://www.w3.org/2000/svg";
+  var NS = "http://www.w3.org/2000/svg";
   var p = new URLSearchParams(location.search);
   var kurz = (p.get("bis") === "termin");
 
-  /* ---- Knoten mit fester Position auf der Leinwand ---- */
-  var KURZ = [
-    { x: 90,  y:150, sym:"💬", name:"Anfrage",        zusatz:"Website",        badge:"Kunde schreibt" },
-    { x:270,  y:150, sym:"🤖", name:"Nachfragen",     zusatz:"nur das Nötige", badge:"Automatisch" },
-    { x:450,  y:150, sym:"⏱️", name:"Dauer schätzen", zusatz:"Erfahrungswerte",badge:"≈ 2 Std" },
-    { x:630,  y:150, sym:"📅", name:"Termin suchen",  zusatz:"Ihr Kalender",   badge:"Di, 14:00" },
-    { x:810,  y:150, sym:"✅", name:"Buchen",         zusatz:"fix eingetragen",badge:"Gebucht" },
-    { x:990,  y:150, sym:"✉️", name:"Bestätigen",     zusatz:"Kunde und Sie",  badge:"Zugestellt" }
+  var GOLD = "#C9A054", SAND = "#E3D5B8";
+
+  var VORNE = [
+    { sym:"i-chat",  name:"Anfrage kommt an",   zusatz:"Ein Kunde schreibt Ihnen." },
+    { sym:"i-idee",  name:"Anliegen verstanden",zusatz:"Nachgefragt, was fehlt." },
+    { sym:"i-kal",   name:"Kalender geprüft",   zusatz:"Was ist wirklich frei?" },
+    { sym:"i-uhr",   name:"Termine angeboten",  zusatz:"Zwei, drei passende." },
+    { sym:"i-check", name:"Termin gebucht",     zusatz:"Fix, ohne Rückfrage." },
+    { sym:"i-brief", name:"Bestätigt",          zusatz:"Beim Kunden und bei Ihnen." }
   ];
-  var LANG = [
-    { x: 90,  y:120, sym:"💬", name:"Anfrage",        zusatz:"Website",        badge:"Kunde schreibt" },
-    { x:270,  y:120, sym:"🤖", name:"Nachfragen",     zusatz:"nur das Nötige", badge:"Automatisch" },
-    { x:450,  y:120, sym:"⏱️", name:"Dauer schätzen", zusatz:"Erfahrungswerte",badge:"≈ 2 Std" },
-    { x:630,  y:120, sym:"📅", name:"Termin suchen",  zusatz:"Ihr Kalender",   badge:"Di, 14:00" },
-    { x:810,  y:120, sym:"✅", name:"Buchen",         zusatz:"fix eingetragen",badge:"Gebucht" },
-    { x:990,  y:120, sym:"✉️", name:"Bestätigen",     zusatz:"Kunde und Sie",  badge:"Zugestellt" },
-    { x:270,  y:370, sym:"📋", name:"Auftrag",        zusatz:"in Ihrer App",   badge:"Angelegt" },
-    { x:540,  y:370, sym:"⏲️", name:"Zeit erfassen",  zusatz:"vor Ort, ein Tipp", badge:"2 Std 15" },
-    { x:810,  y:370, sym:"🧾", name:"Rechnung",       zusatz:"direkt zum Kunden", badge:"Nr. 03/2026" }
+  var HINTEN = [
+    { sym:"i-liste",   name:"Auftrag angelegt", zusatz:"Steht da, bevor Sie hinfahren." },
+    { sym:"i-hammer",  name:"Arbeit erledigt",  zusatz:"Zeit mit einem Tipp erfasst." },
+    { sym:"i-doku",    name:"Rechnung erstellt",zusatz:"Mit Nummer, ohne Papier." },
+    { sym:"i-flieger", name:"Rechnung versandt",zusatz:"Direkt zum Kunden." },
+    { sym:"i-karte",   name:"Zahlung erfasst",  zusatz:"Sie sehen, was offen ist." },
+    { sym:"i-chart",   name:"Alles aktuell",    zusatz:"Ihr Betrieb auf einen Blick." }
   ];
 
-  var K = kurz ? KURZ : LANG;
-  var BREITE = 1120;
-  var HOEHE  = kurz ? 300 : 500;
-  var R = 34;   /* halbe Kastenbreite */
+  var B = 1520;
+  var H = kurz ? 440 : 830;
+  var YA = kurz ? 225 : 215;
+  var YB = 635;
+  var X0 = 300, DX = 190, RK = 36;
 
-  document.getElementById("kopfzeile").textContent =
-    kurz ? "Von der Anfrage bis zum Termin" : "Von der Anfrage bis zur Rechnung";
-  document.getElementById("endeGross").textContent =
-    kurz ? "Kein Anruf. Kein Rückruf. Kein verpasster Kunde." : "Angefragt, gebucht, erledigt, verrechnet.";
-  document.getElementById("endeKlein").textContent =
-    kurz ? "Sie erfahren davon, wenn Sie Zeit haben." : "Und Sie waren die ganze Zeit bei der Arbeit.";
+  var reihen = [];
+  reihen.push({ titel:"FRONT OFFICE", z1:"Von der ersten Nachricht", z2:"bis zum gebuchten Termin.",
+                y:YA, farbe:GOLD, knoten:VORNE });
+  if (!kurz) reihen.push({ titel:"IHR BÜRO", z1:"Vom gebuchten Termin", z2:"bis zur bezahlten Rechnung.",
+                y:YB, farbe:SAND, knoten:HINTEN });
+
+  document.getElementById("kopfzeile").innerHTML = kurz
+    ? 'So arbeitet <em>ZeitZurück</em> — von der ersten Anfrage bis zum Termin.'
+    : 'So arbeitet <em>ZeitZurück</em> — von der ersten Anfrage bis zur bezahlten Rechnung.';
+  document.getElementById("endeGross").textContent = kurz
+    ? "Kein Anruf. Kein Rückruf. Kein verpasster Kunde."
+    : "Von der ersten Nachricht bis zum Geld am Konto.";
+  document.getElementById("endeKlein").textContent = kurz
+    ? "Sie erfahren davon, wenn Sie Zeit haben."
+    : "Und Sie waren die ganze Zeit bei der Arbeit.";
 
   var svg = document.getElementById("leinwand");
-  svg.setAttribute("viewBox", "0 0 " + BREITE + " " + HOEHE);
-  var bg = document.getElementById("hintergrund");
-  bg.setAttribute("width", BREITE); bg.setAttribute("height", HOEHE);
+  svg.setAttribute("viewBox", "0 0 " + B + " " + H);
 
-  var gKanten = document.getElementById("kanten");
-  var gKnoten = document.getElementById("knoten");
-  var paket   = document.getElementById("paket");
+  function el(t, a){ var e = document.createElementNS(NS, t); for (var k in a) e.setAttribute(k, a[k]); return e; }
 
-  function el(tag, attrs){
-    var e = document.createElementNS(SVGNS, tag);
-    for (var k in attrs) e.setAttribute(k, attrs[k]);
-    return e;
+  var gBahn = document.getElementById("bahnen");
+  var gBes  = document.getElementById("beschriftung");
+  var gKn   = document.getElementById("knoten");
+  var gMk   = document.getElementById("marken");
+  var gSw   = document.getElementById("schweif");
+  var paket = document.getElementById("paket");
+  var halo  = document.getElementById("halo");
+
+  /* ---------- Alle Stationen als eine Kette ---------- */
+  var stationen = [];
+  reihen.forEach(function(r, ri){
+    r.knoten.forEach(function(k, ki){
+      stationen.push({ x: X0 + ki * DX, y: r.y, farbe: r.farbe, reihe: ri, d: k });
+    });
+  });
+
+  /* ---------- Bahnen ---------- */
+  function gerade(a, b){
+    var x1 = a.x + RK + 8, x2 = b.x - RK - 8, m = (x2 - x1) * .48;
+    return "M " + x1 + " " + a.y + " C " + (x1 + m) + " " + a.y + ", " + (x2 - m) + " " + b.y + ", " + x2 + " " + b.y;
   }
-
-  /* ---- Kanten: Bezier von Kasten zu Kasten ---- */
-  function kurve(a, b){
-    var x1 = a.x + R, y1 = a.y, x2 = b.x - R, y2 = b.y;
-    var runter = Math.abs(b.y - a.y) > 40;
-    var d;
-    if (!runter) {
-      var m = (x2 - x1) * .5;
-      d = "M " + x1 + " " + y1 + " C " + (x1 + m) + " " + y1 + ", " + (x2 - m) + " " + y2 + ", " + x2 + " " + y2;
-    } else {
-      /* Sprung in die zweite Reihe: rechts raus, weiter Bogen, links wieder rein */
-      x2 = b.x - R;
-      d = "M " + x1 + " " + y1 +
-          " C " + (x1 + 130) + " " + y1 +
-          ", " + (x1 + 150) + " " + ((y1 + y2) / 2) +
-          ", " + ((x1 + x2) / 2) + " " + ((y1 + y2) / 2) +
-          " S " + (x2 - 150) + " " + y2 +
-          ", " + x2 + " " + y2;
-    }
-    return d;
+  /* Ein Bogen ohne Knick: rechts hinaus, weich herum, links wieder herein.
+     Am Wendepunkt stehen beide Kontrollpunkte senkrecht übereinander — dadurch
+     ist der Übergang stufenlos glatt. */
+  function uebergang(a, b){
+    var x1 = a.x + RK + 8, y1 = a.y, x2 = b.x - RK - 8, y2 = b.y;
+    var ym = (y1 + y2) / 2, xr = B - 95, bau = (y2 - y1) * .42;
+    return "M " + x1 + " " + y1 +
+           " C " + (x1 + 250) + " " + y1 + ", " + xr + " " + (ym - bau) + ", " + xr + " " + ym +
+           " C " + xr + " " + (ym + bau) + ", " + (x2 - 250) + " " + y2 + ", " + x2 + " " + y2;
   }
+  /* Einlauf von links */
+  var ein = "M -70 " + (stationen[0].y + 130) +
+            " C 70 " + (stationen[0].y + 130) + ", 165 " + stationen[0].y + ", " + (stationen[0].x - RK - 8) + " " + stationen[0].y;
 
   var kanten = [];
-  for (var i = 0; i < K.length - 1; i++) {
-    var d = kurve(K[i], K[i + 1]);
-    gKanten.appendChild(el("path", { d: d, "class": "kante" }));
-    var hell = el("path", { d: d, "class": "kante-an" });
-    gKanten.appendChild(hell);
-    var L = hell.getTotalLength();
-    hell.style.strokeDasharray = L;
-    hell.style.strokeDashoffset = L;
-    kanten.push({ el: hell, laenge: L });
+  function bahn(d, farbe){
+    gBahn.appendChild(el("path", { d:d, "class":"bahn" }));
+    var h = el("path", { d:d, "class":"bahn-hell", stroke:farbe, filter:"url(#fein)" });
+    gBahn.appendChild(h);
+    var L = h.getTotalLength();
+    h.style.strokeDasharray = L; h.style.strokeDashoffset = L;
+    kanten.push({ el:h, laenge:L });
+  }
+  bahn(ein, stationen[0].farbe);
+  for (var i = 0; i < stationen.length - 1; i++){
+    var a = stationen[i], b = stationen[i + 1];
+    bahn(a.reihe === b.reihe ? gerade(a, b) : uebergang(a, b), b.farbe);
   }
 
-  /* ---- Knoten zeichnen ---- */
-  var knotenEls = K.map(function(k){
-    var g = el("g", { "class": "knoten" });
-    g.appendChild(el("rect", { x: k.x - R, y: k.y - R, width: R * 2, height: R * 2, "class": "kasten" }));
-    var s = el("text", { x: k.x, y: k.y + 1, "class": "sym" }); s.textContent = k.sym; g.appendChild(s);
-    var n = el("text", { x: k.x, y: k.y + R + 22, "class": "name" }); n.textContent = k.name; g.appendChild(n);
-    var z = el("text", { x: k.x, y: k.y + R + 39, "class": "zusatz" }); z.textContent = k.zusatz; g.appendChild(z);
-    var bw = k.badge.length * 6.6 + 16;
-    g.appendChild(el("rect", { x: k.x - bw / 2, y: k.y - R - 26, width: bw, height: 19, "class": "badge-bg" }));
-    var bt = el("text", { x: k.x, y: k.y - R - 12, "class": "badge-tx" }); bt.textContent = k.badge; g.appendChild(bt);
-    gKnoten.appendChild(g);
+  /* ---------- Der Denkmoment ----------
+     Beim Verstehen greift der Assistent gleichzeitig in mehrere Richtungen aus.
+     Kurze Fühler schnellen hinaus und wieder zurück — links, rechts, hin und her. */
+  var DENK_STATION = 1;
+  var fuehler = [];
+  (function(){
+    var s = stationen[DENK_STATION];
+    if (!s) return;
+    var winkel = [-148, -112, -68, -34, 34, 68, 112, 148];
+    var laengen = [96, 74, 112, 82, 104, 70, 118, 88];
+    var stagger = [0, .16, .07, .27, .04, .21, .12, .3];
+    winkel.forEach(function(w, n){
+      var a = w * Math.PI / 180, L = laengen[n];
+      var sx = s.x + Math.cos(a) * (RK + 5), sy = s.y + Math.sin(a) * (RK + 5);
+      var ex = s.x + Math.cos(a) * L,        ey = s.y + Math.sin(a) * L;
+      var mx = (sx + ex) / 2, my = (sy + ey) / 2;
+      var bieg = (n % 2 ? 1 : -1) * 16;
+      var cx = mx + Math.cos(a + Math.PI / 2) * bieg, cy = my + Math.sin(a + Math.PI / 2) * bieg;
+      var dd = "M " + sx.toFixed(1) + " " + sy.toFixed(1) +
+               " Q " + cx.toFixed(1) + " " + cy.toFixed(1) + ", " + ex.toFixed(1) + " " + ey.toFixed(1);
+      var linie = el("path", { d:dd, fill:"none", stroke:s.farbe, "stroke-width":1.4,
+                               "stroke-linecap":"round", opacity:0, filter:"url(#fein)" });
+      gBahn.appendChild(linie);
+      var punkt = el("circle", { r:3, fill:"#FFF1D8", opacity:0, filter:"url(#fein)" });
+      gBahn.appendChild(punkt);
+      fuehler.push({ linie:linie, punkt:punkt, laenge:linie.getTotalLength(), start:stagger[n] });
+    });
+  })();
+
+  /* ---------- Spurbeschriftung ---------- */
+  var spurEls = reihen.map(function(r){
+    var g = el("g", {});
+    var t = el("text", { x:40, y:r.y - 62, "class":"spurtitel", fill:r.farbe }); t.textContent = r.titel;
+    var a = el("text", { x:40, y:r.y - 38, "class":"spurtext" }); a.textContent = r.z1;
+    var b = el("text", { x:40, y:r.y - 19, "class":"spurtext" }); b.textContent = r.z2;
+    g.appendChild(t); g.appendChild(a); g.appendChild(b);
+    gBes.appendChild(g);
+    return { titel:t, zeilen:[a, b] };
+  });
+
+  /* ---------- Knoten ---------- */
+  var knotenEls = stationen.map(function(s, idx){
+    var g = el("g", { "class":"knoten" });
+    g.appendChild(el("rect", { x:s.x - RK, y:s.y - RK, width:RK * 2, height:RK * 2, rx:24, "class":"huelle" }));
+    var u = el("use", { href:"#" + s.d.sym, x:s.x - 15, y:s.y - 15, width:30, height:30, "class":"sym" });
+    u.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", "#" + s.d.sym);
+    g.appendChild(u);
+    var nr = el("text", { x:s.x, y:s.y + RK + 21, "class":"nr" });
+    nr.textContent = String((idx % 6) + 1).padStart(2, "0");
+    g.appendChild(nr);
+    var n = el("text", { x:s.x, y:s.y + RK + 42, "class":"name" }); n.textContent = s.d.name; g.appendChild(n);
+    var z = el("text", { x:s.x, y:s.y + RK + 61, "class":"zusatz" }); z.textContent = s.d.zusatz; g.appendChild(z);
+    gKn.appendChild(g);
+    return { g:g, sym:u, station:s };
+  });
+
+  /* ---------- Marke am Reihenende ---------- */
+  var markeEls = reihen.map(function(r, ri){
+    var xm = X0 + 5 * DX + RK + 100, tx = (ri === 0 ? "Hier endet Front Office" : "Hier endet Ihr Büro");
+    var g = el("g", { "class":"marke" });
+    var w = tx.length * 6.4 + 26;
+    g.appendChild(el("rect", { x:xm - w / 2, y:r.y - 17, width:w, height:34, "class":"marke-rahmen" }));
+    var t = el("text", { x:xm, y:r.y + 4.5, "class":"marke-tx", fill:r.farbe }); t.textContent = tx;
+    g.appendChild(t);
+    gMk.appendChild(g);
     return g;
   });
 
-  /* ---- Ablauf ---- */
+  /* ---------- Schweif ---------- */
+  var schweif = [];
+  for (var s2 = 0; s2 < 9; s2++){
+    var c = el("circle", { r: 4.6 - s2 * .42, fill:"#FFF1D8", opacity:0 });
+    gSw.appendChild(c); schweif.push(c);
+  }
+  var spur = [];
+
+  /* ---------- Ablauf ---------- */
   var ende = document.getElementById("ende");
   var pauseEl = document.getElementById("pause");
   var hinweis = document.getElementById("hinweis");
   var zaehler = document.getElementById("zaehler");
 
-  var i = 0, laeuft = true, timer = null, raf = null;
-  var REISE = 850, HALT = 620;
+  var idx = -1, laeuft = true, raf = null, warte = null;
+  var REISE = 850, HALT = 900, UEBER = 2400, PAUSE_REIHE = 1600;
 
-  function setzePaket(x, y){
+  function setzePaket(x, y, farbe){
     paket.setAttribute("cx", x); paket.setAttribute("cy", y);
+    halo.setAttribute("cx", x);  halo.setAttribute("cy", y);
+    if (farbe) halo.setAttribute("fill", farbe);
+    spur.unshift({ x:x, y:y });
+    if (spur.length > schweif.length) spur.pop();
+    for (var i2 = 0; i2 < schweif.length; i2++){
+      if (spur[i2]){
+        schweif[i2].setAttribute("cx", spur[i2].x);
+        schweif[i2].setAttribute("cy", spur[i2].y);
+        schweif[i2].setAttribute("opacity", (1 - i2 / schweif.length) * .5);
+      }
+    }
   }
 
-  function aktiviere(n){
-    knotenEls[n].classList.add("an");
-    zaehler.textContent = (n + 1) + " / " + K.length;
-    setzePaket(K[n].x, K[n].y);
-    paket.setAttribute("opacity", "1");
+  function sichtbar(an){
+    paket.setAttribute("opacity", an ? "1" : "0");
+    halo.setAttribute("opacity", an ? ".42" : "0");
+    if (!an) schweif.forEach(function(c){ c.setAttribute("opacity", 0); });
   }
 
-  function reise(n, fertig){
-    var k = kanten[n];
-    var start = performance.now();
+  function spurAn(ri){
+    spurEls[ri].titel.classList.add("an");
+    spurEls[ri].zeilen.forEach(function(z){ z.classList.add("an"); });
+  }
+
+  function fahre(n, dauer, fertig){
+    var k = kanten[n], start = null;
     function tick(t){
-      if (!laeuft) { raf = requestAnimationFrame(tick); return; }
-      var f = Math.min(1, (t - start) / REISE);
-      var e = f < .5 ? 2 * f * f : 1 - Math.pow(-2 * f + 2, 2) / 2;
+      if (!laeuft){ raf = requestAnimationFrame(tick); return; }
+      if (start === null) start = t;
+      var f = Math.min(1, (t - start) / dauer);
+      var e = f < .5 ? 4 * f * f * f : 1 - Math.pow(-2 * f + 2, 3) / 2;
       var pt = k.el.getPointAtLength(e * k.laenge);
-      setzePaket(pt.x, pt.y);
+      var st = stationen[Math.min(n, stationen.length - 1)];
+      setzePaket(pt.x, pt.y, st.farbe);
       k.el.style.strokeDashoffset = k.laenge * (1 - e);
-      if (f < 1) { raf = requestAnimationFrame(tick); } else { fertig(); }
+      if (f < 1){ raf = requestAnimationFrame(tick); }
+      else { raf = null; k.el.style.opacity = ".42"; fertig(); }
     }
     raf = requestAnimationFrame(tick);
   }
 
-  function schritt(){
-    if (i >= K.length) { schluss(); return; }
-    aktiviere(i);
-    var n = i; i++;
-    timer = setTimeout(function(){
-      if (!laeuft) { timer = setTimeout(arguments.callee, 200); return; }
-      if (n < kanten.length) { reise(n, schritt); } else { schluss(); }
-    }, HALT);
+  /* Fühler schnellen hinaus und wieder zurück, versetzt */
+  function denken(dauer, fertig){
+    var start = null;
+    function tick(t){
+      if (!laeuft){ raf = requestAnimationFrame(tick); return; }
+      if (start === null) start = t;
+      var f = Math.min(1, (t - start) / dauer);
+      fuehler.forEach(function(fu){
+        var lok = (f - fu.start) / (1 - fu.start);
+        if (lok <= 0 || lok >= 1){
+          fu.punkt.setAttribute("opacity", 0);
+          fu.linie.setAttribute("opacity", 0);
+          return;
+        }
+        var hin = lok < .52 ? lok / .52 : 1 - (lok - .52) / .48;      /* raus und zurück */
+        var e = hin < .5 ? 2 * hin * hin : 1 - Math.pow(-2 * hin + 2, 2) / 2;
+        var q = fu.linie.getPointAtLength(e * fu.laenge);
+        fu.punkt.setAttribute("cx", q.x);
+        fu.punkt.setAttribute("cy", q.y);
+        fu.punkt.setAttribute("opacity", (.9 * Math.sin(lok * Math.PI)).toFixed(2));
+        fu.linie.setAttribute("opacity", (.42 * Math.sin(lok * Math.PI)).toFixed(2));
+      });
+      if (f < 1){ raf = requestAnimationFrame(tick); }
+      else {
+        raf = null;
+        fuehler.forEach(function(fu){ fu.punkt.setAttribute("opacity", 0); fu.linie.setAttribute("opacity", 0); });
+        fertig();
+      }
+    }
+    raf = requestAnimationFrame(tick);
+  }
+
+  function nach(ms, fn){
+    warte = setTimeout(function(){
+      if (!laeuft){ nach(180, fn); return; }
+      fn();
+    }, ms);
+  }
+
+  function ankunft(){
+    var s = stationen[idx];
+    knotenEls[idx].g.classList.add("an");
+    knotenEls[idx].sym.style.stroke = s.farbe;
+    setzePaket(s.x, s.y, s.farbe);
+    zaehler.textContent = (idx + 1) + " / " + stationen.length;
+    if (idx === 0 || s.reihe !== stationen[idx - 1].reihe) spurAn(s.reihe);
+
+    var letzteDerReihe = (idx === stationen.length - 1) || (stationen[idx + 1].reihe !== s.reihe);
+    if (letzteDerReihe) markeEls[s.reihe].classList.add("an");
+
+    function weiter(){
+      if (idx >= stationen.length - 1){ nach(PAUSE_REIHE, schluss); return; }
+      nach(letzteDerReihe ? PAUSE_REIHE : HALT, function(){
+        var wechsel = stationen[idx + 1].reihe !== s.reihe;
+        idx++;
+        fahre(idx, wechsel ? UEBER : REISE, ankunft);
+      });
+    }
+    if (idx === DENK_STATION && fuehler.length){ denken(1900, weiter); return; }
+    weiter();
   }
 
   function schluss(){
-    paket.setAttribute("opacity", "0");
+    sichtbar(false);
     ende.classList.add("an");
-    timer = setTimeout(function(){ if (laeuft) neustart(); }, 4200);
+    nach(4600, neustart);
   }
 
   function neustart(){
     ende.classList.remove("an");
-    knotenEls.forEach(function(e){ e.classList.remove("an"); });
-    kanten.forEach(function(k){ k.el.style.strokeDashoffset = k.laenge; });
-    paket.setAttribute("opacity", "0");
-    i = 0;
-    timer = setTimeout(function(){ if (laeuft) schritt(); }, 500);
+    knotenEls.forEach(function(k){ k.g.classList.remove("an"); k.sym.style.stroke = ""; });
+    markeEls.forEach(function(m){ m.classList.remove("an"); });
+    spurEls.forEach(function(s){ s.titel.classList.remove("an"); s.zeilen.forEach(function(z){ z.classList.remove("an"); }); });
+    kanten.forEach(function(k){ k.el.style.strokeDashoffset = k.laenge; k.el.style.opacity = ".9"; });
+    fuehler.forEach(function(fu){ fu.punkt.setAttribute("opacity", 0); fu.linie.setAttribute("opacity", 0); });
+    spur = [];
+    idx = -1;
+    nach(700, start);
+  }
+
+  function start(){
+    sichtbar(true);
+    idx = 0;
+    fahre(0, 1100, ankunft);
   }
 
   document.body.addEventListener("click", function(){
     laeuft = !laeuft;
     pauseEl.classList.toggle("an", !laeuft);
-    if (laeuft && !raf) schritt();
   });
 
-  setTimeout(function(){ hinweis.classList.add("an"); }, 1200);
-  setTimeout(function(){ hinweis.classList.remove("an"); }, 5600);
-  timer = setTimeout(schritt, 500);
+  setTimeout(function(){ hinweis.classList.add("an"); }, 1600);
+  setTimeout(function(){ hinweis.classList.remove("an"); }, 6200);
+  nach(600, start);
 })();
 </script>
 </body>
