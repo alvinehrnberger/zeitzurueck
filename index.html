@@ -242,6 +242,17 @@
     #ablaufBox .rahmen{position:relative;width:min(1160px,100%);height:min(680px,86vh);border-radius:20px;overflow:hidden;box-shadow:0 30px 90px rgba(0,0,0,.5);background:#0d1f17}
     #ablaufBox iframe{width:100%;height:100%;border:0;display:block}
     #ablaufBox .zu{position:absolute;top:12px;right:14px;z-index:2;width:34px;height:34px;border-radius:50%;border:1px solid rgba(247,244,235,.25);background:rgba(13,31,23,.6);color:#F7F4EB;font-size:17px;line-height:1;cursor:pointer}
+
+    .gruender{padding:86px 0;position:relative;overflow:hidden;background:var(--ivory-soft)}
+    .gruender-strang{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+    .gruender-innen{display:grid;grid-template-columns:minmax(0,.82fr) minmax(0,1fr);gap:54px;align-items:center;position:relative}
+    .gruender-bild{border-radius:22px;overflow:hidden;box-shadow:0 26px 64px rgba(18,40,29,.26)}
+    .gruender-bild img{width:100%;height:auto;display:block}
+    .gruender-text h2{margin:10px 0 20px;max-width:15ch}
+    .gruender-text p{margin:0 0 16px;font-size:16.5px;line-height:1.72;color:var(--muted)}
+    .gruender-sig{margin-top:26px;font-weight:600;color:var(--ink);font-size:15.5px}
+    .gruender-sig span{display:block;font-weight:400;font-size:13.5px;color:var(--muted);margin-top:3px}
+    @media(max-width:880px){.gruender{padding:60px 0}.gruender-innen{grid-template-columns:1fr;gap:30px}.gruender-text h2{max-width:none}}
 </style>
 </head>
 <body>
@@ -309,6 +320,25 @@
   </div>
 </section>
 
+
+<section class="gruender" id="gruender">
+  <svg class="gruender-strang" viewBox="0 0 1240 420" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M -60 330 C 240 330, 330 140, 620 152 S 1010 320, 1300 205" fill="none" stroke="#C9A054" stroke-width="1.6" opacity=".22"/>
+    <circle r="3.6" fill="#C9A054" opacity=".8"><animateMotion dur="16s" repeatCount="indefinite" path="M -60 330 C 240 330, 330 140, 620 152 S 1010 320, 1300 205"/></circle>
+  </svg>
+  <div class="wrap">
+    <div class="gruender-innen">
+      <div class="gruender-bild"><img src="alvin-portrait.jpg" alt="Alvin Ehrnberger, Gründer von ZeitZurück" loading="lazy" width="1000" height="1000"></div>
+      <div class="gruender-text">
+        <span class="eyebrow">Der Gründer</span>
+        <h2>Gebaut, weil Büroarbeit nicht Ihre eigentliche Arbeit sein sollte.</h2>
+        <p>Ich bin Alvin Ehrnberger. Ich habe ZeitZurück entwickelt, damit kleine Betriebe weniger Zeit mit Anfragen, Terminen und Rechnungen verbringen — und mehr Zeit für die Arbeit haben, für die ihre Kunden sie eigentlich brauchen.</p>
+        <p>Ich führe selbst einen kleinen Betrieb: Möbelmontage in Wien und Niederösterreich. ZeitZurück nimmt dort meine Anfragen auf, bucht meine Termine und schreibt meine Rechnungen. Was Sie hier sehen, benutze ich jeden Tag selbst.</p>
+        <div class="gruender-sig">Alvin Ehrnberger<span>Gründer von ZeitZurück</span></div>
+      </div>
+    </div>
+  </div>
+</section>
 <section id="pakete">
   <div class="wrap">
     <div class="sec-head">
