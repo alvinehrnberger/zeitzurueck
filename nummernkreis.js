@@ -610,3 +610,71 @@
     }catch(e){ scrim.classList.remove('show'); alert('Fehler beim Speichern: '+e.message); }
   };
 })();
+
+
+/* ============ Zahlungsart & Abschluss ohne Rechnung ============ */
+(function(){
+  function pauschAktiv(){ return window.__zzModus==='pauschale'; }
+  function satzJetzt(){ return betrieb?Number(betrieb.stundensatz):50; }
+  function betragJetzt(){ return pauschAktiv() ? (Number(String(window.__zzBetrag||'').replace(',','.'))||0) : (curHours*satzJetzt()); }
+
+  window.zzFuss = function(i, satz){
+    var t = (i && (i.stunden===null || i.stunden===undefined)) ? 'Vereinbarte Pauschale. Keine Abrechnung nach Stunden.' : 'Abgerechnet wird nach tatsächlich geleisteter Zeit zu € '+satz+',— pro Stunde.';
+    if(i && i.zahlart==='bar') t += ' Betrag dankend in bar erhalten.';
+    return t; };
+
+  var _oc = window.openComplete;
+  if(typeof _oc==='function'){ window.openComplete = function(id){ var r=_oc.apply(this,arguments); setTimeout(function(){
+    window.__zzZahlart=null;
+    var b=document.getElementById('cBar'); if(b) b.textContent='Ohne Rechnung abschließen';
+    try{ var n=sheet.querySelector('.note'); if(n) n.innerHTML='Rechnungsnummer wird automatisch vergeben: <b>'+naechsteNummer()+'</b><br>Ohne Rechnung = Auftrag wird nur auf „erledigt“ gesetzt, ZeitZurück erstellt keinen Beleg.'; }catch(e){}
+  },0); return r; }; }
+
+  window.zzZahlart = function(id, art){ window.__zzZahlart=art; window.finish(id,'rechnung'); };
+
+  function frageZahlart(id, mail){
+    sheet.innerHTML='<h3>Wie wurde bezahlt?</h3>'
+      + '<p class="s">Betrag: <b>'+eur(betragJetzt())+'</b>'+(pauschAktiv()?' · Pauschale':'')+'</p>'
+      + '<input id="cMail" type="hidden" value="'+esc(mail)+'">'
+      + '<div class="stack">'
+      + '<button class="btn btn-primary" id="cRech" onclick="zzZahlart(\''+id+'\',\'bar\')">Bar erhalten</button>'
+      + '<button class="btn btn-ghost" id="cBar" onclick="zzZahlart(\''+id+'\',\'ueberweisung\')">Auf Rechnung (Überweisung)</button>'
+      + '</div>'
+      + '<div class="note">Bar = Rechnung wird erstellt, gesendet und sofort als bezahlt vermerkt.<br>Überweisung = zahlbar binnen 14 Tagen, erscheint in der Mahnprüfung.</div>';
+  }
+
+  window.finish = async function(id, art){
+    var mailEl=el('cMail'); var mail=(mailEl&&mailEl.value||'').trim();
+    if(art==='rechnung' && !/.+@.+\..+/.test(mail)){ alert('Bitte die E-Mail des Kunden eingeben – dorthin geht die Rechnung.'); return; }
+    var pausch=pauschAktiv(); var satz=satzJetzt(); var betrag=betragJetzt();
+    if(pausch && !(betrag>0)){ alert('Bitte den Pauschalbetrag eingeben.'); return; }
+    if(art==='rechnung' && !window.__zzZahlart){ frageZahlart(id, mail); return; }
+    var zahlart = window.__zzZahlart || null;
+    var cR=el('cRech'), cB=el('cBar'); if(cR) cR.disabled=true; if(cB) cB.disabled=true;
+    if(art==='rechnung' && cR) cR.textContent='Rechnung wird erstellt…';
+    var j=auftraege.find(function(x){return x.id===id;});
+    try{
+      await sb.from('auftraege').update({ status: art==='bar'?'bar':'erledigt', stunden: pausch?null:curHours, abrechnung: pausch?'pauschale':'zeit', pauschale_betrag: pausch?betrag:null }).eq('id', id);
+      var nummer = art==='rechnung' ? naechsteNummer() : null;
+      var payload={ betrieb_id:betrieb.id, auftrag_id:id, nummer:nummer, kunde:j.kunde, positionstext:j.aufgabe, stunden: pausch?null:curHours, betrag:betrag, art:art };
+      if(art==='rechnung'){ payload.kunde_email=mail; payload.zahlart=zahlart; if(zahlart==='bar') payload.bezahlt_am=isoDate(); }
+      var rec=null;
+      try{ var q1=await sb.from('rechnungen').insert(payload).select().single(); rec=q1.data; }
+      catch(e){ delete payload.kunde_email; var q2=await sb.from('rechnungen').insert(payload).select().single(); rec=q2.data; }
+      if(!rec) rec=Object.assign({id:'tmp',datum:new Date().toISOString()},payload);
+      rec.kunde_adresse=j.adresse||'';
+      var versendet=false, sendErr='';
+      if(art==='rechnung'){ try{ await sendDoc(rec, mail, 'rechnung'); versendet=true; }catch(e){ sendErr=e.message||'Versand fehlgeschlagen'; } }
+      scrim.classList.remove('show'); await loadData();
+      backBtn.style.display='none'; el('tabs').style.display='none'; el('fab').style.display='none'; el('barSub').textContent=j.kunde;
+      var html;
+      if(art==='bar'){
+        html='<div class="done-hero"><div class="big">✓</div><h2>Auftrag abgeschlossen</h2><p>'+esc(j.kunde)+' · ohne Rechnung.</p><div class="checks" style="text-align:left"><div><span>✓</span> Auftrag auf „erledigt“ gesetzt</div><div style="color:var(--muted)"><span style="color:var(--muted)">–</span> ZeitZurück hat keinen Beleg erstellt</div></div></div><div class="cta"><button class="btn btn-dark" onclick="showList()">Zurück</button></div>';
+      } else {
+        var barZeile = (zahlart==='bar') ? '<div><span>✓</span> Betrag bar erhalten, Rechnung als bezahlt vermerkt</div>' : '<div><span>✓</span> Zahlbar binnen 14 Tagen (Überweisung)</div>';
+        html='<div class="done-hero"><div class="big">✓</div><h2>Rechnung '+esc(rec.nummer)+' '+(versendet?'gesendet':'erstellt')+'</h2><p>'+(versendet?('Als PDF an '+esc(mail)+'.'+(zahlart==='bar'?' Bar erhalten.':' Zahlbar bis '+deDate(faelligAm(rec))+'.')):('Konnte nicht automatisch senden ('+esc(sendErr)+'). Du kannst sie unten erneut senden.'))+'</p></div><div style="padding:0 2px">'+invoiceHTML(rec)+'</div><div class="done-hero"><div class="checks" style="text-align:left"><div><span>'+(versendet?'✓':'–')+'</span> '+(versendet?('Als PDF an '+esc(j.kunde)+' gesendet'):'Noch nicht gesendet')+'</div>'+barZeile+'<div><span>✓</span> Kopie in deine Buchhaltung gelegt</div><div><span>✓</span> Auftrag auf „erledigt“ gesetzt</div></div></div><div class="cta"><button class="btn btn-ghost" onclick="downloadPDF(\''+rec.id+'\')">⬇ PDF</button><button class="btn btn-dark" onclick="showList()">Fertig</button></div>';
+      }
+      screen.innerHTML=html; screen.scrollTop=0;
+    }catch(e){ scrim.classList.remove('show'); alert('Fehler beim Speichern: '+e.message); }
+  };
+})();
