@@ -34,7 +34,12 @@
   .kopf .klein{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-weight:600}
   .kopf h1{font-size:19px;font-weight:600;margin-top:5px;letter-spacing:-.01em}
 
-  .bahn{position:relative;flex:1 1 auto;min-height:0;padding-left:34px}
+  .bahn{
+    position:relative;flex:1 1 auto;min-height:0;
+    overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none;
+  }
+  .bahn::-webkit-scrollbar{display:none}
+  .spur{position:relative;padding-left:34px}
   .linie{
     position:absolute;left:15px;top:8px;bottom:8px;width:2px;
     background:rgba(247,244,235,.13);border-radius:2px;
@@ -133,10 +138,12 @@
   </div>
 
   <div class="bahn" id="bahn">
-    <div class="linie"></div>
-    <div class="linie-aktiv" id="linieAktiv"></div>
-    <div class="paket" id="paket"></div>
-    <!-- Knoten werden eingesetzt -->
+    <div class="spur" id="spur">
+      <div class="linie"></div>
+      <div class="linie-aktiv" id="linieAktiv"></div>
+      <div class="paket" id="paket"></div>
+      <!-- Knoten werden eingesetzt -->
+    </div>
   </div>
 
   <div class="fuss">
@@ -178,6 +185,7 @@
     kurz ? "Sie erfahren davon, wenn Sie Zeit haben." : "Und Sie waren die ganze Zeit bei der Arbeit.";
 
   var bahn = document.getElementById("bahn");
+  var spur = document.getElementById("spur");
   var elemente = liste.map(function(k){
     var d = document.createElement("div");
     d.className = "knoten";
@@ -186,7 +194,7 @@
       '<div class="txt"><div class="titel">' + k.titel + '</div>' +
       '<div class="unter">' + k.unter + '</div>' +
       '<span class="marke">' + k.marke + '</span></div>';
-    bahn.appendChild(d);
+    spur.appendChild(d);
     return d;
   });
 
@@ -211,6 +219,8 @@
     paket.style.top = mitte(el) + "px";
     aktiv.style.height = (mitte(el) + 7 - 8) + "px";
     el.classList.add("an");
+    var ziel = el.offsetTop + el.offsetHeight / 2 - bahn.clientHeight / 2;
+    bahn.scrollTo({ top: Math.max(0, ziel), behavior: "smooth" });
     zaehler.textContent = (i + 1) + " / " + elemente.length;
     i++;
     timer = setTimeout(function(){ if (laeuft) schritt(); }, TAKT);
@@ -228,6 +238,7 @@
     aktiv.style.height = "0";
     paket.style.opacity = "0";
     paket.style.top = "0";
+    bahn.scrollTo({ top: 0, behavior: "smooth" });
     i = 0;
     timer = setTimeout(function(){ if (laeuft) schritt(); }, 500);
   }
