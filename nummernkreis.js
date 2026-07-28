@@ -626,11 +626,12 @@
   var _oc = window.openComplete;
   if(typeof _oc==='function'){ window.openComplete = function(id){ var r=_oc.apply(this,arguments); setTimeout(function(){
     window.__zzZahlart=null;
-    var b=document.getElementById('cBar'); if(b) b.textContent='Ohne Rechnung abschließen';
+    var b=document.getElementById('cBar'); if(b){ b.textContent='Ohne Rechnung abschließen'; b.setAttribute('onclick','zzOhneRechnung(\''+id+'\')'); }
     try{ var n=sheet.querySelector('.note'); if(n) n.innerHTML='Rechnungsnummer wird automatisch vergeben: <b>'+naechsteNummer()+'</b><br>Ohne Rechnung = Auftrag wird nur auf „erledigt“ gesetzt, ZeitZurück erstellt keinen Beleg.'; }catch(e){}
   },0); return r; }; }
 
   window.zzZahlart = function(id, art){ window.__zzZahlart=art; window.finish(id,'rechnung'); };
+  window.zzOhneRechnung = function(id){ window.__zzZahlart=null; window.finish(id,'bar'); };
 
   function frageZahlart(id, mail){
     sheet.innerHTML='<h3>Wie wurde bezahlt?</h3>'
@@ -659,10 +660,12 @@
       var payload={ betrieb_id:betrieb.id, auftrag_id:id, nummer:nummer, kunde:j.kunde, positionstext:j.aufgabe, stunden: pausch?null:curHours, betrag:betrag, art:art };
       if(art==='rechnung'){ payload.kunde_email=mail; payload.zahlart=zahlart; if(zahlart==='bar') payload.bezahlt_am=isoDate(); }
       var rec=null;
-      try{ var q1=await sb.from('rechnungen').insert(payload).select().single(); rec=q1.data; }
-      catch(e){ delete payload.kunde_email; var q2=await sb.from('rechnungen').insert(payload).select().single(); rec=q2.data; }
-      if(!rec) rec=Object.assign({id:'tmp',datum:new Date().toISOString()},payload);
-      rec.kunde_adresse=j.adresse||'';
+      if(art==='rechnung'){
+        try{ var q1=await sb.from('rechnungen').insert(payload).select().single(); rec=q1.data; }
+        catch(e){ delete payload.kunde_email; var q2=await sb.from('rechnungen').insert(payload).select().single(); rec=q2.data; }
+        if(!rec) rec=Object.assign({id:'tmp',datum:new Date().toISOString()},payload);
+        rec.kunde_adresse=j.adresse||'';
+      }
       var versendet=false, sendErr='';
       if(art==='rechnung'){ try{ await sendDoc(rec, mail, 'rechnung'); versendet=true; }catch(e){ sendErr=e.message||'Versand fehlgeschlagen'; } }
       scrim.classList.remove('show'); await loadData();
