@@ -532,3 +532,81 @@
   tabEinhaengen();
 
 })();
+
+
+/* ================= Pauschale statt Stunden ================= */
+(function(){
+  function std(){ try{ return (typeof betrieb!=='undefined' && betrieb && betrieb.abrechnung_standard) || 'zeit'; }catch(e){ return 'zeit'; } }
+  function jobPauschale(j){ if(j && j.abrechnung==='pauschale') return true; if(j && j.abrechnung==='zeit') return false; return std()==='pauschale'; }
+  function recPauschale(i){ return !!i && (i.stunden===null || i.stunden===undefined); }
+  window.zzPos = function(i, stunden, satz){ return recPauschale(i) ? 'Pauschale' : String(stunden).replace('.',',')+' h a \u20ac '+satz+',\u2014'; };
+  window.zzFuss = function(i, satz){ return recPauschale(i) ? 'Vereinbarte Pauschale. Keine Abrechnung nach Stunden.' : 'Abgerechnet wird nach tats\u00e4chlich geleisteter Zeit zu \u20ac '+satz+',\u2014 pro Stunde.'; };
+  window.zzMailSatz = function(){ var r=window.__zzRec; return recPauschale(r) ? 'wird als vereinbarte Pauschale, nicht nach Stunden.' : 'wird nach tats\u00e4chlich geleisteter Zeit zu '+eur(betrieb?betrieb.stundensatz:50)+' pro Stunde.'; };
+  var _sd = window.sendDoc;
+  if(typeof _sd==='function'){ window.sendDoc = function(rec){ window.__zzRec = rec; return _sd.apply(this, arguments); }; }
+  var _sj = window.showJob;
+  if(typeof _sj==='function'){ window.showJob = function(id){ var r=_sj.apply(this,arguments); setTimeout(function(){ try{
+    var j=auftraege.find(function(x){return x.id===id;});
+    if(!j) return; if(j.stunden!==null && j.stunden!==undefined) return; if(!jobPauschale(j)) return;
+    Array.prototype.forEach.call(document.querySelectorAll('.row'), function(row){ var k=row.querySelector('.k'); var v=row.querySelector('.v'); if(!k||!v) return;
+      if(k.textContent==='Geleistete Zeit'){ k.textContent='Abrechnung'; v.textContent='Pauschale'; }
+      if(k.textContent==='Stundensatz'){ row.style.display='none'; } });
+  }catch(e){} },0); return r; }; }
+  var _oc = window.openComplete;
+  if(typeof _oc==='function'){ window.openComplete = function(id){ var r=_oc.apply(this,arguments); setTimeout(function(){ zzUI(id); },0); return r; }; }
+  function zzUI(id){
+    var host=document.querySelector('.hours'); if(!host || document.getElementById('zzModus')) return;
+    var j=null; try{ j=auftraege.find(function(x){return x.id===id;}); }catch(e){}
+    var frage=host.previousElementSibling;
+    var sumEl=document.getElementById('hsum'); var sumP=sumEl?sumEl.parentElement:null;
+    var row=document.createElement('div'); row.id='zzModus'; row.style.cssText='display:flex;gap:8px;margin:0 0 14px';
+    row.innerHTML='<button type="button" data-m="zeit" class="zzb">Nach Zeit</button><button type="button" data-m="pauschale" class="zzb">Pauschale</button>';
+    host.parentNode.insertBefore(row, frage||host);
+    var box=document.createElement('div'); box.id='zzPauschBox'; box.style.cssText='margin:0 0 14px;display:none';
+    box.innerHTML='<p class="s" style="margin:0 0 8px">Vereinbarter Pauschalbetrag (netto)</p><input id="zzBetrag" type="number" inputmode="decimal" min="0" step="0.01" placeholder="z. B. 450" style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(0,0,0,.18);font-size:17px">';
+    host.parentNode.insertBefore(box, host.nextSibling);
+    var betragEl=box.querySelector('#zzBetrag');
+    if(j && j.pauschale_betrag) betragEl.value=j.pauschale_betrag;
+    window.__zzBetrag = betragEl.value || '';
+    betragEl.addEventListener('input', function(){ window.__zzBetrag = betragEl.value; });
+    function paint(m){ window.__zzModus=m;
+      Array.prototype.forEach.call(row.querySelectorAll('.zzb'), function(b){ var on=(b.getAttribute('data-m')===m);
+        b.style.cssText='flex:1;padding:10px 12px;border-radius:999px;cursor:pointer;font-weight:600;font-size:14px;border:1px solid '+(on?'transparent':'rgba(0,0,0,.18)')+';background:'+(on?'#C9A054':'transparent')+';color:'+(on?'#12281d':'inherit'); });
+      var p=(m==='pauschale'); host.style.display=p?'none':''; if(frage) frage.style.display=p?'none':''; box.style.display=p?'':'none'; if(sumP) sumP.style.display=p?'none':''; }
+    Array.prototype.forEach.call(row.querySelectorAll('.zzb'), function(b){ b.addEventListener('click', function(){ paint(b.getAttribute('data-m')); }); });
+    paint(jobPauschale(j)?'pauschale':'zeit');
+  }
+  var _fin = window.finish;
+  window.finish = async function(id, art){
+    if(window.__zzModus!=='pauschale'){ return _fin.apply(this, arguments); }
+    var mailEl=el('cMail'); var mail=(mailEl&&mailEl.value||'').trim();
+    if(art==='rechnung' && !/.+@.+\..+/.test(mail)){ alert('Bitte die E-Mail des Kunden eingeben \u2013 dorthin geht die Rechnung.'); return; }
+    var betrag=Number(String(window.__zzBetrag||'').replace(',','.'));
+    if(!(betrag>0)){ alert('Bitte den Pauschalbetrag eingeben.'); return; }
+    el('cRech').disabled=true; el('cBar').disabled=true;
+    if(art==='rechnung') el('cRech').textContent='Rechnung wird erstellt\u2026';
+    var j=auftraege.find(function(x){return x.id===id;});
+    try{
+      await sb.from('auftraege').update({ status: art==='bar'?'bar':'erledigt', stunden: null, abrechnung:'pauschale', pauschale_betrag: betrag }).eq('id', id);
+      var nummer = art==='rechnung' ? naechsteNummer() : null;
+      var payload={ betrieb_id:betrieb.id, auftrag_id:id, nummer:nummer, kunde:j.kunde, positionstext:j.aufgabe, stunden:null, betrag:betrag, art:art };
+      if(art==='rechnung') payload.kunde_email=mail;
+      var rec=null;
+      try{ var r1=await sb.from('rechnungen').insert(payload).select().single(); rec=r1.data; }
+      catch(e){ delete payload.kunde_email; var r2=await sb.from('rechnungen').insert(payload).select().single(); rec=r2.data; }
+      if(!rec) rec=Object.assign({id:'tmp',datum:new Date().toISOString()},payload);
+      rec.kunde_adresse=j.adresse||'';
+      var versendet=false, sendErr='';
+      if(art==='rechnung'){ try{ await sendDoc(rec, mail, 'rechnung'); versendet=true; }catch(e){ sendErr=e.message||'Versand fehlgeschlagen'; } }
+      scrim.classList.remove('show'); await loadData();
+      backBtn.style.display='none'; el('tabs').style.display='none'; el('fab').style.display='none'; el('barSub').textContent=j.kunde;
+      var html;
+      if(art==='bar'){
+        html='<div class="done-hero"><div class="big">\u2713</div><h2>Auftrag erledigt</h2><p>'+esc(j.kunde)+' \u00b7 bar bezahlt (Pauschale).</p><div class="checks" style="text-align:left"><div><span>\u2713</span> Auftrag auf \u201eerledigt\u201c gesetzt</div><div style="color:var(--muted)"><span style="color:var(--muted)">\u2013</span> Kein Beleg \u00fcber ZeitZur\u00fcck (Barzahlung)</div></div></div><div class="cta"><button class="btn btn-dark" onclick="showList()">Zur\u00fcck</button></div>';
+      } else {
+        html='<div class="done-hero"><div class="big">\u2713</div><h2>Rechnung '+esc(rec.nummer)+' '+(versendet?'gesendet':'erstellt')+'</h2><p>'+(versendet?('Als PDF an '+esc(mail)+'. Zahlbar bis '+deDate(faelligAm(rec))+'.'):('Konnte nicht automatisch senden ('+esc(sendErr)+'). Du kannst sie unten erneut senden.'))+'</p></div><div style="padding:0 2px">'+invoiceHTML(rec)+'</div><div class="done-hero"><div class="checks" style="text-align:left"><div><span>'+(versendet?'\u2713':'\u2013')+'</span> '+(versendet?('Als PDF an '+esc(j.kunde)+' gesendet'):'Noch nicht gesendet')+'</div><div><span>\u2713</span> Kopie in deine Buchhaltung gelegt</div><div><span>\u2713</span> Auftrag auf \u201eerledigt\u201c gesetzt</div></div></div><div class="cta"><button class="btn btn-ghost" onclick="downloadPDF(\''+rec.id+'\')">\u2b07 PDF</button><button class="btn btn-dark" onclick="showList()">Fertig</button></div>';
+      }
+      screen.innerHTML=html; screen.scrollTop=0;
+    }catch(e){ scrim.classList.remove('show'); alert('Fehler beim Speichern: '+e.message); }
+  };
+})();

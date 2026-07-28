@@ -526,7 +526,7 @@ function buildPDF(i, art){
   let yN=yR+(txt.length*5);
   if(stunden){
     doc.setFontSize(9.5); doc.setTextColor(90);
-    doc.text(String(stunden).replace('.',',')+' h a € '+satz+',—', L+26, yN);
+    doc.text((window.zzPos?window.zzPos(i,stunden,satz):String(stunden).replace('.',',')+' h a € '+satz+',—'), L+26, yN);
     doc.setTextColor(0);
   }
 
@@ -546,7 +546,7 @@ function buildPDF(i, art){
     const es=doc.splitTextToSize(et,R-L); doc.text(es,L,yF); yF+=es.length*5+7;
   }
   if(!betrieb || betrieb.kleinunternehmer){ doc.text('Umsatzsteuerbefreiung gem. § 6 Abs. 1 Z 27 UStG.', L, yF); yF+=9; }
-  if(art==='rechnung'){ doc.text('Abgerechnet wird nach tatsächlich geleisteter Zeit zu € '+satz+',— pro Stunde.', L, yF); yF+=9; }
+  if(art==='rechnung'){ doc.text((window.zzFuss?window.zzFuss(i,satz):'Abgerechnet wird nach tatsächlich geleisteter Zeit zu € '+satz+',— pro Stunde.'), L, yF); yF+=9; }
   if(k.iban && art!=='storno'){
     const zt=doc.splitTextToSize('Ich ersuche um Überweisung des oben genannten Betrages '+(art==='rechnung'?('binnen '+k.zahlungsziel+' Tagen '):'')+'auf mein Konto bei der '+k.bank+', mit dem IBAN: '+k.iban+', BIC: '+k.bic+' und verbleibe', R-L);
     doc.text(zt,L,yF); yF+=zt.length*5+7;
@@ -578,7 +578,7 @@ async function sendDoc(rec, empfaenger, art){
                 : ('Ihre Rechnung '+rec.nummer+' – '+(betrieb?betrieb.name:''));
   let text;
   if(art==='rechnung'){
-    text='Sehr geehrte/r '+(rec.kunde||'')+',\n\nvielen Dank für Ihren Auftrag. Im Anhang finden Sie Ihre Rechnung '+rec.nummer+' über '+eur(rec.betrag)+'.\n\nLeistung: '+(rec.positionstext||'')+'\n\nAbgerechnet wird nach tatsächlich geleisteter Zeit zu '+eur(betrieb?betrieb.stundensatz:50)+' pro Stunde.\n\nIch ersuche um Überweisung des Betrages binnen '+k.zahlungsziel+' Tagen auf mein Konto bei der '+k.bank+',\nIBAN: '+k.iban+', BIC: '+k.bic+'.\n\nMit freundlichen Grüßen\n'+(betrieb?betrieb.inhaber:'')+'\n'+(betrieb?betrieb.name:'');
+    text='Sehr geehrte/r '+(rec.kunde||'')+',\n\nvielen Dank für Ihren Auftrag. Im Anhang finden Sie Ihre Rechnung '+rec.nummer+' über '+eur(rec.betrag)+'.\n\nLeistung: '+(rec.positionstext||'')+'\n\nAbgerechnet '+(window.zzMailSatz?window.zzMailSatz():'wird nach tatsächlich geleisteter Zeit zu '+eur(betrieb?betrieb.stundensatz:50)+' pro Stunde.')+'\n\nIch ersuche um Überweisung des Betrages binnen '+k.zahlungsziel+' Tagen auf mein Konto bei der '+k.bank+',\nIBAN: '+k.iban+', BIC: '+k.bic+'.\n\nMit freundlichen Grüßen\n'+(betrieb?betrieb.inhaber:'')+'\n'+(betrieb?betrieb.name:'');
   } else if(art==='erinnerung'){
     text='Sehr geehrte/r '+(rec.kunde||'')+',\n\ndarf ich höflich an die offene Rechnung '+rec.nummer+' über '+eur(rec.betrag)+' erinnern? Sie war am '+deDate(faelligAm(rec))+' zur Zahlung fällig.\n\nVermutlich ist sie im Alltag untergegangen. Sollten Sie bereits bezahlt haben, betrachten Sie diese Nachricht bitte als gegenstandslos.\n\nDie Rechnung finden Sie noch einmal im Anhang.\nIBAN: '+k.iban+', BIC: '+k.bic+' ('+k.bank+').\n\nMit freundlichen Grüßen\n'+(betrieb?betrieb.inhaber:'')+'\n'+(betrieb?betrieb.name:'');
   } else if(art==='mahnung'){
