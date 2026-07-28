@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>ZeitZurück — Ablauf</title>
+<style>
+  :root{
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --petrol:#1A3A2B;
+    --petrol-deep:#12281d;
+    --ivory:#F7F4EB;
+    --beige:#d9cbb3;
+    --gold:#C9A054;
+    --ink:#14221b;
+    --muted:#5c6a63;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:var(--sans);
+    background:var(--petrol-deep);
+    color:var(--ivory);
+    display:flex;align-items:center;justify-content:center;
+    overflow:hidden;cursor:pointer;user-select:none;
+  }
+  .frame{
+    position:relative;width:100%;max-width:640px;height:100%;
+    padding:26px 22px;display:flex;flex-direction:column;
+  }
+
+  .kopf{flex:0 0 auto;margin-bottom:14px}
+  .kopf .klein{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-weight:600}
+  .kopf h1{font-size:19px;font-weight:600;margin-top:5px;letter-spacing:-.01em}
+
+  .bahn{position:relative;flex:1 1 auto;min-height:0;padding-left:34px}
+  .linie{
+    position:absolute;left:15px;top:8px;bottom:8px;width:2px;
+    background:rgba(247,244,235,.13);border-radius:2px;
+  }
+  .linie-aktiv{
+    position:absolute;left:15px;top:8px;width:2px;height:0;
+    background:linear-gradient(180deg,var(--gold),rgba(201,160,84,.35));
+    border-radius:2px;transition:height .5s cubic-bezier(.4,0,.2,1);
+  }
+  .paket{
+    position:absolute;left:9px;top:0;width:14px;height:14px;border-radius:50%;
+    background:var(--gold);box-shadow:0 0 0 5px rgba(201,160,84,.18),0 0 18px rgba(201,160,84,.7);
+    opacity:0;transition:top .5s cubic-bezier(.4,0,.2,1),opacity .25s;
+  }
+
+  .knoten{
+    position:relative;display:flex;gap:12px;align-items:flex-start;
+    padding:11px 14px;margin-bottom:9px;border-radius:13px;
+    background:rgba(247,244,235,.045);
+    border:1px solid rgba(247,244,235,.09);
+    opacity:.32;transform:translateY(5px);
+    transition:opacity .4s,transform .4s,background .4s,border-color .4s;
+  }
+  .knoten::before{
+    content:"";position:absolute;left:-25px;top:19px;width:19px;height:2px;
+    background:rgba(247,244,235,.13);transition:background .4s;
+  }
+  .knoten.an{
+    opacity:1;transform:translateY(0);
+    background:rgba(247,244,235,.09);
+    border-color:rgba(201,160,84,.42);
+  }
+  .knoten.an::before{background:var(--gold)}
+
+  .icon{
+    flex:0 0 auto;width:30px;height:30px;border-radius:9px;
+    background:rgba(201,160,84,.16);display:flex;align-items:center;justify-content:center;
+    font-size:15px;line-height:1;
+  }
+  .knoten.an .icon{background:rgba(201,160,84,.3)}
+  .txt{flex:1 1 auto;min-width:0}
+  .titel{font-size:14px;font-weight:600;letter-spacing:-.005em}
+  .unter{font-size:12.5px;color:rgba(247,244,235,.62);margin-top:2px;line-height:1.4}
+  .marke{
+    display:inline-block;margin-top:6px;padding:2px 8px;border-radius:6px;
+    background:rgba(201,160,84,.18);color:var(--gold);
+    font-size:11px;font-weight:600;letter-spacing:.01em;
+    opacity:0;transform:translateY(-3px);transition:opacity .35s,transform .35s;
+  }
+  .knoten.an .marke{opacity:1;transform:translateY(0)}
+
+  .fuss{
+    flex:0 0 auto;margin-top:12px;font-size:12.5px;color:rgba(247,244,235,.5);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;
+  }
+  .hinweis{opacity:0;transition:opacity .4s}
+  .hinweis.an{opacity:1}
+
+  .ende{
+    position:absolute;inset:0;background:var(--petrol-deep);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:30px;gap:9px;
+    opacity:0;pointer-events:none;transition:opacity .5s;
+  }
+  .ende.an{opacity:1;pointer-events:auto}
+  .ende .gross{font-size:23px;font-weight:600;letter-spacing:-.015em;line-height:1.3}
+  .ende .klein{font-size:14px;color:rgba(247,244,235,.62)}
+  .ende .nochmal{
+    margin-top:10px;padding:9px 18px;border-radius:999px;
+    border:1px solid rgba(201,160,84,.5);color:var(--gold);
+    font-size:13px;font-weight:600;
+  }
+
+  .pause{
+    position:absolute;top:14px;right:16px;font-size:11px;letter-spacing:.1em;
+    text-transform:uppercase;color:rgba(247,244,235,.45);
+    opacity:0;transition:opacity .25s;
+  }
+  .pause.an{opacity:1}
+
+  @media (max-width:420px){
+    .frame{padding:20px 16px}
+    .kopf h1{font-size:17px}
+    .titel{font-size:13.5px}
+    .unter{font-size:12px}
+  }
+</style>
+</head>
+<body>
+<div class="frame">
+  <div class="pause" id="pause">Pausiert</div>
+
+  <div class="kopf">
+    <div class="klein">Der Ablauf</div>
+    <h1 id="kopfzeile">Von der Anfrage bis zum Termin</h1>
+  </div>
+
+  <div class="bahn" id="bahn">
+    <div class="linie"></div>
+    <div class="linie-aktiv" id="linieAktiv"></div>
+    <div class="paket" id="paket"></div>
+    <!-- Knoten werden eingesetzt -->
+  </div>
+
+  <div class="fuss">
+    <span class="hinweis" id="hinweis">Klick zum Pausieren</span>
+    <span id="zaehler"></span>
+  </div>
+
+  <div class="ende" id="ende">
+    <div class="gross" id="endeGross"></div>
+    <div class="klein" id="endeKlein"></div>
+    <div class="nochmal">Noch einmal ansehen</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var KNOTEN = [
+    { icon:"💬", titel:"Anfrage kommt herein",   unter:"Über Ihre Website — jederzeit, auch nachts.", marke:"Kunde schreibt" },
+    { icon:"🤖", titel:"ZeitZurück fragt nach",  unter:"Nur das Nötige: was, wo, wie viel.",          marke:"Automatisch" },
+    { icon:"⏱️", titel:"Dauer wird geschätzt",   unter:"Aus Ihren eigenen Erfahrungswerten.",         marke:"≈ 2 Std" },
+    { icon:"📅", titel:"Freier Termin gefunden", unter:"Echter Blick in Ihren Kalender.",             marke:"Di, 14:00" },
+    { icon:"✅", titel:"Termin gebucht",          unter:"Im Kalender eingetragen, fix.",               marke:"Gebucht" },
+    { icon:"✉️", titel:"Bestätigung verschickt", unter:"An den Kunden und an Sie.",                   marke:"Zugestellt" },
+    { icon:"📋", titel:"Auftrag in Ihrer App",   unter:"Steht da, bevor Sie hinfahren.",              marke:"Angelegt",  lang:true },
+    { icon:"⏲️", titel:"Zeit erfasst",            unter:"Ein Tipp auf dem Handy, vor Ort.",            marke:"2 Std 15", lang:true },
+    { icon:"🧾", titel:"Rechnung unterwegs",     unter:"Fertig geschrieben, direkt beim Kunden.",     marke:"Nr. 03/2026", lang:true }
+  ];
+
+  var p = new URLSearchParams(location.search);
+  var kurz = (p.get("bis") === "termin");
+
+  var liste = KNOTEN.filter(function(k){ return kurz ? !k.lang : true; });
+
+  document.getElementById("kopfzeile").textContent =
+    kurz ? "Von der Anfrage bis zum Termin" : "Von der Anfrage bis zur Rechnung";
+  document.getElementById("endeGross").textContent =
+    kurz ? "Kein Anruf. Kein Rückruf. Kein verpasster Kunde." : "Angefragt, gebucht, erledigt, verrechnet.";
+  document.getElementById("endeKlein").textContent =
+    kurz ? "Sie erfahren davon, wenn Sie Zeit haben." : "Und Sie waren die ganze Zeit bei der Arbeit.";
+
+  var bahn = document.getElementById("bahn");
+  var elemente = liste.map(function(k){
+    var d = document.createElement("div");
+    d.className = "knoten";
+    d.innerHTML =
+      '<div class="icon">' + k.icon + '</div>' +
+      '<div class="txt"><div class="titel">' + k.titel + '</div>' +
+      '<div class="unter">' + k.unter + '</div>' +
+      '<span class="marke">' + k.marke + '</span></div>';
+    bahn.appendChild(d);
+    return d;
+  });
+
+  var paket   = document.getElementById("paket");
+  var aktiv   = document.getElementById("linieAktiv");
+  var ende    = document.getElementById("ende");
+  var pauseEl = document.getElementById("pause");
+  var hinweis = document.getElementById("hinweis");
+  var zaehler = document.getElementById("zaehler");
+
+  var i = 0, laeuft = true, timer = null;
+  var TAKT = 1500;
+
+  function mitte(el){
+    return el.offsetTop + el.offsetHeight / 2 - 7;
+  }
+
+  function schritt(){
+    if (i >= elemente.length) { schluss(); return; }
+    var el = elemente[i];
+    paket.style.opacity = "1";
+    paket.style.top = mitte(el) + "px";
+    aktiv.style.height = (mitte(el) + 7 - 8) + "px";
+    el.classList.add("an");
+    zaehler.textContent = (i + 1) + " / " + elemente.length;
+    i++;
+    timer = setTimeout(function(){ if (laeuft) schritt(); }, TAKT);
+  }
+
+  function schluss(){
+    paket.style.opacity = "0";
+    ende.classList.add("an");
+    timer = setTimeout(function(){ if (laeuft) neustart(); }, 4200);
+  }
+
+  function neustart(){
+    ende.classList.remove("an");
+    elemente.forEach(function(e){ e.classList.remove("an"); });
+    aktiv.style.height = "0";
+    paket.style.opacity = "0";
+    paket.style.top = "0";
+    i = 0;
+    timer = setTimeout(function(){ if (laeuft) schritt(); }, 500);
+  }
+
+  document.body.addEventListener("click", function(){
+    laeuft = !laeuft;
+    pauseEl.classList.toggle("an", !laeuft);
+    if (laeuft) { schritt(); } else { clearTimeout(timer); }
+  });
+
+  setTimeout(function(){ hinweis.classList.add("an"); }, 1200);
+  setTimeout(function(){ hinweis.classList.remove("an"); }, 5200);
+  timer = setTimeout(schritt, 600);
+})();
+</script>
+</body>
+</html>
