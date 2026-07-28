@@ -46,15 +46,15 @@
   .bahn-hell{fill:none;stroke-width:2.6;stroke-linecap:round;opacity:.9}
 
   /* Knoten */
-  .knoten{opacity:.3;transition:opacity .7s cubic-bezier(.3,0,.2,1)}
+  .knoten{opacity:.3;transition:opacity .5s cubic-bezier(.33,0,.2,1)}
   .knoten.an{opacity:1}
   .huelle{
     fill:rgba(247,244,235,.035);stroke:rgba(247,244,235,.11);stroke-width:1.4;
-    transition:fill .7s,stroke .7s;
+    transition:fill .5s cubic-bezier(.33,0,.2,1),stroke .5s cubic-bezier(.33,0,.2,1);
   }
   .knoten.an .huelle{fill:rgba(247,244,235,.07)}
   .sym{fill:none;stroke:rgba(247,244,235,.55);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;
-       transition:stroke .7s}
+       transition:stroke .5s cubic-bezier(.33,0,.2,1)}
   .name{font-size:13px;font-weight:600;text-anchor:middle;fill:rgba(247,244,235,.94);letter-spacing:-.006em}
   .zusatz{font-size:11.5px;text-anchor:middle;fill:rgba(247,244,235,.44)}
   .nr{font-size:10.5px;text-anchor:middle;fill:rgba(247,244,235,.3);font-weight:600;letter-spacing:.06em}
@@ -324,7 +324,7 @@
   var zaehler = document.getElementById("zaehler");
 
   var idx = -1, laeuft = true, raf = null, warte = null;
-  var REISE = 850, HALT = 900, UEBER = 2400, PAUSE_REIHE = 1600;
+  var REISE = 700, HALT = 740, UEBER = 2050, PAUSE_REIHE = 1350;
 
   function setzePaket(x, y, farbe){
     paket.setAttribute("cx", x); paket.setAttribute("cy", y);
@@ -358,7 +358,7 @@
       if (!laeuft){ raf = requestAnimationFrame(tick); return; }
       if (start === null) start = t;
       var f = Math.min(1, (t - start) / dauer);
-      var e = f < .5 ? 4 * f * f * f : 1 - Math.pow(-2 * f + 2, 3) / 2;
+      var e = f * f * (3 - 2 * f);              /* weich hinein, weich hinaus */
       var pt = k.el.getPointAtLength(e * k.laenge);
       var st = stationen[Math.min(n, stationen.length - 1)];
       setzePaket(pt.x, pt.y, st.farbe);
@@ -384,7 +384,7 @@
           return;
         }
         var hin = lok < .52 ? lok / .52 : 1 - (lok - .52) / .48;      /* raus und zurück */
-        var e = hin < .5 ? 2 * hin * hin : 1 - Math.pow(-2 * hin + 2, 2) / 2;
+        var e = hin * hin * (3 - 2 * hin);
         var q = fu.linie.getPointAtLength(e * fu.laenge);
         fu.punkt.setAttribute("cx", q.x);
         fu.punkt.setAttribute("cy", q.y);
@@ -427,7 +427,7 @@
         fahre(idx, wechsel ? UEBER : REISE, ankunft);
       });
     }
-    if (idx === DENK_STATION && fuehler.length){ denken(1900, weiter); return; }
+    if (idx === DENK_STATION && fuehler.length){ denken(1620, weiter); return; }
     weiter();
   }
 
