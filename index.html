@@ -317,7 +317,7 @@
         <p>Einmal ansehen — oder in vier Schritten nachlesen.</p>
       </div>
       <div class="video-embed">
-        <iframe src="explainer.html" title="ZeitZurück – So funktioniert's" id="explainerFrame"></iframe>
+        <iframe src="flow.html" title="ZeitZurück – So funktioniert's" id="explainerFrame"></iframe>
       </div>
     </div>
     <div class="steps" id="steps"></div>
@@ -467,12 +467,7 @@ const CONFIG = {
     { id:"reinigungskraft", label:"Reinigungskraft", supported:true, hourly:35, adminMin:60 },
     { id:"sonstiges",   label:"Sonstiges",        supported:true, hourly:70, adminMin:90  }
   ],
-  steps: [
-    { t:"Kunde schreibt", d:"Über Ihre Website oder WhatsApp – jederzeit." },
-    { t:"ZeitZurück fragt nach", d:"Sammelt alle nötigen Infos zur Anfrage." },
-    { t:"Termin wird gefunden", d:"Passender freier Termin, direkt gebucht." },
-    { t:"Bestätigung", d:"Kunde und Betrieb erhalten die Bestätigung." }
-  ],
+  steps: [],
   packages: [
     { name:"Anfragen &amp; Termine", price:59, setup:549, ablauf:"flow.html?bis=termin",
       desc:"Ihre Kunden fragen an, ZeitZurück nimmt auf und bucht den Termin. Die Rechnung schreiben Sie weiterhin selbst.",
@@ -707,7 +702,7 @@ start();
 (function(){
   const NAV_H=66;
   const frame=document.getElementById('explainerFrame');
-  function playExplainer(){ if(frame) frame.src='explainer.html?play='+Date.now(); }
+  function playExplainer(){ if(frame) frame.src='flow.html?play='+Date.now(); }
   function smartScrollTo(el){
     const r=el.getBoundingClientRect();
     const avail=window.innerHeight-NAV_H;
