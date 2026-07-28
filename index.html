@@ -233,6 +233,15 @@
   #toTop:hover{background:var(--petrol-deep)}
   #toTop.show{opacity:1;visibility:visible;transform:none}
   @media(max-width:600px){#toTop{right:16px;bottom:16px;width:44px;height:44px}}
+
+    .pkg-ablauf{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;margin:2px 0 10px;padding:11px 14px;border-radius:999px;border:1px solid rgba(31,61,52,.18);background:transparent;color:#1A3A2B;font:inherit;font-size:13.5px;font-weight:600;cursor:pointer;transition:background .2s,border-color .2s}
+    .pkg-ablauf:hover{background:rgba(26,58,43,.06);border-color:rgba(31,61,52,.34)}
+    .pkg-ablauf svg{width:15px;height:15px;flex:0 0 auto}
+    #ablaufBox{position:fixed;inset:0;z-index:90;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(10,24,18,.72)}
+    #ablaufBox.auf{display:flex}
+    #ablaufBox .rahmen{position:relative;width:min(1160px,100%);height:min(680px,86vh);border-radius:20px;overflow:hidden;box-shadow:0 30px 90px rgba(0,0,0,.5);background:#0d1f17}
+    #ablaufBox iframe{width:100%;height:100%;border:0;display:block}
+    #ablaufBox .zu{position:absolute;top:12px;right:14px;z-index:2;width:34px;height:34px;border-radius:50%;border:1px solid rgba(247,244,235,.25);background:rgba(13,31,23,.6);color:#F7F4EB;font-size:17px;line-height:1;cursor:pointer}
 </style>
 </head>
 <body>
@@ -448,10 +457,10 @@ const CONFIG = {
     { t:"Bestätigung", d:"Kunde und Betrieb erhalten die Bestätigung." }
   ],
   packages: [
-    { name:"Anfragen &amp; Termine", price:59, setup:549,
+    { name:"Anfragen &amp; Termine", price:59, setup:549, ablauf:"flow.html?bis=termin",
       desc:"Ihre Kunden fragen an, ZeitZurück nimmt auf und bucht den Termin. Die Rechnung schreiben Sie weiterhin selbst.",
       features:["Website-Chat","WhatsApp-Kanal","Termine im Kalender","Automatische Bestätigung","Kunde verschiebt oder sagt selbst ab"] },
-    { name:"Von der Anfrage bis zur Rechnung", price:89, setup:999, featured:true,
+    { name:"Von der Anfrage bis zur Rechnung", price:89, setup:999, ablauf:"flow.html", featured:true,
       desc:"Alles davon — und danach Auftrag, Zeiten und Rechnung in Ihrer App.",
       features:["Alles aus Anfragen &amp; Termine","Aufträge und Zeiten in Ihrer App","Rechnung schreiben und versenden","Rechnung geht direkt an den Kunden","Übersicht offener Rechnungen"] }
   ]
@@ -470,6 +479,7 @@ document.getElementById('pkgs').innerHTML = CONFIG.packages.map(p=>`
     <a class="setup-line" href="einrichtung">+ einmalig ${p.setup} € Einrichtung ›</a>
     <div class="desc">${p.desc}</div>
     <ul>${p.features.map(f=>`<li>${f}</li>`).join('')}</ul>
+    <button type="button" class="pkg-ablauf" data-ablauf="${p.ablauf}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M10 8.5l6 3.5-6 3.5z"></path></svg>Ablauf ansehen</button>
     <button type="button" class="btn ${p.featured?'btn-primary':'btn-dark'} pkg-select" data-pkg="${p.name}" style="justify-content:center;border:none;cursor:pointer;font-family:inherit;font-size:15px;width:100%">Auswählen</button>
   </div>`).join('');
 
@@ -722,6 +732,19 @@ start();
       navLinks.classList.remove('open'); navToggle.setAttribute('aria-expanded','false');
     }));
   }
+})();
+</script>
+<div id="ablaufBox"><div class="rahmen"><button class="zu" type="button" aria-label="Schliessen">×</button><iframe id="ablaufRahmen" title="Ablauf" src="about:blank"></iframe></div></div>
+<script>
+(function(){
+  var box=document.getElementById("ablaufBox"), rah=document.getElementById("ablaufRahmen");
+  function zu(){ box.classList.remove("auf"); rah.src="about:blank"; }
+  document.addEventListener("click", function(e){
+    var b=e.target.closest(".pkg-ablauf");
+    if(b){ e.preventDefault(); rah.src=b.getAttribute("data-ablauf"); box.classList.add("auf"); return; }
+    if(e.target.closest("#ablaufBox .zu") || e.target===box){ zu(); }
+  });
+  document.addEventListener("keydown", function(e){ if(e.key==="Escape") zu(); });
 })();
 </script>
 </body>
