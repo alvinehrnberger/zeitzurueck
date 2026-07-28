@@ -243,7 +243,7 @@
     <button class="nav-toggle" id="navToggle" aria-label="Menü" aria-expanded="false"><span></span><span></span><span></span></button>
     <div class="links" id="navLinks">
       <a href="#how">So funktioniert's</a>
-      <a href="#pakete">Pakete</a>
+      <a href="#pakete">Preis</a>
       <a href="#case">Referenz</a>
       <a href="einrichtung">Setup-Pauschale</a>
       <a href="app">Login</a>
@@ -260,7 +260,7 @@
       <div class="gold-line"></div>
       <p class="support">Kundenanfragen aufnehmen, Termine koordinieren und Bestätigungen versenden – automatisch über Website und WhatsApp. Ohne technisches Wissen. Rund um die Uhr.</p>
       <div class="cta-row">
-        <a href="#pakete" class="btn btn-primary">Pakete ansehen</a>
+        <a href="#pakete" class="btn btn-primary">Preis ansehen</a>
         <a href="#how" class="btn btn-ghost">So funktioniert's</a>
       </div>
       <div class="trust-mini">
@@ -303,13 +303,19 @@
 <section id="pakete">
   <div class="wrap">
     <div class="sec-head">
-      <span class="eyebrow">Pakete</span>
-      <h2>Wie viel Büro sollen wir übernehmen?</h2>
-      <p>Aufbau, Betrieb und Überwachung sind in jeder Stufe enthalten. Sie wechseln jederzeit.</p>
+      <span class="eyebrow">Preis</span>
+      <h2>Keine Pakete. Eine Frage.</h2>
+      <p>Schreiben Sie Ihre Rechnungen schon selbst — oder soll ZeitZurück das mitmachen?</p>
     </div>
     <div class="pkgs" id="pkgs"></div>
     <div id="taxNote" style="text-align:center;margin-top:14px;font-size:13px;color:rgba(244,240,231,.6)"></div>
-    <div class="pkg-setup" style="text-align:center;margin-top:18px;font-size:15px;max-width:640px;margin-left:auto;margin-right:auto">Bei ZeitZurück erhalten Sie Ihr komplettes digitales Büro zum einmaligen <strong>Gründungspreis von 999 €</strong> – auf Wunsch in Raten. <a href="einrichtung" style="color:var(--gold);font-weight:600;white-space:nowrap">Alle Leistungen ansehen ›</a></div>
+    <div class="pkg-setup">
+      <strong>Einmalige Einrichtung</strong><br>
+      Einzelunternehmer, Domain und Kalender vorhanden — <strong>999 €</strong><br>
+      Domain, Geschäfts-E-Mail und WhatsApp müssen neu eingerichtet werden — <strong>ca. 1.300 €</strong><br>
+      Mehrere Mitarbeiter mit eigenen Kalendern — <strong>ab ca. 1.600 €</strong><br>
+      Ihre Zahl bekommen Sie im Erstgespräch. Sie ändert sich danach nicht. <a href="einrichtung">Alle Leistungen ansehen ›</a>
+    </div>
   </div>
 </section>
 
@@ -444,12 +450,11 @@ const CONFIG = {
     { t:"Bestätigung", d:"Kunde und Betrieb erhalten die Bestätigung." }
   ],
   packages: [
-    { name:"START", price:59,  desc:"Sie verpassen keine Anfrage mehr. Für Einzelunternehmer, die über ihre Website gefunden werden.",
-      features:["Website-Chat","Terminbuchung im Kalender","Automatische Bestätigung","Laufende Überwachung"] },
-    { name:"PLUS",  price:99,  desc:"Der ganze Auftrag läuft durch. Bis zur Rechnung.", featured:true,
-      features:["Alles aus START","WhatsApp-Kanal","Aufträge, Zeiten und Rechnungen in Ihrer App","Kunde verschiebt oder sagt selbst ab","Übersicht offener Rechnungen"] },
-    { name:"PRO",   price:149, desc:"Höhere Nutzung, mehr Support, erweiterter Funktionsumfang.",
-      features:["Alles aus PLUS","Höhere Nutzungsgrenzen","Erweiterter Support","Priorisierte Betreuung"] }
+    { name:"Anfragen &amp; Termine", price:59, desc:"Für Betriebe, die ihre Rechnungen selbst schreiben — oder eine Registrierkasse haben.",
+      features:["Website-Chat","WhatsApp-Kanal","Termine im Kalender","Automatische Bestätigung","Kunde verschiebt oder sagt selbst ab"] },
+    { name:"Das ganze Büro", price:89, desc:"ZeitZurück übernimmt auch das Papier danach.", featured:true,
+      features:["Alles aus Anfragen &amp; Termine","Aufträge und Zeiten in Ihrer App","Rechnung schreiben und versenden","Übersicht offener Rechnungen"] }
+  ] }
   ]
 };
 
@@ -461,10 +466,9 @@ document.getElementById('steps').innerHTML = CONFIG.steps.map((s,i)=>`
 
 document.getElementById('pkgs').innerHTML = CONFIG.packages.map(p=>`
   <div class="pkg ${p.featured?'featured':''}">
-    ${p.featured?'<div class="tag">Beliebt</div>':''}
+    ${p.tag?`<div class="tag">${p.tag}</div>`:''}
     <div class="name">${p.name}</div>
     <div class="price">${p.price} €<span>/Monat</span></div>
-    <a class="setup-line" href="einrichtung">+ einmalig ${fmt(CONFIG.setup)} € Setup-Pauschale ›</a>
     <div class="desc">${p.desc}</div>
     <ul>${p.features.map(f=>`<li>${f}</li>`).join('')}</ul>
     <button type="button" class="btn ${p.featured?'btn-primary':'btn-dark'} pkg-select" data-pkg="${p.name}" style="justify-content:center;border:none;cursor:pointer;font-family:inherit;font-size:15px;width:100%">Auswählen</button>
@@ -574,7 +578,7 @@ function offerNext(){
   clearControls();
   bot("Schauen Sie sich in Ruhe unsere Pakete an – und kommen Sie danach einfach hierher zurück. Oder hinterlassen Sie gleich Ihre Kontaktdaten für einen konkreten Vorschlag.");
   const box=document.createElement('div'); box.className='chips';
-  const pkg=document.createElement('a'); pkg.className='btn btn-primary'; pkg.href='#pakete'; pkg.style.justifyContent='center'; pkg.textContent='Pakete ansehen';
+  const pkg=document.createElement('a'); pkg.className='btn btn-primary'; pkg.href='#pakete'; pkg.style.justifyContent='center'; pkg.textContent='Preis ansehen';
   const contact=document.createElement('button'); contact.className='chip'; contact.textContent='Kontakt hinterlassen';
   const again=document.createElement('button'); again.className='chip'; again.textContent='Neu berechnen';
   box.appendChild(pkg); box.appendChild(contact); box.appendChild(again);
@@ -599,7 +603,7 @@ function offerContact(){
   btn.onclick=go; inp.addEventListener('keydown',e=>{if(e.key==='Enter')go();});
   row.appendChild(inp); row.appendChild(btn); wrap.appendChild(row); controls.appendChild(wrap);
   const box=document.createElement('div'); box.className='chips';
-  box.innerHTML=`<a href="#pakete" class="btn btn-dark" style="justify-content:center">Pakete ansehen</a>
+  box.innerHTML=`<a href="#pakete" class="btn btn-dark" style="justify-content:center">Preis ansehen</a>
                  <button class="chip" id="again">Neu berechnen</button>`;
   controls.appendChild(box);
   document.getElementById('again').onclick=start;
