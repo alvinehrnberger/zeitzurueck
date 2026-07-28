@@ -216,7 +216,7 @@
   var AUSSCHNITT = 430;
 
   function pruefeGeraet(){
-    var neu = (buehneEl.clientWidth || window.innerWidth) < 560;
+    var neu = (buehneEl.clientWidth || window.innerWidth) < 780;
     if (neu !== handy){
       handy = neu;
       if (!handy) svg.setAttribute("viewBox", "0 0 " + B + " " + H);
@@ -226,7 +226,8 @@
   function blende(){
     if (!handy) return;
     var br = buehneEl.clientWidth || 1, ho = buehneEl.clientHeight || 1;
-    var KW = AUSSCHNITT, KH = KW * (ho / br);
+    var KW = Math.max(430, Math.min(760, br * 1.02)), KH = KW * (ho / br);
+    if (KH < 300) { KH = 300; KW = KH * (br / ho); }
     var x = Math.max(-70, Math.min(B - KW + 70, camX - KW / 2));
     var y = (KH >= H) ? (H - KH) / 2
                       : Math.max(-50, Math.min(H - KH + 50, camY - KH / 2));
