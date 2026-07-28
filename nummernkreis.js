@@ -669,6 +669,7 @@
       var versendet=false, sendErr='';
       if(art==='rechnung'){ try{ await sendDoc(rec, mail, 'rechnung'); versendet=true; }catch(e){ sendErr=e.message||'Versand fehlgeschlagen'; } }
       scrim.classList.remove('show'); await loadData();
+  if(art!=='rechnung'){ alert('Auftrag abgeschlossen. Es wurde keine Rechnung erstellt.'); showList(); return; }
       backBtn.style.display='none'; el('tabs').style.display='none'; el('fab').style.display='none'; el('barSub').textContent=j.kunde;
       var html;
       if(art==='bar'){
