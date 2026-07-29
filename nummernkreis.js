@@ -706,7 +706,7 @@ window.createJob = async function(){
   var termin = null;
   if(roh){
     var d = new Date(roh);
-    if(isNaN(d.getTime())){ alert('Der Termin ist kein gueltiges Datum.'); return; }
+    if(isNaN(d.getTime())){ alert('Der Termin ist kein gültiges Datum.'); return; }
     termin = d.toISOString();
   }
 
@@ -765,14 +765,19 @@ window.createJob = async function(){
    die Terminsuche haelt den Zeitraum weiter fuer belegt.
    ============================================================ */
 window.deleteJob = async function(id){
-  if(!confirm('Diesen Auftrag wirklich loeschen?')) return;
   try{
-    // Erst nachsehen, ob ein Kalendereintrag dranhaengt - solange die Zeile noch da ist.
+    // Erst nachsehen, ob ein Kalendereintrag dranhängt - solange die Zeile noch da ist.
     var ev = null, bid = null;
     try{
       var q = await sb.from('auftraege').select('event_id,betrieb_id').eq('id', id).single();
       if(q && q.data){ ev = q.data.event_id || null; bid = q.data.betrieb_id || null; }
-    }catch(e){ /* ohne diese Info loeschen wir trotzdem, nur ohne Kalender */ }
+    }catch(e){ /* ohne diese Info löschen wir trotzdem, nur ohne Kalender */ }
+
+    // Nur versprechen, was auch passiert: den Kalender nur erwähnen, wenn einer dranhängt.
+    var frage = ev
+      ? 'Diesen Auftrag wirklich löschen?\n\nDer Termin wird dabei auch aus Ihrem Kalender entfernt.'
+      : 'Diesen Auftrag wirklich löschen?';
+    if(!confirm(frage)) return;
 
     if(ev){
       var ok = false;
@@ -791,7 +796,7 @@ window.deleteJob = async function(id){
       }catch(e){ ok = false; }
 
       if(!ok){
-        if(!confirm('Der Kalendereintrag konnte nicht geloescht werden.\n\nDen Auftrag trotzdem loeschen? Der Termin bleibt dann im Kalender stehen und muss dort von Hand entfernt werden.')) return;
+        if(!confirm('Der Kalendereintrag konnte nicht gelöscht werden.\n\nDen Auftrag trotzdem löschen? Der Termin bleibt dann im Kalender stehen und muss dort von Hand entfernt werden.')) return;
       }
     }
 
@@ -800,6 +805,6 @@ window.deleteJob = async function(id){
     await loadData();
     showList();
   }catch(e){
-    alert('Der Auftrag konnte nicht geloescht werden.\n\n' + (e.message || e));
+    alert('Der Auftrag konnte nicht gelöscht werden.\n\n' + (e.message || e));
   }
 };
