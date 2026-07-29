@@ -758,3 +758,48 @@ window.createJob = async function(){
     alert('Der Auftrag konnte nicht gespeichert werden.\n\n' + (e.message || e));
   }
 };
+
+/* ============================================================
+   Auftrag loeschen loescht auch den Kalendereintrag  (29.07.2026)
+   Sonst bliebe ein Termin stehen, der niemanden mehr betrifft, und
+   die Terminsuche haelt den Zeitraum weiter fuer belegt.
+   ============================================================ */
+window.deleteJob = async function(id){
+  if(!confirm('Diesen Auftrag wirklich loeschen?')) return;
+  try{
+    // Erst nachsehen, ob ein Kalendereintrag dranhaengt - solange die Zeile noch da ist.
+    var ev = null, bid = null;
+    try{
+      var q = await sb.from('auftraege').select('event_id,betrieb_id').eq('id', id).single();
+      if(q && q.data){ ev = q.data.event_id || null; bid = q.data.betrieb_id || null; }
+    }catch(e){ /* ohne diese Info loeschen wir trotzdem, nur ohne Kalender */ }
+
+    if(ev){
+      var ok = false;
+      try{
+        var antwort = await fetch(window.ZZ_KALENDER_WEBHOOK, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            aktion: 'loeschen',
+            auftrag_id: id,
+            betrieb_id: bid || betrieb.id,
+            event_id: ev
+          })
+        });
+        ok = antwort.ok;
+      }catch(e){ ok = false; }
+
+      if(!ok){
+        if(!confirm('Der Kalendereintrag konnte nicht geloescht werden.\n\nDen Auftrag trotzdem loeschen? Der Termin bleibt dann im Kalender stehen und muss dort von Hand entfernt werden.')) return;
+      }
+    }
+
+    var d = await sb.from('auftraege').delete().eq('id', id);
+    if(d && d.error) throw d.error;
+    await loadData();
+    showList();
+  }catch(e){
+    alert('Der Auftrag konnte nicht geloescht werden.\n\n' + (e.message || e));
+  }
+};
