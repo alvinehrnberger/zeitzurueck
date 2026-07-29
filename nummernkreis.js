@@ -682,3 +682,79 @@
     }catch(e){ scrim.classList.remove('show'); alert('Fehler beim Speichern: '+e.message); }
   };
 })();
+
+/* ============================================================
+   Auftrag aus der App in den Kalender  (29.07.2026)
+   Ein Termin, den der Betrieb selbst in der App eintraegt, war fuer die
+   Terminsuche unsichtbar - der Chat konnte denselben Zeitraum ein zweites
+   Mal vergeben. Diese Fassung von createJob legt den Kalendereintrag mit an
+   und merkt sich die event_id, damit spaetere Aenderungen ihn wiederfinden.
+   ============================================================ */
+window.ZZ_KALENDER_WEBHOOK = 'https://alvvyn.app.n8n.cloud/webhook/auftrag-kalender';
+window.ZZ_STANDARD_DAUER   = 120;
+
+window.createJob = async function(){
+  var btn     = el('nGo');
+  var kunde   = (el('nKunde').value   || '').trim();
+  var mail    = (el('nMail').value    || '').trim();
+  var aufgabe = (el('nAufgabe').value || '').trim();
+  var adr     = (el('nAdresse').value || '').trim();
+  var roh     = (el('nTermin').value  || '').trim();
+
+  if(!kunde){ alert('Bitte geben Sie einen Kunden an.'); return; }
+
+  var termin = null;
+  if(roh){
+    var d = new Date(roh);
+    if(isNaN(d.getTime())){ alert('Der Termin ist kein gueltiges Datum.'); return; }
+    termin = d.toISOString();
+  }
+
+  btn.disabled = true;
+  try{
+    var rec = { betrieb_id: betrieb.id, kunde: kunde, aufgabe: aufgabe, status: 'offen' };
+    if(mail)   rec.kunde_email = mail;
+    if(adr)    rec.adresse     = adr;
+    if(termin) rec.termin      = termin;
+
+    // insert + select ist EINE Anfrage: schlaegt sie fehl, wurde nichts angelegt.
+    var neu = null;
+    var q = await sb.from('auftraege').insert(rec).select().single();
+    if(q.error){
+      var q2 = await sb.from('auftraege').insert(rec);
+      if(q2.error) throw q2.error;
+    } else {
+      neu = q.data;
+    }
+
+    if(neu && termin){
+      var ok = false;
+      try{
+        var antwort = await fetch(window.ZZ_KALENDER_WEBHOOK, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            aktion: 'anlegen',
+            auftrag_id: neu.id,
+            betrieb_id: betrieb.id,
+            kunde: kunde, aufgabe: aufgabe, adresse: adr,
+            termin: termin,
+            dauer_minuten: window.ZZ_STANDARD_DAUER
+          })
+        });
+        ok = antwort.ok;
+      }catch(e){ ok = false; }
+
+      if(!ok){
+        alert('Der Auftrag ist gespeichert - aber der Kalendereintrag hat nicht funktioniert.\n\nBitte tragen Sie den Termin von Hand in Ihren Kalender ein. Sonst kann die Terminsuche denselben Zeitraum noch einmal vergeben.');
+      }
+    }
+
+    scrim.classList.remove('show');
+    await loadData();
+    setTab('jobs');
+  }catch(e){
+    btn.disabled = false;
+    alert('Der Auftrag konnte nicht gespeichert werden.\n\n' + (e.message || e));
+  }
+};
