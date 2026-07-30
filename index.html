@@ -667,7 +667,7 @@ function startQualification(pkg){
   window.scrollTo({top:0, behavior:'smooth'});
   body.innerHTML=''; clearControls();
   const sessionId = 'quali-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8);
-  bot(`Sehr gute Wahl – Paket <strong>${pkg}</strong>! 👋<br>Erzählen Sie mir kurz von Ihrem Betrieb – ich prüfe für Alvin, ob ZeitZurück zu Ihnen passt. Was bieten Sie an?`);
+  bot(`Sehr gute Wahl – Paket <strong>${pkg}</strong>! 👋<br>Erzählen Sie mir kurz von Ihrem Betrieb – dann prüfen wir, ob ZeitZurück zu Ihnen passt. Was machen Sie, und wo?`);
   setTimeout(()=>{ body.scrollTop=0; }, 60);
   qualiInput(pkg, sessionId);
 }
