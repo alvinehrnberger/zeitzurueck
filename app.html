@@ -193,26 +193,88 @@ const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
 const RECHNUNG_WEBHOOK = 'https://alvvyn.app.n8n.cloud/webhook/rechnung-senden';
 
 const BETRIEB_KONFIG = {
-  'Montageservice & Mehr': {
-    praefix:'M ', startJahr:2026, startNummer:2,
-    strasse:'Frühlingsstraße 91', plzOrt:'3012 Wolfsgraben',
-    telefon:'0660/8268569', email:'Alvin.Ehrnberger@gmail.com',
-    ausstellungsort:'Wolfsgraben', bank:'Erste Bank AG',
-    iban:'AT56 2011 1287 4423 7300', bic:'GIBAATWWXXX', zahlungsziel:14
+  "M": {
+    "praefix": "M ",
+    "startJahr": 2026,
+    "startNummer": 2,
+    "strasse": "Frühlingsstraße 91",
+    "plzOrt": "3012 Wolfsgraben",
+    "telefon": "0660/8268569",
+    "email": "Alvin.Ehrnberger@gmail.com",
+    "ausstellungsort": "Wolfsgraben",
+    "bank": "Erste Bank AG",
+    "iban": "AT56 2011 1287 4423 7300",
+    "bic": "GIBAATWWXXX",
+    "zahlungsziel": 14,
+    "bezeichnung": "Montage"
   },
-  'ZeitZurück.at': {
-    praefix:'ZZ ', startJahr:0, startNummer:0,
-    strasse:'Frühlingsstraße 91', plzOrt:'3012 Wolfsgraben',
-    telefon:'0660/8268569', email:'office@zeitzurueck.at',
-    ausstellungsort:'Wolfsgraben', bank:'Erste Bank AG',
-    iban:'AT56 2011 1287 4423 7300', bic:'GIBAATWWXXX', zahlungsziel:14
+  "ZZ": {
+    "praefix": "ZZ ",
+    "startJahr": 2026,
+    "startNummer": 2,
+    "strasse": "Frühlingsstraße 91",
+    "plzOrt": "3012 Wolfsgraben",
+    "telefon": "0660/8268569",
+    "email": "office@zeitzurueck.at",
+    "ausstellungsort": "Wolfsgraben",
+    "bank": "Erste Bank AG",
+    "iban": "AT56 2011 1287 4423 7300",
+    "bic": "GIBAATWWXXX",
+    "zahlungsziel": 14,
+    "bezeichnung": "ZeitZurück"
   },
-  '_default': { praefix:'', startJahr:0, startNummer:0, strasse:'', plzOrt:'', telefon:'', email:'', ausstellungsort:'', bank:'', iban:'', bic:'', zahlungsziel:14 }
+  "V": {
+    "praefix": "V ",
+    "startJahr": 2026,
+    "startNummer": 2,
+    "strasse": "Frühlingsstraße 91",
+    "plzOrt": "3012 Wolfsgraben",
+    "telefon": "0660/8268569",
+    "email": "Alvin.Ehrnberger@gmail.com",
+    "ausstellungsort": "Wolfsgraben",
+    "bank": "Erste Bank AG",
+    "iban": "AT56 2011 1287 4423 7300",
+    "bic": "GIBAATWWXXX",
+    "zahlungsziel": 14,
+    "bezeichnung": "Veranstaltungstechnik"
+  },
+  "DEMO": {
+    "praefix": "DEMO ",
+    "startJahr": 0,
+    "startNummer": 0,
+    "strasse": "Frühlingsstraße 91",
+    "plzOrt": "3012 Wolfsgraben",
+    "telefon": "0660/8268569",
+    "email": "Alvin.Ehrnberger@gmail.com",
+    "ausstellungsort": "Wolfsgraben",
+    "bank": "Erste Bank AG",
+    "iban": "AT56 2011 1287 4423 7300",
+    "bic": "GIBAATWWXXX",
+    "zahlungsziel": 14,
+    "bezeichnung": "Vorführung"
+  },
+  "_default": {
+    "praefix": "M ",
+    "startJahr": 2026,
+    "startNummer": 2,
+    "strasse": "Frühlingsstraße 91",
+    "plzOrt": "3012 Wolfsgraben",
+    "telefon": "0660/8268569",
+    "email": "Alvin.Ehrnberger@gmail.com",
+    "ausstellungsort": "Wolfsgraben",
+    "bank": "Erste Bank AG",
+    "iban": "AT56 2011 1287 4423 7300",
+    "bic": "GIBAATWWXXX",
+    "zahlungsziel": 14,
+    "bezeichnung": "Montage"
+  }
 };
-function konf(){
-  const name = betrieb && betrieb.name ? betrieb.name : '';
-  return Object.assign({}, BETRIEB_KONFIG['_default'], BETRIEB_KONFIG[name] || {});
-}
+function konf(kreis){
+      // Absenderprofil je Bereich: M, ZZ, V oder DEMO.
+      // Faellt nie auf einen leeren Eintrag zurueck - _default ist eine Kopie von M.
+      const kz = String(kreis || window.__zzKreis || 'M');
+      return Object.assign({}, BETRIEB_KONFIG['_default'], BETRIEB_KONFIG[kz] || {});
+    }
 
 let betriebe=[], betrieb=null, auftraege=[], rechnungen=[], tab='jobs', curHours=3, mode='login';
 
@@ -355,6 +417,8 @@ async function switchBetrieb(id){
 function naechsteNummer(){
   const k=konf(), jahr=new Date().getFullYear();
   const bisher = rechnungen.filter(i=>{
+        const istDemo = (k.praefix === 'DEMO ');
+        if((((i.kreis||'M') === 'DEMO') !== istDemo)) return false;
     if(i.art!=='rechnung' && i.art!=='storno') return false;
     const d=i.datum||i.created_at;
     return d ? (new Date(d)).getFullYear()===jahr : true;
