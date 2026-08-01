@@ -997,10 +997,22 @@ el('pw').addEventListener('keydown',e=>{ if(e.key==='Enter') submitAuth(); });
     b = b || document.getElementById("zzBurger");
     var s=document.getElementById("screen"), a=document.getElementById("app");
     if(!b||!s||!a) return;
-    var rs=s.getBoundingClientRect(), ra=a.getBoundingClientRect();
-    b.style.top=(rs.top-ra.top+12)+"px"; b.style.right="15px";
+    var g=document.querySelector(".greet");
+    var bez=(g && g.getBoundingClientRect().height>0) ? g : s;
+    var rb=bez.getBoundingClientRect(), ra=a.getBoundingClientRect();
+    var bar=document.querySelector(".bar");
+    var band=document.getElementById("demoBand");
+    var unten = bar ? (bar.getBoundingClientRect().bottom-ra.top) : 0;
+    if(band && band.style.display!=="none") unten = Math.max(unten, band.getBoundingClientRect().bottom-ra.top);
+    var oben = rb.top-ra.top + (bez===s ? 12 : -4);
+    b.style.top=Math.max(unten+8, oben)+"px"; b.style.right="15px";
   }
   window.addEventListener("resize", function(){ platzieren(); });
+  function beobachten(){
+    var s=document.getElementById("screen"); if(!s || window.__zzBeob) return;
+    try{ window.__zzBeob=new MutationObserver(function(){ platzieren(); });
+      window.__zzBeob.observe(s,{childList:true}); }catch(e){}
+  }
   function bauen(){
     var abm=document.querySelector(".out");
     if(!abm || document.getElementById("zzBurger")) return;
@@ -1034,7 +1046,7 @@ el('pw').addEventListener('keydown',e=>{ if(e.key==='Enter') submitAuth(); });
       var tabs=document.getElementById("tabs");
       if(tabs && tabs.parentNode) tabs.parentNode.insertBefore(band, tabs.nextSibling);
     }
-    anzeigen(window.__zzKreis);
+    anzeigen(window.__zzKreis); beobachten(); setTimeout(function(){ platzieren(b); },50);
   }
   if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", bauen); else bauen();
   setTimeout(bauen, 600); setTimeout(bauen, 1800);
