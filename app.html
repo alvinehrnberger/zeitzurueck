@@ -14,7 +14,7 @@
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
   body{font-family:var(--sans);background:#e7e3d8;color:var(--ink);display:flex;justify-content:center;min-height:100vh}
   .phone{width:100%;max-width:460px;background:var(--ivory);min-height:100vh;position:relative;overflow:hidden;box-shadow:0 30px 80px rgba(22,46,39,.2);display:flex;flex-direction:column}
-  .flag{position:fixed;top:8px;left:50%;transform:translateX(-50%);background:rgba(18,40,29,.82);color:#fff;font-size:10.5px;padding:3px 11px;border-radius:999px;z-index:80;letter-spacing:.03em}
+  .flag{position:fixed;bottom:10px;left:12px;background:rgba(18,40,29,.5);color:#fff;font-size:10px;padding:3px 10px;border-radius:999px;z-index:40;letter-spacing:.03em;pointer-events:none}
 
   #login{flex:1;background:var(--petrol);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 26px;gap:6px;position:relative}
   #login:after{content:"";position:absolute;right:-16%;top:-12%;width:60%;height:45%;border-radius:50%;background:rgba(217,203,179,.05)}
@@ -141,9 +141,16 @@
   .checks div{padding:5px 0;display:flex;gap:9px}
   .checks span{color:var(--ok);font-weight:700}
 </style>
+<style>
+.kreiszeile{padding:0 14px 10px;display:flex;justify-content:flex-end;align-items:center;gap:8px}
+.kreiswahl{background:rgba(255,255,255,.10);color:#fff;border:1px solid rgba(255,255,255,.24);border-radius:999px;padding:6px 30px 6px 13px;font:inherit;font-size:12.5px;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='white' stroke-width='1.6'/></svg>");background-repeat:no-repeat;background-position:right 11px center;background-size:10px}
+.kreiswahl option{color:#14181C;background:#fff}
+.demoband{margin:0 14px 10px;padding:8px 12px;border-radius:10px;background:#8A4B00;color:#fff;font-size:12px;line-height:1.35}
+body.vorfuehrung #fab{background:#8A4B00}
+</style>
 </head>
 <body>
-<div class="flag" id="flag">Live · Daten in Frankfurt/EU 🇪🇺</div>
+<div class="flag" id="flag">Live · Daten in der EU 🇪🇺</div>
 <div class="phone">
 
   <div id="login">
@@ -418,7 +425,8 @@ function naechsteNummer(){
   const k=konf(), jahr=new Date().getFullYear();
   const bisher = rechnungen.filter(i=>{
         const istDemo = (k.praefix === 'DEMO ');
-        if((((i.kreis||'M') === 'DEMO') !== istDemo)) return false;
+        const kz = String(i.kreis || String(i.nummer||'').trim().split(' ')[0] || 'M');
+        if(((kz === 'DEMO') !== istDemo)) return false;
     if(i.art!=='rechnung' && i.art!=='storno') return false;
     const d=i.datum||i.created_at;
     return d ? (new Date(d)).getFullYear()===jahr : true;
@@ -939,6 +947,43 @@ el('pw').addEventListener('keydown',e=>{ if(e.key==='Enter') submitAuth(); });
 (async function(){
   const { data } = await sb.auth.getSession();
   if(data.session) await enterApp();
+})();
+</script>
+<script>
+/* Bereichsauswahl: M, ZZ, V, DEMO. Setzt window.__zzKreis, das konf() liest. */
+(function(){
+  var KREISE=[["M","Montage"],["ZZ","ZeitZurück"],["V","Veranstaltungstechnik"],["DEMO","Vorführung"]];
+  function geladen(){ try{ return localStorage.getItem("zzKreis")||"M"; }catch(e){ return "M"; } }
+  window.__zzKreis = geladen();
+  function anzeigen(k){
+    document.body.classList.toggle("vorfuehrung", k==="DEMO");
+    var b=document.getElementById("demoBand");
+    if(b) b.style.display = (k==="DEMO") ? "block" : "none";
+  }
+  function wechseln(k){
+    window.__zzKreis=k;
+    try{ localStorage.setItem("zzKreis",k); }catch(e){}
+    anzeigen(k);
+    if(typeof loadData==="function"){ try{ loadData(); }catch(e){} }
+  }
+  function bauen(){
+    var tabs=document.getElementById("tabs");
+    if(!tabs || document.getElementById("kreisWahl")) return;
+    var zeile=document.createElement("div"); zeile.className="kreiszeile";
+    var sel=document.createElement("select"); sel.id="kreisWahl"; sel.className="kreiswahl";
+    sel.setAttribute("aria-label","Bereich");
+    KREISE.forEach(function(p){ var o=document.createElement("option"); o.value=p[0]; o.textContent=p[1];
+      if(p[0]===window.__zzKreis) o.selected=true; sel.appendChild(o); });
+    sel.addEventListener("change", function(){ wechseln(sel.value); });
+    zeile.appendChild(sel);
+    var band=document.createElement("div"); band.id="demoBand"; band.className="demoband";
+    band.textContent="Vorführung — diese Rechnungen zählen nicht mit und dürfen gelöscht werden.";
+    tabs.parentNode.insertBefore(zeile, tabs.nextSibling);
+    tabs.parentNode.insertBefore(band, zeile.nextSibling);
+    anzeigen(window.__zzKreis);
+  }
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", bauen); else bauen();
+  setTimeout(bauen, 600); setTimeout(bauen, 1800);
 })();
 </script>
 </body>
