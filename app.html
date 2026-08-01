@@ -717,12 +717,12 @@ function downloadPDF(id,art){
   } else {
     text='Sehr geehrte/r '+(rec.kunde||'')+',\n\nim Anhang erhalten Sie die Stornorechnung '+rec.nummer+' zur Rechnung '+(stornoZu(rec)||'')+'.\n\nDie ursprüngliche Rechnung ist damit vollständig storniert; der Betrag entfällt.\n\nMit freundlichen Grüßen\n'+(betrieb?betrieb.inhaber:'')+'\n'+(betrieb?betrieb.name:'');
   }
-  const res=const zzRef = zzReferenz(rec, art);
+  const zzRef = zzReferenz(rec, art);
             await zzArchivieren(rec, b64, art);
             if(typeof text === 'string' && text.indexOf('Mit freundlichen') > -1){
               text = text.replace('Mit freundlichen', 'Zahlungsreferenz: ' + zzRef + ' (bitte bei der Überweisung angeben)\n\nMit freundlichen');
             }
-            await fetch(RECHNUNG_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},
+            const res = await fetch(RECHNUNG_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({ referenz: zzRef, empfaenger, kunde:rec.kunde||'', nummer:rec.nummer||'', betrag:eur(rec.betrag),
       leistung:rec.positionstext||'', betrieb:betrieb?betrieb.name:'', inhaber:betrieb?(betrieb.inhaber||''):'',
       dateiname:pdfName(rec,art), pdf_base64:b64, betreff, text, dokumentart:bez })});
