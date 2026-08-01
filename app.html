@@ -657,7 +657,9 @@ function downloadPDF(id,art){
       return ((art === 'storno') ? 'ST-' : 'RG-') + kern;
     }
     function zzKreisVon(rec){
-      return String((rec && rec.kreis) || String((rec && rec.nummer) || '').trim().split(' ')[0] || 'M');
+      /* Das Praefix der Nummer ist die verlaessliche Quelle. Die Spalte kreis kann auf der Vorgabe stehen. */
+      var ausNummer = String((rec && rec.nummer) || '').trim().split(' ')[0];
+      return String(ausNummer || (rec && rec.kreis) || 'M');
     }
     /* Friert die tatsaechlich verschickte Fassung ein. Schlaegt das fehl, wird NICHT verschickt. */
     async function zzArchivieren(rec, b64, art){

@@ -31,13 +31,15 @@
   };
 
   window.naechsteNummer = function () {
-    var k = konf(), jahr = new Date().getFullYear();
+    var k = konf(), istDemo = String(k.praefix || '').trim() === 'DEMO', jahr = new Date().getFullYear();
     var bisher = (window._alleRechnungen || []).filter(function (i) {
       if (i.art !== 'rechnung' && i.art !== 'storno') return false;
+      var kz = String(i.nummer || '').trim().split(' ')[0];
+      if ((kz === 'DEMO') !== istDemo) return false;
       var d = i.datum || i.created_at;
       return d ? (new Date(d)).getFullYear() === jahr : true;
     }).length;
-    var offset = (GLOBAL_JAHR === jahr) ? GLOBAL_NUMMER : 0;
+    var offset = istDemo ? 0 : ((GLOBAL_JAHR === jahr) ? GLOBAL_NUMMER : 0);
     return k.praefix + String(offset + bisher + 1).padStart(2, '0') + '/' + jahr;
   };
 
