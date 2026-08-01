@@ -99,7 +99,17 @@ Marke **ZeitZurück®** ist registriert (AT Nr. 336036, 23.07.2026). Fünf Websi
 - **DEMO wird am Nummernpräfix erkannt**, nicht nur an der Spalte `kreis` — dadurch greift die Trennung auch für Rechnungen, die auf anderen Wegen entstanden sind.
 - **Datenband** von oben (wo es über dem Firmennamen klebte) nach unten links, Text jetzt „Live · Daten in der EU 🇪🇺" ohne Ortsangabe.
 
-**Offen:** das Einfrieren beim Versand, die Rollentrennung beim Löschen, der Webhook für bestätigte SEPA-Zahlungen.
+- **Burger-Menü** statt Auswahlfeld, oben rechts im Inhalt auf Höhe der Begrüßung. Weicht dem Demo-Band automatisch aus. Keine blauen Fokusrahmen mehr (gold statt blau).
+- **Einfrieren beim Versand gebaut.** In `sendDoc` liegt zwischen „PDF fertig" und „Mail raus" der Archivschritt. Schlägt er fehl, wird **nicht** verschickt. Jeder weitere Versand erzeugt Fassung 2, 3, 4 — nie überschrieben. DEMO wird übersprungen.
+- **Zahlungsreferenz** aus der Nummer: `M 03/2026` → `RG-M03-2026`, Storno → `ST-`. In der Mail und als eigenes Feld an n8n. **Noch nicht auf dem PDF** — kommt als Nächstes.
+
+**Offen:** Zahlungsreferenz auf das PDF, Rollentrennung beim Löschen, Knopf „Geänderte Rechnung senden", Webhook für bestätigte SEPA-Zahlungen.
+
+### Zwei Fehler, die nur die Probe gefunden hat
+**1. Die Archivtabelle war für die App gar nicht beschreibbar.** Per Migration angelegte Tabellen bekommen in Supabase keine Rechte für die App-Rolle — der erste echte Rechnungsversand wäre abgebrochen. Gefunden, indem der Ablauf mit einer Probedatei durchgespielt wurde, statt sich auf „der Code sieht richtig aus" zu verlassen.
+**2. Die App durfte das Archiv leeren.** Aus den Standardrechten kam ein `TRUNCATE` mit. Das hätte die gesamte Aufbewahrung mit einem Aufruf entfernbar gemacht — genau das, wogegen das Archiv gebaut ist. Entzogen.
+**Gegenprobe bestanden:** Anlegen und Lesen funktionieren, Ändern und Löschen werden von der Datenbank verweigert, die Zeile blieb unverändert. Übrig sind ausschließlich `SELECT` und `INSERT`.
+**Lehre:** Rechte sind kein Nebenschauplatz. Eine Regel, die man nicht ausprobiert hat, ist eine Vermutung.
 
 ### Zahlungseingänge automatisch erkennen — geprüft, bewusst zurückgestellt
 **Die Frage:** Kann Stripe auch bei unseren Kunden mitlaufen, damit n8n meldet „Rechnung bezahlt"?
