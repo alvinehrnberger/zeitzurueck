@@ -142,8 +142,9 @@
   .checks span{color:var(--ok);font-weight:700}
 </style>
 <style>
-.kreiszeile{padding:0 14px 10px;display:flex;justify-content:flex-end;align-items:center;gap:8px}
-.kreiswahl{background:rgba(255,255,255,.10);color:#fff;border:1px solid rgba(255,255,255,.24);border-radius:999px;padding:6px 30px 6px 13px;font:inherit;font-size:12.5px;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='white' stroke-width='1.6'/></svg>");background-repeat:no-repeat;background-position:right 11px center;background-size:10px}
+.kreisbez{font-size:12px;color:rgba(20,24,28,.55);letter-spacing:.02em}
+.kreiszeile{padding:12px 14px 4px;display:flex;justify-content:flex-end;align-items:center;gap:9px}
+.kreiswahl{background:#fff;color:#14181C;border:1px solid rgba(20,24,28,.20);border-radius:999px;padding:7px 32px 7px 14px;font:inherit;font-size:13px;font-weight:600;-webkit-appearance:none;appearance:none;box-shadow:0 1px 3px rgba(0,0,0,.07);background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%2314181C' stroke-width='1.6'/></svg>");background-repeat:no-repeat;background-position:right 12px center;background-size:10px}
 .kreiswahl option{color:#14181C;background:#fff}
 .demoband{margin:0 14px 10px;padding:8px 12px;border-radius:10px;background:#8A4B00;color:#fff;font-size:12px;line-height:1.35}
 body.vorfuehrung #fab{background:#8A4B00}
@@ -975,7 +976,8 @@ el('pw').addEventListener('keydown',e=>{ if(e.key==='Enter') submitAuth(); });
     KREISE.forEach(function(p){ var o=document.createElement("option"); o.value=p[0]; o.textContent=p[1];
       if(p[0]===window.__zzKreis) o.selected=true; sel.appendChild(o); });
     sel.addEventListener("change", function(){ wechseln(sel.value); });
-    zeile.appendChild(sel);
+    var bez=document.createElement("span"); bez.className="kreisbez"; bez.textContent="Bereich";
+    zeile.appendChild(bez); zeile.appendChild(sel);
     var band=document.createElement("div"); band.id="demoBand"; band.className="demoband";
     band.textContent="Vorführung — diese Rechnungen zählen nicht mit und dürfen gelöscht werden.";
     tabs.parentNode.insertBefore(zeile, tabs.nextSibling);
