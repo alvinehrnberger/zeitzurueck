@@ -142,12 +142,22 @@
   .checks span{color:var(--ok);font-weight:700}
 </style>
 <style>
-.kreisbez{font-size:12px;color:rgba(20,24,28,.55);letter-spacing:.02em}
-.kreiszeile{padding:12px 14px 4px;display:flex;justify-content:flex-end;align-items:center;gap:9px}
-.kreiswahl{background:#fff;color:#14181C;border:1px solid rgba(20,24,28,.20);border-radius:999px;padding:7px 32px 7px 14px;font:inherit;font-size:13px;font-weight:600;-webkit-appearance:none;appearance:none;box-shadow:0 1px 3px rgba(0,0,0,.07);background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%2314181C' stroke-width='1.6'/></svg>");background-repeat:no-repeat;background-position:right 12px center;background-size:10px}
-.kreiswahl option{color:#14181C;background:#fff}
-.demoband{margin:0 14px 10px;padding:8px 12px;border-radius:10px;background:#8A4B00;color:#fff;font-size:12px;line-height:1.35}
-body.vorfuehrung #fab{background:#8A4B00}
+.zzburger{width:38px;height:38px;border-radius:12px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;padding:0;margin-right:10px;cursor:pointer;-webkit-tap-highlight-color:transparent;flex:0 0 auto}
+.zzburger span{display:block;width:16px;height:2px;border-radius:2px;background:#fff}
+.zzburger:focus{outline:none}
+.zzburger:focus-visible{outline:2px solid #D8B45C;outline-offset:2px}
+.zzschirm{position:fixed;inset:0;z-index:110;display:none}
+.zzschirm.auf{display:block}
+.zzmenu{position:fixed;z-index:120;background:#fff;color:#14181C;border-radius:16px;box-shadow:0 20px 48px rgba(0,0,0,.24);padding:6px;min-width:224px;display:none}
+.zzmenu.auf{display:block}
+.zzmenu .mkopf{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:rgba(20,24,28,.42);padding:9px 12px 5px}
+.zzmenu button{display:flex;width:100%;align-items:center;justify-content:space-between;gap:12px;background:none;border:0;font:inherit;font-size:14.5px;text-align:left;padding:11px 12px;border-radius:11px;cursor:pointer;color:#14181C;-webkit-tap-highlight-color:transparent}
+.zzmenu button:focus{outline:none}
+.zzmenu button:hover{background:rgba(20,24,28,.06)}
+.zzmenu button.aktiv{font-weight:700;background:rgba(216,180,92,.16)}
+.zzmenu .hak{color:#2F6B4F;font-weight:700}
+.demoband{margin:10px 14px 0;padding:9px 12px;border-radius:11px;background:#8A4B00;color:#fff;font-size:12.5px;line-height:1.35}
+body.demolauf #fab{background:#8A4B00}
 </style>
 </head>
 <body>
@@ -259,7 +269,7 @@ const BETRIEB_KONFIG = {
     "iban": "AT56 2011 1287 4423 7300",
     "bic": "GIBAATWWXXX",
     "zahlungsziel": 14,
-    "bezeichnung": "Vorführung"
+    "bezeichnung": "Demo"
   },
   "_default": {
     "praefix": "M ",
@@ -951,37 +961,69 @@ el('pw').addEventListener('keydown',e=>{ if(e.key==='Enter') submitAuth(); });
 })();
 </script>
 <script>
-/* Bereichsauswahl: M, ZZ, V, DEMO. Setzt window.__zzKreis, das konf() liest. */
+/* Bereichsauswahl im Burger-Menue: M, ZZ, V, DEMO. Setzt window.__zzKreis, das konf() liest. */
 (function(){
-  var KREISE=[["M","Montage"],["ZZ","ZeitZurück"],["V","Veranstaltungstechnik"],["DEMO","Vorführung"]];
+  var KREISE=[["M","Montage"],["ZZ","ZeitZurück"],["V","Veranstaltungstechnik"],["DEMO","Demo"]];
   function geladen(){ try{ return localStorage.getItem("zzKreis")||"M"; }catch(e){ return "M"; } }
   window.__zzKreis = geladen();
   function anzeigen(k){
-    document.body.classList.toggle("vorfuehrung", k==="DEMO");
+    document.body.classList.toggle("demolauf", k==="DEMO");
     var b=document.getElementById("demoBand");
     if(b) b.style.display = (k==="DEMO") ? "block" : "none";
+    var m=document.getElementById("zzMenu");
+    if(m){ [].forEach.call(m.querySelectorAll("button"), function(btn){
+      var an = btn.getAttribute("data-k")===k;
+      btn.classList.toggle("aktiv", an);
+      var h=btn.querySelector(".hak"); if(h) h.textContent = an ? "✓" : "";
+    }); }
   }
+  function zu(){ var m=document.getElementById("zzMenu"), s=document.getElementById("zzSchirm");
+    if(m) m.classList.remove("auf"); if(s) s.classList.remove("auf"); }
   function wechseln(k){
     window.__zzKreis=k;
     try{ localStorage.setItem("zzKreis",k); }catch(e){}
-    anzeigen(k);
+    anzeigen(k); zu();
     if(typeof loadData==="function"){ try{ loadData(); }catch(e){} }
   }
+  function oeffnen(knopf){
+    var m=document.getElementById("zzMenu"), s=document.getElementById("zzSchirm");
+    var r=knopf.getBoundingClientRect();
+    m.style.top=(r.bottom+8)+"px";
+    m.style.left=Math.max(10, Math.min(r.left, window.innerWidth-244))+"px";
+    m.classList.add("auf"); s.classList.add("auf");
+  }
   function bauen(){
-    var tabs=document.getElementById("tabs");
-    if(!tabs || document.getElementById("kreisWahl")) return;
-    var zeile=document.createElement("div"); zeile.className="kreiszeile";
-    var sel=document.createElement("select"); sel.id="kreisWahl"; sel.className="kreiswahl";
-    sel.setAttribute("aria-label","Bereich");
-    KREISE.forEach(function(p){ var o=document.createElement("option"); o.value=p[0]; o.textContent=p[1];
-      if(p[0]===window.__zzKreis) o.selected=true; sel.appendChild(o); });
-    sel.addEventListener("change", function(){ wechseln(sel.value); });
-    var bez=document.createElement("span"); bez.className="kreisbez"; bez.textContent="Bereich";
-    zeile.appendChild(bez); zeile.appendChild(sel);
-    var band=document.createElement("div"); band.id="demoBand"; band.className="demoband";
-    band.textContent="Vorführung — diese Rechnungen zählen nicht mit und dürfen gelöscht werden.";
-    tabs.parentNode.insertBefore(zeile, tabs.nextSibling);
-    tabs.parentNode.insertBefore(band, zeile.nextSibling);
+    var abm=document.querySelector(".out");
+    if(!abm || document.getElementById("zzBurger")) return;
+    var b=document.createElement("button");
+    b.id="zzBurger"; b.className="zzburger"; b.type="button";
+    b.setAttribute("aria-label","Bereich wählen");
+    b.appendChild(document.createElement("span"));
+    b.appendChild(document.createElement("span"));
+    b.appendChild(document.createElement("span"));
+    abm.parentNode.insertBefore(b, abm);
+    var s=document.createElement("div"); s.id="zzSchirm"; s.className="zzschirm";
+    var m=document.createElement("div"); m.id="zzMenu"; m.className="zzmenu";
+    var k=document.createElement("div"); k.className="mkopf"; k.textContent="Bereich"; m.appendChild(k);
+    KREISE.forEach(function(p){
+      var e=document.createElement("button"); e.type="button"; e.setAttribute("data-k",p[0]);
+      var t1=document.createElement("span"); t1.textContent=p[1];
+      var h=document.createElement("span"); h.className="hak";
+      e.appendChild(t1); e.appendChild(h);
+      e.addEventListener("click", function(){ wechseln(p[0]); });
+      m.appendChild(e);
+    });
+    document.body.appendChild(s); document.body.appendChild(m);
+    b.addEventListener("click", function(ev){ ev.stopPropagation();
+      if(m.classList.contains("auf")) zu(); else oeffnen(b); });
+    s.addEventListener("click", zu);
+    document.addEventListener("keydown", function(ev){ if(ev.key==="Escape") zu(); });
+    var band=document.getElementById("demoBand");
+    if(!band){ band=document.createElement("div"); band.id="demoBand"; band.className="demoband";
+      band.textContent="Demo — diese Rechnungen zählen nicht mit und dürfen gelöscht werden.";
+      var tabs=document.getElementById("tabs");
+      if(tabs && tabs.parentNode) tabs.parentNode.insertBefore(band, tabs.nextSibling);
+    }
     anzeigen(window.__zzKreis);
   }
   if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", bauen); else bauen();
