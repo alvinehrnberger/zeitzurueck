@@ -91,7 +91,21 @@ Marke **ZeitZurück®** ist registriert (AT Nr. 336036, 23.07.2026). Fünf Websi
 - **`BETRIEB_KONFIG` umgeschlüsselt** von Betriebsname auf Kürzel: `M`, `ZZ`, `V`, `DEMO`, `_default`. Alle echten Kreise teilen den Startwert 2, DEMO zählt eigenständig. `_default` ist jetzt eine Kopie von M statt eines leeren Eintrags — ein Fehlgriff führt nie mehr zu einer Rechnung ohne Bankverbindung.
 - **Gerechnet und geprüft:** leer → M 03/2026 · danach V → V 04/2026 · danach M → M 05/2026 · zwei DEMO-Rechnungen verschieben die echte Reihe nicht · unbekannter Kreis fällt auf M zurück.
 
-**Offen:** das sichtbare Auswahlfeld für den Bereich, das Einfrieren beim Versand, die Rollentrennung beim Löschen.
+- **SEPA-Lastschrift in Stripe eingeschaltet** (Sandbox `acct_1TvBZx2cyEXsXjGG`). Stripe weist beim Einschalten darauf hin, dass SEPA eine **verzögerte Zahlungsart** ist: Das Geld ist nicht sofort da. Wir brauchen deshalb einen Webhook, damit ZeitZurück erfährt, wann eine Zahlung tatsächlich durch ist — sonst gilt ein Kunde als zahlend, bevor er es ist.
+- **Muss im Live-Konto wiederholt werden.** Die Sandbox-Einstellung wandert nicht mit.
+- Vorgefunden: 17 Zahlungsarten aktiv, darunter Kakao Pay, Naver Pay, PAYCO, Samsung Pay, MB WAY, Satispay, Pix, BLIK. Stripe blendet sie je nach Land des Kunden ohnehin aus, es schadet also nichts — aufgeräumt wird beim Live-Konto.
+
+- **Bereichsauswahl im Backend gebaut.** Auswahlfeld unter den Reitern: Montage · ZeitZurück · Veranstaltungstechnik · Vorführung. Die Wahl bleibt gespeichert. Bei *Vorführung* erscheint ein oranges Band und der Plus-Knopf färbt sich um, damit man den Modus nie übersieht.
+- **DEMO wird am Nummernpräfix erkannt**, nicht nur an der Spalte `kreis` — dadurch greift die Trennung auch für Rechnungen, die auf anderen Wegen entstanden sind.
+- **Datenband** von oben (wo es über dem Firmennamen klebte) nach unten links, Text jetzt „Live · Daten in der EU 🇪🇺" ohne Ortsangabe.
+
+**Offen:** das Einfrieren beim Versand, die Rollentrennung beim Löschen, der Webhook für bestätigte SEPA-Zahlungen.
+
+### Zahlungseingänge automatisch erkennen — geprüft, bewusst zurückgestellt
+**Die Frage:** Kann Stripe auch bei unseren Kunden mitlaufen, damit n8n meldet „Rechnung bezahlt"?
+**Befund:** Über Stripe nur, wenn der Handwerker seine Kunden auch über Stripe kassieren ließe — das tut er nicht, er bekommt Überweisungen, und Stripe würde ihm Gebühren auf jede Rechnung legen. Der richtige Weg wäre **Kontozugriff nach PSD2** (Anbieter wie Klarna Kosma, Tink, finAPI): eingehende Überweisung nach Betrag und Zahlungsreferenz der Rechnung zuordnen.
+**Warum zurückgestellt:** Der Zugriff braucht alle 90 Tage eine neue Zustimmung des Betriebs, kostet je Konto Geld und ist der größte Baustein bisher. Klassische Falle: großartige Funktion, kein Kunde.
+**Was wir stattdessen sofort tun:** eine saubere **Zahlungsreferenz auf jede Rechnung**. Kostet nichts und ist genau die Voraussetzung, ohne die eine spätere automatische Zuordnung gar nicht möglich wäre.
 
 ---
 
