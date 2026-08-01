@@ -650,7 +650,54 @@ function downloadPDF(id,art){
 }
 
 /* ---------- Versand ---------- */
-async function sendDoc(rec, empfaenger, art){
+    /* ---------- Archiv und Zahlungsreferenz ---------- */
+    function zzReferenz(rec, art){
+      var n = String((rec && rec.nummer) || '').trim();
+      var kern = n.replace(/\s+/g,'').replace(/[^A-Za-z0-9]+/g,'-').replace(/^-|-$/g,'');
+      return ((art === 'storno') ? 'ST-' : 'RG-') + kern;
+    }
+    function zzKreisVon(rec){
+      return String((rec && rec.kreis) || String((rec && rec.nummer) || '').trim().split(' ')[0] || 'M');
+    }
+    /* Friert die tatsaechlich verschickte Fassung ein. Schlaegt das fehl, wird NICHT verschickt. */
+    async function zzArchivieren(rec, b64, art){
+      var kreis = zzKreisVon(rec);
+      if(kreis === 'DEMO') return {uebersprungen:'demo'};
+      if(art !== 'rechnung' && art !== 'storno') return {uebersprungen:'kein beleg'};
+      try{
+        var nummer = String(rec.nummer || '').trim();
+        if(!nummer) throw new Error('keine Nummer');
+        var jahr = new Date(rec.datum || rec.created_at || Date.now()).getFullYear();
+        var vor = await sb.from('rechnung_versionen').select('fassung')
+                    .eq('betrieb_id', betrieb.id).eq('nummer', nummer);
+        if(vor && vor.error) throw new Error(vor.error.message);
+        var fassung = 1;
+        if(vor && vor.data && vor.data.length){
+          fassung = Math.max.apply(null, vor.data.map(function(x){ return Number(x.fassung)||0; })) + 1;
+        }
+        var sauber = nummer.replace(/\s+/g,'').replace(/[^A-Za-z0-9]+/g,'-').replace(/^-|-$/g,'');
+        var pfad = betrieb.id + '/' + jahr + '/' + sauber + '_f' + fassung + '.pdf';
+        var roh = atob(b64);
+        var arr = new Uint8Array(roh.length);
+        for(var n2 = 0; n2 < roh.length; n2++) arr[n2] = roh.charCodeAt(n2);
+        var hoch = await sb.storage.from('rechnungen')
+                     .upload(pfad, new Blob([arr], {type:'application/pdf'}),
+                             {contentType:'application/pdf', upsert:false});
+        if(hoch && hoch.error) throw new Error('Ablage: ' + hoch.error.message);
+        var zeile = await sb.from('rechnung_versionen').insert({
+          betrieb_id: betrieb.id, rechnung_id: rec.id || null, nummer: nummer, fassung: fassung,
+          empfaenger: rec.kunde || null, empfaenger_email: rec.kunde_email || null,
+          betrag: rec.betrag != null ? rec.betrag : null, positionstext: rec.positionstext || null,
+          pfad: pfad, anlass: (fassung === 1 ? 'Erstversand' : 'Erneuter Versand')
+        });
+        if(zeile && zeile.error) throw new Error('Eintrag: ' + zeile.error.message);
+        return {pfad: pfad, fassung: fassung};
+      }catch(e){
+        throw new Error('Nicht verschickt: die Fassung konnte nicht archiviert werden. ' + (e && e.message ? e.message : e));
+      }
+    }
+
+    async function sendDoc(rec, empfaenger, art){
   art = art||'rechnung';
   const doc=buildPDF(rec,art);
   const b64=doc.output('datauristring').split(',')[1];
@@ -670,8 +717,13 @@ async function sendDoc(rec, empfaenger, art){
   } else {
     text='Sehr geehrte/r '+(rec.kunde||'')+',\n\nim Anhang erhalten Sie die Stornorechnung '+rec.nummer+' zur Rechnung '+(stornoZu(rec)||'')+'.\n\nDie ursprüngliche Rechnung ist damit vollständig storniert; der Betrag entfällt.\n\nMit freundlichen Grüßen\n'+(betrieb?betrieb.inhaber:'')+'\n'+(betrieb?betrieb.name:'');
   }
-  const res=await fetch(RECHNUNG_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({ empfaenger, kunde:rec.kunde||'', nummer:rec.nummer||'', betrag:eur(rec.betrag),
+  const res=const zzRef = zzReferenz(rec, art);
+            await zzArchivieren(rec, b64, art);
+            if(typeof text === 'string' && text.indexOf('Mit freundlichen') > -1){
+              text = text.replace('Mit freundlichen', 'Zahlungsreferenz: ' + zzRef + ' (bitte bei der Überweisung angeben)\n\nMit freundlichen');
+            }
+            await fetch(RECHNUNG_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({ referenz: zzRef, empfaenger, kunde:rec.kunde||'', nummer:rec.nummer||'', betrag:eur(rec.betrag),
       leistung:rec.positionstext||'', betrieb:betrieb?betrieb.name:'', inhaber:betrieb?(betrieb.inhaber||''):'',
       dateiname:pdfName(rec,art), pdf_base64:b64, betreff, text, dokumentart:bez })});
   if(!res.ok) throw new Error('Versand fehlgeschlagen');
