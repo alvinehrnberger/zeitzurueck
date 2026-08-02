@@ -640,8 +640,8 @@
       + '<p class="s">Betrag: <b>'+eur(betragJetzt())+'</b>'+(pauschAktiv()?' · Pauschale':'')+'</p>'
       + '<input id="cMail" type="hidden" value="'+esc(mail)+'">'
       + '<div class="stack">'
-      + '<button class="btn btn-primary" id="cRech" onclick="zzZahlart(\''+id+'\',\'bar\')">Bar erhalten</button>'
-      + '<button class="btn btn-ghost" id="cBar" onclick="zzZahlart(\''+id+'\',\'ueberweisung\')">Auf Rechnung (Überweisung)</button>'
+      + '<button class="btn btn-primary" id="cBar" onclick="zzZahlart(\''+id+'\',\'ueberweisung\')">Auf Rechnung (Überweisung)</button>'
+      + '<button class="btn btn-ghost" id="cRech" onclick="zzZahlart(\''+id+'\',\'bar\')">Bar erhalten</button>'
       + '</div>'
       + '<div class="note">Bar = Rechnung wird erstellt, gesendet und sofort als bezahlt vermerkt.<br>Überweisung = zahlbar binnen 14 Tagen, erscheint in der Mahnprüfung.</div>';
   }
@@ -709,7 +709,11 @@ window.createJob = async function(){
   if(roh){
     var d = new Date(roh);
     if(isNaN(d.getTime())){ alert('Der Termin ist kein gültiges Datum.'); return; }
-    termin = d.toISOString();
+
+      if(d.getTime() < Date.now() - 86400000){
+        var jahr = d.getFullYear();
+        if(!confirm('Achtung: Der Termin liegt in der Vergangenheit (' + d.toLocaleDateString('de-AT') + ').\nStimmt das Jahr ' + jahr + '?\n\nTrotzdem anlegen?')) return;
+      }    termin = d.toISOString();
   }
 
   btn.disabled = true;

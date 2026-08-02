@@ -585,7 +585,7 @@ function buildPDF(i, art){
   doc.setFontSize(11); let y=57;
   doc.setFont('helvetica','bold'); doc.text(i.kunde||'', L, y); y+=5.5;
   doc.setFont('helvetica','normal'); doc.setFontSize(10.5);
-  (i.kunde_adresse||'').split(/\n|,\s*(?=\d{4}\s)/).filter(Boolean).forEach(z=>{ doc.text(z,L,y); y+=5; });
+  (i.kunde_adresse||'').split(/\n|,\s*(?=\d{4}\b)/).filter(Boolean).forEach(z=>{ doc.text(z,L,y); y+=5; });
   doc.setFontSize(10.5);
   doc.text((k.ausstellungsort?k.ausstellungsort+', am ':'')+deDate(art==='rechnung'||art==='storno'?(i.datum||new Date()):new Date()), R, 57, {align:'right'});
 
@@ -783,7 +783,7 @@ function invoiceHTML(i){
       <div class="ct">${esc([k.strasse,k.plzOrt].filter(Boolean).join(', '))}${k.telefon?' · '+esc(k.telefon):''}</div>
     </div>
     <div class="an"><b>${esc(i.kunde||'')}</b></div>
-    ${(i.kunde_adresse||'').split(/\n|,\s*(?=\d{4}\s)/).filter(Boolean).map(z=>`<div class="an" style="color:var(--muted)">${esc(z)}</div>`).join('')}
+    ${(i.kunde_adresse||'').split(/\n|,\s*(?=\d{4}\b)/).filter(Boolean).map(z=>`<div class="an" style="color:var(--muted)">${esc(z)}</div>`).join('')}
     <div class="nr">${istStorno(i)?'Stornorechnung':'Rechnung'} Nr. ${esc(i.nummer||'—')}</div>
     <div class="dt">${k.ausstellungsort?esc(k.ausstellungsort)+', am ':''}${deDate(i.datum||i.created_at)}</div>
     <div class="li"><span>${esc(i.positionstext||'')}</span><span>${eur(i.betrag)}</span></div>
