@@ -14,7 +14,7 @@
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
   body{font-family:var(--sans);background:#e7e3d8;color:var(--ink);display:flex;justify-content:center;min-height:100vh}
   .phone{width:100%;max-width:460px;background:var(--ivory);min-height:100vh;position:relative;overflow:hidden;box-shadow:0 30px 80px rgba(22,46,39,.2);display:flex;flex-direction:column}
-  .flag{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);background:rgba(18,40,29,.5);color:#fff;font-size:10px;padding:3px 10px;border-radius:999px;z-index:40;letter-spacing:.03em;pointer-events:none}
+  .flag{display:none}
 
   #login{flex:1;background:var(--petrol);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 26px;gap:6px;position:relative}
   #login:after{content:"";position:absolute;right:-16%;top:-12%;width:60%;height:45%;border-radius:50%;background:rgba(217,203,179,.05)}
@@ -585,7 +585,7 @@ function buildPDF(i, art){
   doc.setFontSize(11); let y=57;
   doc.setFont('helvetica','bold'); doc.text(i.kunde||'', L, y); y+=5.5;
   doc.setFont('helvetica','normal'); doc.setFontSize(10.5);
-  (i.kunde_adresse||'').split('\n').filter(Boolean).forEach(z=>{ doc.text(z,L,y); y+=5; });
+  (i.kunde_adresse||'').split(/\n|,\s*(?=\d{4}\s)/).filter(Boolean).forEach(z=>{ doc.text(z,L,y); y+=5; });
   doc.setFontSize(10.5);
   doc.text((k.ausstellungsort?k.ausstellungsort+', am ':'')+deDate(art==='rechnung'||art==='storno'?(i.datum||new Date()):new Date()), R, 57, {align:'right'});
 
@@ -603,7 +603,7 @@ function buildPDF(i, art){
   doc.setTextColor(0); doc.setDrawColor(190); doc.setLineWidth(0.25); doc.line(L,yR+2.2,R,yR+2.2);
   yR+=9;
   doc.setFont('helvetica','normal'); doc.setFontSize(10.5);
-  doc.text(deDate(i.datum||i.created_at), L, yR);
+  doc.text(deDate(i.leistung_datum||i.datum||i.created_at), L, yR);
   const txt=doc.splitTextToSize(i.positionstext||'',92);
   doc.text(txt, L+26, yR);
   doc.text(Number(i.betrag).toLocaleString('de-AT',{minimumFractionDigits:2}), R, yR, {align:'right'});
@@ -783,7 +783,7 @@ function invoiceHTML(i){
       <div class="ct">${esc([k.strasse,k.plzOrt].filter(Boolean).join(', '))}${k.telefon?' · '+esc(k.telefon):''}</div>
     </div>
     <div class="an"><b>${esc(i.kunde||'')}</b></div>
-    ${(i.kunde_adresse||'').split('\n').filter(Boolean).map(z=>`<div class="an" style="color:var(--muted)">${esc(z)}</div>`).join('')}
+    ${(i.kunde_adresse||'').split(/\n|,\s*(?=\d{4}\s)/).filter(Boolean).map(z=>`<div class="an" style="color:var(--muted)">${esc(z)}</div>`).join('')}
     <div class="nr">${istStorno(i)?'Stornorechnung':'Rechnung'} Nr. ${esc(i.nummer||'—')}</div>
     <div class="dt">${k.ausstellungsort?esc(k.ausstellungsort)+', am ':''}${deDate(i.datum||i.created_at)}</div>
     <div class="li"><span>${esc(i.positionstext||'')}</span><span>${eur(i.betrag)}</span></div>
@@ -820,15 +820,15 @@ function openEdit(id){
   const i=rechnungen.find(x=>x.id===id);
   const satz=betrieb?Number(betrieb.stundensatz):50;
   sheet.innerHTML=`<h3>Rechnung bearbeiten</h3><p class="s">${esc(i.nummer||'')}</p>
-    <div class="mailrow"><label>Kunde</label><input id="eKunde" value="${esc(i.kunde||'')}"></div>
+    <div class="mailrow"><label>Kunde</label><input id="eKunde" value="${esc(i.kunde||'')}"></div><div class="mailrow"><label>Rechnungsadresse</label><input id="eAdresse" value="${esc(i.kunde_adresse||'')}" placeholder="leer lassen: Adresse vom Auftrag"></div>
     <div class="mailrow"><label>Leistung</label><textarea id="eText">${esc(i.positionstext||'')}</textarea></div>
     <div class="two">
       <div class="mailrow"><label>Stunden</label><input id="eStd" type="number" step="0.5" min="0" value="${i.stunden||''}"></div>
       <div class="mailrow"><label>Betrag (€)</label><input id="eBetrag" type="number" step="0.01" value="${i.betrag}"></div>
     </div>
-    <div class="mailrow"><label>Rechnungsdatum</label><input id="eDatum" type="date" value="${isoDate(i.datum||i.created_at)}"></div>
+    <div class="mailrow"><label>Rechnungsdatum</label><input id="eDatum" type="date" value="${isoDate(i.datum||i.created_at)}"></div><div class="mailrow"><label>Datum der Leistung</label><input id="eLeistung" type="date" value="${isoDate(i.leistung_datum||i.datum||i.created_at)}"></div>
     <div class="mailrow"><label>E-Mail des Kunden</label><input id="eMail" type="email" value="${esc(i.kunde_email||'')}"></div>
-    <div class="mailrow"><label>Rechnungsadresse</label><input id="eAdresse" value="${esc(i.kunde_adresse||'')}" placeholder="leer lassen: Adresse vom Auftrag"></div><div class="stack">
+    <div class="stack">
       <button class="btn btn-primary" id="eGo" onclick="saveEdit('${id}')">Änderungen speichern</button>
       <button class="btn btn-ghost" onclick="openManage('${id}')">Zurück</button>
     </div>
@@ -846,7 +846,9 @@ async function saveEdit(id){
     datum:el('eDatum').value||isoDate()
   };
   const st=parseFloat(el('eStd').value); if(!isNaN(st)) upd.stunden=st;
-  const adr = (el('eAdresse') ? el('eAdresse').value.trim() : '');
+  const ld = (el('eLeistung') ? el('eLeistung').value : '');
+      upd.leistung_datum = ld || null;
+      const adr = (el('eAdresse') ? el('eAdresse').value.trim() : '');
       upd.kunde_adresse = adr || null;
       const mail=(el('eMail').value||'').trim();
   if(mail) upd.kunde_email=mail;
