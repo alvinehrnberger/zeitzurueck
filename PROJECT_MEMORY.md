@@ -119,6 +119,24 @@ Marke **ZeitZurück®** ist registriert (AT Nr. 336036, 23.07.2026). Fünf Websi
 
 ---
 
+## Gebaut am 2. August 2026
+
+- **Chat repariert.** Die Gewerbezeile („Tischlerarbeiten … das darf ich nicht machen") ist raus — sie war **selbst geschrieben**, keine Erfindung des Modells. Ersetzt durch Alvins echte Regel, formuliert als Angebot statt als Rechtsauskunft: Anschluss von Wasser, Strom und Gas macht er nicht, alles Übrige an einer Küche schon, einschließlich Arbeitsplatte anpassen und ausschneiden. Küchen sind jetzt vollständig im Leistungsumfang. Die erfundene Frage „ist die Arbeitsplatte bereits angebracht?" ist ausdrücklich verboten. Kontaktdaten werden nur noch erfragt, wenn sie fehlen. Lieferung wird angeboten, ohne Preis zu nennen.
+- **Chatfenster:** drei pulsierende Punkte statt stummer Blase, nach 3,5 s zusätzlich ein Wartehinweis (nur einmal — die erste Fassung startete pro Nachricht einen Zeitgeber und zeigte den Satz dreimal). Lange Antworten beginnen oben statt am Ende.
+- **Rechnung:** `leistung_datum` als eigene Spalte und im PDF. Vorher stand in der Positionszeile das Rechnungsdatum — bei einer am 15.08. erbrachten Leistung also der falsche Tag. Das Leistungsdatum ist Pflichtangabe nach § 11 UStG. Empfängeradresse jetzt zweizeilig (PLZ und Ort unter der Straße). Rechnungsadresse als eigenes Feld direkt unter dem Kundennamen.
+- **Datenband „Live · Daten in der EU" entfernt.**
+- **Anfragemail:** Knopf „Auftrag öffnen", golden statt fast schwarz.
+
+### Der Kalender: warum wir das Modell aus der Schleife nehmen
+Ein gelöschter Auftrag ließ den Kalendereintrag stehen. Ursache **nicht** in der Technik: Die Kennung wird sauber durchgereicht und gespeichert — aber der Chat hat `auftrag_anlegen` mit **`event_id: null`** aufgerufen, obwohl im Prompt ausdrücklich steht, sie mitzugeben.
+**Entscheidung:** Die Löschung darf sich nicht auf eine Zusage des Modells stützen. Sie findet den Termin künftig selbst über Datum, Uhrzeit und Kundennamen, die ohnehin am Auftrag stehen.
+**Verallgemeinert:** Alles, was zuverlässig sein muss, gehört in deterministischen Code. Das Modell darf formulieren und einordnen — nicht Schlüssel weiterreichen.
+
+### Kalender in der Gegenrichtung: bewusst nicht
+Ein im Kalender gelöschter Termin soll den Auftrag **nicht** löschen. An einem Auftrag hängen Stunden, Rechnung und Archiv; ein Wisch am Handy darf das nicht auslösen. Später höchstens ein Hinweis „Termin ist nicht mehr im Kalender".
+
+---
+
 ## Bewusst verschoben — und warum
 
 | Verschoben | Warum |
