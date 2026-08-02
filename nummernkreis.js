@@ -96,7 +96,7 @@
           zeile +
           (j.adresse ? '<div class="row"><span class="k">Adresse</span><span class="v"><a href="' + mapsLink(j.adresse) + '" target="_blank" rel="noopener">' + esc(j.adresse) + ' ↗</a></span></div>' : '') +
         '</div>' +
-        '<div class="dngr" onclick="deleteJob(\'' + j.id + '\')">Auftrag löschen</div></div>' + aktion;
+        '<div class="verlegen" onclick="openTermin(\'' + j.id + '\')">Termin ändern</div><div class="dngr" onclick="deleteJob(\'' + j.id + '\')">Auftrag löschen</div></div>' + aktion;
       return;
     }
 
@@ -112,7 +112,7 @@
         '<div class="row"><span class="k">Nächste Rechnung</span><span class="v">' + naechsteNummer() + '</span></div>' +
       '</div>' +
       '<p style="color:var(--muted);font-size:13px;margin-top:14px">Wenn du fertig bist: „Arbeit abgeschlossen" tippen, echte Stunden eintragen — den Rest erledigt ZeitZurück.</p>' +
-      '<div class="dngr" onclick="deleteJob(\'' + j.id + '\')">Auftrag löschen</div></div>' +
+      '<div class="verlegen" onclick="openTermin(\'' + j.id + '\')">Termin ändern</div><div class="dngr" onclick="deleteJob(\'' + j.id + '\')">Auftrag löschen</div></div>' +
       '<div class="cta"><button class="btn btn-primary" onclick="openComplete(\'' + j.id + '\')">✓ Arbeit abgeschlossen</button></div>';
   };
 
@@ -812,5 +812,61 @@ window.deleteJob = async function(id){
     showList();
   }catch(e){
     alert('Der Auftrag konnte nicht gelöscht werden.\n\n' + (e.message || e));
+  }
+};
+
+
+/* ---------- Termin verschieben ---------- */
+window.openTermin = function (id) {
+  var j = ((typeof auftraege !== 'undefined' && auftraege) || window._alleAuftraege || []).find(function (x) { return x.id === id; });
+  if (!j) { alert('Auftrag nicht gefunden.'); return; }
+  var d = j.termin ? new Date(j.termin) : new Date();
+  var vorgabe = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+  sheet.innerHTML = '<h3>Termin ändern</h3>'
+    + '<div class="sub">' + (j.kunde || '') + ' — ' + (j.aufgabe || '') + '</div>'
+    + '<div class="mailrow"><label>Neuer Termin</label>'
+    + '<input id="tNeu" type="datetime-local" value="' + vorgabe + '"></div>'
+    + '<div class="mailrow"><label><input id="tMail" type="checkbox" checked> Kunden per Mail verständigen</label></div>'
+    + '<div class="stack">'
+    + '<button class="btn btn-primary" id="tGo" onclick="terminSpeichern(\'' + id + '\')">Termin verschieben</button>'
+    + '<button class="btn btn-ghost" onclick="showJob(\'' + id + '\')">Zurück</button></div>'
+    + '<div class="note">Der Kalendereintrag wird mitverschoben.</div>';
+  scrim.classList.add('show');
+};
+
+window.terminSpeichern = async function (id) {
+  var btn = el('tGo');
+  var roh = el('tNeu') ? el('tNeu').value : '';
+  if (!roh) { alert('Bitte einen Termin wählen.'); return; }
+  var d = new Date(roh);
+  if (isNaN(d.getTime())) { alert('Der Termin ist kein gültiges Datum.'); return; }
+  if (d.getTime() < Date.now() - 86400000) {
+    if (!confirm('Der neue Termin liegt in der Vergangenheit (' + d.toLocaleDateString('de-AT') + ').\nStimmt das Jahr ' + d.getFullYear() + '?\n\nTrotzdem verschieben?')) return;
+  }
+  var melden = el('tMail') ? el('tMail').checked : true;
+  var j = ((typeof auftraege !== 'undefined' && auftraege) || window._alleAuftraege || []).find(function (x) { return x.id === id; });
+  if (btn) { btn.disabled = true; btn.textContent = 'Wird verschoben …'; }
+  try {
+    var q = await sb.from('auftraege').update({ termin: d.toISOString() }).eq('id', id);
+    if (q.error) throw q.error;
+    var antwort = await fetch(window.ZZ_KALENDER_WEBHOOK, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        aktion: 'verschieben', auftrag_id: id, betrieb_id: betrieb.id,
+        event_id: j ? j.event_id : null, termin: d.toISOString(),
+        kunde: j ? j.kunde : '', kunde_email: j ? j.kunde_email : '',
+        aufgabe: j ? j.aufgabe : '', adresse: j ? j.adresse : '',
+        melden: !!melden
+      })
+    });
+    if (!antwort.ok) {
+      alert('Der Termin wurde im Auftrag geändert, aber der Kalender konnte nicht nachgezogen werden.\nBitte im Kalender von Hand korrigieren.');
+    }
+    scrim.classList.remove('show');
+    await loadData();
+    showJob(id);
+  } catch (e) {
+    if (btn) { btn.disabled = false; btn.textContent = 'Termin verschieben'; }
+    alert('Fehler: ' + (e && e.message ? e.message : e));
   }
 };
