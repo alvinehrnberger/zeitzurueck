@@ -828,7 +828,7 @@ function openEdit(id){
     </div>
     <div class="mailrow"><label>Rechnungsdatum</label><input id="eDatum" type="date" value="${isoDate(i.datum||i.created_at)}"></div>
     <div class="mailrow"><label>E-Mail des Kunden</label><input id="eMail" type="email" value="${esc(i.kunde_email||'')}"></div>
-    <div class="stack">
+    <div class="mailrow"><label>Rechnungsadresse</label><input id="eAdresse" value="${esc(i.kunde_adresse||'')}" placeholder="leer lassen: Adresse vom Auftrag"></div><div class="stack">
       <button class="btn btn-primary" id="eGo" onclick="saveEdit('${id}')">Änderungen speichern</button>
       <button class="btn btn-ghost" onclick="openManage('${id}')">Zurück</button>
     </div>
@@ -846,7 +846,9 @@ async function saveEdit(id){
     datum:el('eDatum').value||isoDate()
   };
   const st=parseFloat(el('eStd').value); if(!isNaN(st)) upd.stunden=st;
-  const mail=(el('eMail').value||'').trim();
+  const adr = (el('eAdresse') ? el('eAdresse').value.trim() : '');
+      upd.kunde_adresse = adr || null;
+      const mail=(el('eMail').value||'').trim();
   if(mail) upd.kunde_email=mail;
   try{
     await sb.from('rechnungen').update(upd).eq('id',id);
@@ -1047,6 +1049,20 @@ el('pw').addEventListener('keydown',e=>{ if(e.key==='Enter') submitAuth(); });
     m.style.left=Math.max(10, Math.min(r.left, window.innerWidth-244))+"px";
     m.classList.add("auf"); s.classList.add("auf");
   }
+  function bandSetzen(){
+    var f = document.getElementById("flag"); if(!f) return;
+    var hoch = 0, alle = document.querySelectorAll("button, a, div");
+    for(var n = 0; n < alle.length; n++){
+      var el = alle[n]; if(el === f) continue;
+      var cs = getComputedStyle(el);
+      if(cs.position !== "fixed" || cs.display === "none" || cs.visibility === "hidden") continue;
+      var r = el.getBoundingClientRect();
+      if(r.height < 28 || r.width < 140) continue;
+      if(window.innerHeight - r.bottom > 40) continue;
+      hoch = Math.max(hoch, window.innerHeight - r.top);
+    }
+    f.style.bottom = (hoch ? (hoch + 12) : 10) + "px";
+  }
   function platzieren(b){
     b = b || document.getElementById("zzBurger");
     var s=document.getElementById("screen"), a=document.getElementById("app");
@@ -1060,6 +1076,7 @@ el('pw').addEventListener('keydown',e=>{ if(e.key==='Enter') submitAuth(); });
     if(band && band.style.display!=="none") unten = Math.max(unten, band.getBoundingClientRect().bottom-ra.top);
     var oben = rb.top-ra.top + (bez===s ? 12 : -4);
     b.style.top=Math.max(unten+8, oben)+"px"; b.style.right="15px";
+    bandSetzen();
   }
   window.addEventListener("resize", function(){ platzieren(); });
   function beobachten(){
