@@ -905,7 +905,13 @@ function openDelete(id){
 }
 async function doDelete(id){
   const btn=el('dGo'); btn.disabled=true; btn.textContent='Wird gelöscht…';
-  try{ await sb.from('rechnungen').delete().eq('id',id); scrim.classList.remove('show'); await loadData(); setTab('inv'); }
+  try{ const weg = await sb.from('rechnungen').delete().eq('id',id).select('id');
+      if(weg && weg.error) throw weg.error;
+      if(!weg || !weg.data || weg.data.length === 0){
+        if(btn){ btn.disabled = false; btn.textContent = 'Endgültig löschen'; }
+        alert('Diese Rechnung ist bereits beim Kunden und kann nicht gelöscht werden.\n\nFür eine bereits verschickte Rechnung gibt es den Storno — damit bleibt nachvollziehbar, dass sie aufgehoben wurde. Löschen würde eine Lücke im Nummernkreis hinterlassen.');
+        return;
+      } scrim.classList.remove('show'); await loadData(); setTab('inv'); }
   catch(e){ btn.disabled=false; btn.textContent='Ja, endgültig löschen'; alert('Fehler: '+e.message); }
 }
 

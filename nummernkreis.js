@@ -807,7 +807,11 @@ window.deleteJob = async function(id){
       }
     }
 
-    var d = await sb.from('auftraege').delete().eq('id', id);
+    var d = await sb.from('auftraege').delete().eq('id', id).select('id');
+    if (d && !d.error && (!d.data || d.data.length === 0)) {
+      alert('Dieser Auftrag konnte nicht gelöscht werden.\n\nLöschen ist dem Inhaber vorbehalten.');
+      return;
+    }
     if(d && d.error) throw d.error;
     await loadData();
     showList();
