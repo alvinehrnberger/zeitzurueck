@@ -90,6 +90,7 @@
         '<div class="d-h">' + esc(j.kunde) + '</div><div class="d-s">' + esc(j.aufgabe || '') + '</div>' +
         '<div class="rows">' +
           '<div class="row"><span class="k">Status</span><span class="v" style="color:var(--ok)">Erledigt</span></div>' +
+          '<div class="row"><span class="k">Termin</span><span class="v">' + (j.termin ? new Date(j.termin).toLocaleString('de-AT',{weekday:'short',day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—') + '</span></div>' +
           '<div class="row"><span class="k">Geleistete Zeit</span><span class="v">' + String(j.stunden).replace('.', ',') + ' Std</span></div>' +
           (inv && inv.nummer ? '<div class="row"><span class="k">Rechnung</span><span class="v">Nr. ' + esc(inv.nummer) + '</span></div>' : '') +
           (inv ? '<div class="row"><span class="k">Betrag</span><span class="v">' + eur(inv.betrag) + '</span></div>' : '') +
@@ -591,7 +592,7 @@
     try{
       await sb.from('auftraege').update({ status: art==='bar'?'bar':'erledigt', stunden: null, abrechnung:'pauschale', pauschale_betrag: betrag }).eq('id', id);
       var nummer = art==='rechnung' ? naechsteNummer() : null;
-      var payload={ betrieb_id:betrieb.id, auftrag_id:id, nummer:nummer, kunde:j.kunde, positionstext:j.aufgabe, stunden:null, betrag:betrag, art:art };
+      var payload={ betrieb_id:betrieb.id, auftrag_id:id, leistung_datum:(j&&j.termin)?(function(d){return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10);})(new Date(j.termin)):null,nummer:nummer, kunde:j.kunde, positionstext:j.aufgabe, stunden:null, betrag:betrag, art:art };
       if(art==='rechnung') payload.kunde_email=mail;
       var rec=null;
       try{ var r1=await sb.from('rechnungen').insert(payload).select().single(); rec=r1.data; }
@@ -659,7 +660,7 @@
     try{
       await sb.from('auftraege').update({ status: art==='bar'?'bar':'erledigt', stunden: pausch?null:curHours, abrechnung: pausch?'pauschale':'zeit', pauschale_betrag: pausch?betrag:null }).eq('id', id);
       var nummer = art==='rechnung' ? naechsteNummer() : null;
-      var payload={ betrieb_id:betrieb.id, auftrag_id:id, nummer:nummer, kunde:j.kunde, positionstext:j.aufgabe, stunden: pausch?null:curHours, betrag:betrag, art:art };
+      var payload={ betrieb_id:betrieb.id, auftrag_id:id, leistung_datum:(j&&j.termin)?(function(d){return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10);})(new Date(j.termin)):null,nummer:nummer, kunde:j.kunde, positionstext:j.aufgabe, stunden: pausch?null:curHours, betrag:betrag, art:art };
       if(art==='rechnung'){ payload.kunde_email=mail; payload.zahlart=zahlart; if(zahlart==='bar') payload.bezahlt_am=isoDate(); }
       var rec=null;
       if(art==='rechnung'){
