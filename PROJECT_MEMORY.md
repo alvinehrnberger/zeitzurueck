@@ -1,6 +1,6 @@
 # PROJECT_MEMORY — ZeitZurück®
 
-*Stand: 2. August 2026 · lebendes Dokument im Repository `zeitzurueck`*
+*Stand: 4. August 2026 · lebendes Dokument im Repository `zeitzurueck`*
 
 ---
 
@@ -78,6 +78,27 @@ Stripe sieht nur, was durch Stripe läuft — der Handwerker bekommt Überweisun
 **Zurückgestellt:** alle 90 Tage neue Zustimmung, Kosten je Konto, größter Baustein bisher.
 **Ausnahme:** Betriebe, die an Private verkaufen und Anzahlungen nehmen — für Evolution Ears ist Stripe sinnvoll.
 
+### Der Auftragsverarbeitungsvertrag hängt am Fragebogen, nicht an einer Unterschrift
+Art. 28 Abs. 9 DSGVO lässt **elektronische Form** ausdrücklich zu — es braucht keine Signatur und keinen Ausdruck. Der Vertrag liegt als PDF im Briefkopf bereit, der Fragebogen führt ihn mit Namen, Funktion, E-Mail und einem Pflichthaken zu. Gespeichert werden Zustimmung, Zeitpunkt, Fassung und die **Prüfsumme des PDF**, das der Betrieb tatsächlich gesehen hat. Damit ist auch Jahre später belegbar, welchem Text zugestimmt wurde.
+**Der eine ehrliche Punkt darin:** das Sprachmodell läuft in den USA. Anthropic bleibt (Qualität), also steht die Drittlandübermittlung offen im Vertrag statt versteckt in einer Anlage.
+
+### Aufbewahrung von Chatverläufen: gestuft, nicht pauschal
+Ein Gespräch ohne Buchung ist nach **12 Monaten** weg. Wurde daraus ein Auftrag, bleibt es **3 Jahre** — die Gewährleistungsfrist. Art. 17 Abs. 3 lit. e DSGVO trägt das: Aufbewahrung zur Rechtsverteidigung. Ein nächtlicher Lauf räumt selbständig auf.
+**Verworfen:** eine einheitliche Frist. Kurz genug für den Datenschutz und lang genug für den Streitfall gibt es nicht als eine Zahl.
+**Fürs Lernen egal:** wir lernen aus Gesprächen der letzten Wochen, nicht der letzten Jahre.
+
+### Ein Klick in einer Mail darf nichts auslösen
+Am 30. Juli kamen drei einander widersprechende Mails an, weil ein Postfach-Scanner Links im Hintergrund geöffnet hatte. Seitdem gilt: **GET zeigt nur, POST handelt.** Wer im Angebot auf „annehmen" klickt, landet auf einer Seite und muss dort noch einmal bestätigen.
+**Verworfen:** der bequemere Ein-Klick-Weg. Ein Angebot, das ein Virenscanner annimmt, ist schlimmer als ein Klick mehr.
+
+### Löschen sperren heißt: in der Datenbank, nicht im Knopf
+Eine versendete Rechnung lässt sich nicht mehr löschen — durchgesetzt über eine Regel in der Datenbank, zusätzlich beschränkt auf die Rolle *Inhaber*. `DEMO` bleibt löschbar, damit das Vorführen den Zähler nicht verbraucht.
+**Der Fallstrick:** eine gesperrte Löschung liefert keinen Fehler, sondern null Zeilen. Ohne Prüfung hätte die App „gelöscht" gemeldet und nichts getan.
+
+### Angebot und Auftrag sind dasselbe Ding in zwei Zuständen
+Ein Kostenvoranschlag ist keine zweite Datenwelt, sondern eine Rechnung mit `art = 'angebot'`, eigener Nummer (`A …`) und Gültigkeitsdatum. Wird es angenommen, wird der Auftrag wieder ein normaler offener Auftrag — dieselben Stunden, dieselbe Rechnung, kein Umtragen.
+**Anlass:** Caesar Handmade Guitars. Dort ist der Voranschlag der Normalfall, nicht die Ausnahme.
+
 ### Opus statt Fable für diese Arbeit
 Opus 5 liegt bei agentischem Programmieren vorn (43 % gegen 33 %) und ausdrücklich bei numerischem Denken und Präzision. Fable 5 ist auf lange autonome Läufe und Mehr-Agenten-Orchestrierung ausgelegt — das tun wir nicht; wir arbeiten in engen Schleifen mit Rückkopplung. Die 50 % Fable im Max-Plan sind zusätzlicher Spielraum, keine bessere Wahl.
 
@@ -89,9 +110,15 @@ Opus 5 liegt bei agentischem Programmieren vorn (43 % gegen 33 %) und ausdrückl
 
 **Termine:** Anlegen, **Verschieben** (Kalender zieht nach, Kunde bekommt eine Verlegungsmail), Löschen. Die Kalenderkennung holt sich der Ablauf beim Anlegen selbst aus dem Kalender, statt sich auf den Chat zu verlassen. Warnung, wenn ein Termin in der Vergangenheit liegt — mit Nennung des Jahres.
 
-**Chat:** trifft keine gewerberechtlichen Aussagen, kennt Alvins echte Grenze (kein Wasser- und Stromanschluss, alles Übrige an einer Küche schon), fragt Kontaktdaten nur wenn sie fehlen, bietet Lieferung ohne Preisnennung an. Drei pulsierende Punkte und nach 3,5 s ein Wartehinweis.
+**Chat:** trifft keine gewerberechtlichen Aussagen, kennt Alvins echte Grenze (kein Wasser- und Stromanschluss, alles Übrige an einer Küche schon), fragt Kontaktdaten nur wenn sie fehlen, bietet Lieferung ohne Preisnennung an. Drei pulsierende Punkte und nach 3,5 s ein Wartehinweis. Jedes Gespräch wird protokolliert und ist als Sitzung nachlesbar — Grundlage für den wöchentlichen Durchgang.
 
-**Offen:** Zahlungsreferenz aufs PDF · Löschen für Kundenlogins sperren · Stripe-Rückruf für bestätigte SEPA-Zahlungen · Handy-Durchgang über alle Seiten · Chatprotokoll-Aufbewahrung.
+**Recht und Papier:** Auftragsverarbeitungsvertrag als PDF im Briefkopf, elektronisch über den Fragebogen zugestimmt, mit Prüfsumme belegt. Impressum und Datenschutzerklärung stehen. Aufbewahrung gestuft und automatisch aufgeräumt.
+
+**Geld:** Zahlungsreferenz auf PDF und in der Mail. Stripe-Rückruf für bestätigte SEPA-Zahlungen — die Signatur wird geprüft, der Schlüssel liegt in einer Tabelle, die weder App noch Besucher lesen dürfen. Stripe steht im Testmodus; scharf geschaltet wird beim ersten Ja.
+
+**Angebote:** eigener Nummernkreis `A`, Angebotslayout ohne Zahlungssatz, Gültigkeitsdatum, Hinweis auf § 5 KSchG. Zwei Knöpfe in der Kundenmail.
+
+**Offen:** die Bestätigungsseite für angenommene und abgelehnte Angebote · Handy-Durchgang über alle Seiten · ein Gehirn für alle Chats · Stripe scharf schalten.
 
 ---
 
@@ -104,7 +131,7 @@ Opus 5 liegt bei agentischem Programmieren vorn (43 % gegen 33 %) und ausdrückl
 | Monatliche ZZ-Rechnungen automatisch | Lohnt ab etwa zehn Kunden. Bis dahin ein Knopf im Monat. |
 | Gründerpreise in Stripe | Erst nach einer Vereinbarung mit Roli und Alex. |
 | EU-Marke | ~800 € ohne Umsatz nicht sinnvoll. Frist hängt am AT-Anmeldetag. |
-| Gemeinde Wolfsgraben | Gute Idee, warme Tür, dasselbe Produkt — aber keine vierte Baustelle ohne ersten Kunden. Memo liegt vor. |
+| Gemeinde Wolfsgraben | **Gestrichen** auf Alvins Wunsch. Warme Tür, aber keine vierte Baustelle ohne ersten Kunden. |
 | Eigene Domain Montageservice | Hängt am Namen, der am WKO-Termin hängt. Solange steht `n8n.cloud` in Kundenmails. |
 | n8n v3 | Durchsicht aller Abläufe im Oktober. |
 
@@ -122,6 +149,9 @@ Opus 5 liegt bei agentischem Programmieren vorn (43 % gegen 33 %) und ausdrückl
 - **Der gewünschte Zustand darf keinen Alarm auslösen.** Ein Termin, der schon gelöscht ist, ist kein Fehler.
 - **Ein offensichtlich falscher Wert muss Widerspruch auslösen.** Ein Auftrag wurde auf 2024 gebucht und lief kommentarlos durch. Nicht der Code war schuld — es fehlte die Rückfrage.
 - **Nie eine Datei hochladen, ohne den Inhalt zu prüfen.** `app.html` wurde einmal mit dem Wort „null" überschrieben, weil eine Variable beim Seitenwechsel verloren ging. Seitdem bricht der Upload bei unplausibler Größe ab.
+- **Eine Sperre, die nur „nichts passiert" meldet, wird für Erfolg gehalten.** Die Datenbank verweigert das Löschen einer verschickten Rechnung — ohne Fehler, mit null Zeilen. Die App hätte „gelöscht" gesagt.
+- **Nicht jeder Klick kommt von einem Menschen.** Postfächer öffnen Links, bevor jemand sie sieht.
+- **Eine Änderung an zwei Stellen ist eine Änderung, die man einmal vergisst.** Der Nummernkreis stand in zwei Dateien; repariert war nur eine, und die Vorführung verbrauchte echte Rechnungsnummern.
 - **Betriebe kaufen kein Werkzeug.** Sie kaufen, dass das Telefon nicht mehr für Dinge läutet, die keine Arbeit sind.
 - **Der Vorsprung ist keine Technik, sondern Ortskenntnis.** Jeder kann einen Chat einbauen. Niemand sonst lernt die fünf Fragen, die der Frau vom Elektriker im Wienerwald wirklich gestellt werden.
 
