@@ -97,7 +97,7 @@
           zeile +
           (j.adresse ? '<div class="row"><span class="k">Adresse</span><span class="v"><a href="' + mapsLink(j.adresse) + '" target="_blank" rel="noopener">' + esc(j.adresse) + ' ↗</a></span></div>' : '') +
         '</div>' +
-        '<div class="verlegen" onclick="openTermin(\'' + j.id + '\')">Termin ändern</div><div class="dngr" onclick="deleteJob(\'' + j.id + '\')">Auftrag löschen</div></div>' + aktion;
+        '<div class="verlegen" onclick="openAngebot(\'' + j.id + '\')">Angebot erstellen</div><div class="verlegen" onclick="openTermin(\'' + j.id + '\')">Termin ändern</div><div class="dngr" onclick="deleteJob(\'' + j.id + '\')">Auftrag löschen</div></div>' + aktion;
       return;
     }
 
@@ -113,7 +113,7 @@
         '<div class="row"><span class="k">Nächste Rechnung</span><span class="v">' + naechsteNummer() + '</span></div>' +
       '</div>' +
       '<p style="color:var(--muted);font-size:13px;margin-top:14px">Wenn du fertig bist: „Arbeit abgeschlossen" tippen, echte Stunden eintragen — den Rest erledigt ZeitZurück.</p>' +
-      '<div class="verlegen" onclick="openTermin(\'' + j.id + '\')">Termin ändern</div><div class="dngr" onclick="deleteJob(\'' + j.id + '\')">Auftrag löschen</div></div>' +
+      '<div class="verlegen" onclick="openAngebot(\'' + j.id + '\')">Angebot erstellen</div><div class="verlegen" onclick="openTermin(\'' + j.id + '\')">Termin ändern</div><div class="dngr" onclick="deleteJob(\'' + j.id + '\')">Auftrag löschen</div></div>' +
       '<div class="cta"><button class="btn btn-primary" onclick="openComplete(\'' + j.id + '\')">✓ Arbeit abgeschlossen</button></div>';
   };
 
@@ -831,10 +831,10 @@ window.openTermin = function (id) {
     + '<div class="sub">' + (j.kunde || '') + ' — ' + (j.aufgabe || '') + '</div>'
     + '<div class="mailrow"><label>Neuer Termin</label>'
     + '<input id="tNeu" type="datetime-local" value="' + vorgabe + '"></div>'
-    + '<div class="mailrow"><label><input id="tMail" type="checkbox" checked> Kunden per Mail verständigen</label></div>'
+    + '<label class="zzhaken"><input id="tMail" type="checkbox" checked><span>Kunden per Mail verständigen</span></label>'
     + '<div class="stack">'
     + '<button class="btn btn-primary" id="tGo" onclick="terminSpeichern(\'' + id + '\')">Termin verschieben</button>'
-    + '<button class="btn btn-ghost" onclick="showJob(\'' + id + '\')">Zurück</button></div>'
+    + '<button class="btn btn-ghost" onclick="zurueckZumAuftrag(\'' + id + '\')">Zurück</button></div>'
     + '<div class="note">Der Kalendereintrag wird mitverschoben.</div>';
   scrim.classList.add('show');
 };
@@ -874,4 +874,79 @@ window.terminSpeichern = async function (id) {
     if (btn) { btn.disabled = false; btn.textContent = 'Termin verschieben'; }
     alert('Fehler: ' + (e && e.message ? e.message : e));
   }
+};
+
+
+/* ---------- Angebote ---------- */
+window.naechsteAngebotsnummer = function () {
+  var jahr = new Date().getFullYear();
+  var bisher = (window._alleRechnungen || []).filter(function (i) {
+    if (i.art !== 'angebot') return false;
+    var d = i.datum || i.created_at;
+    return new Date(d).getFullYear() === jahr;
+  }).length;
+  return 'A ' + String(bisher + 1).padStart(2, '0') + '/' + jahr;
+};
+
+window.openAngebot = function (auftragId) {
+  var liste = (typeof auftraege !== 'undefined' && auftraege) || window._alleAuftraege || [];
+  var j = liste.find(function (x) { return x.id === auftragId; });
+  if (!j) { alert('Auftrag nicht gefunden.'); return; }
+  var satz = Number(betrieb && betrieb.stundensatz) || 0;
+  var frist = new Date(); frist.setDate(frist.getDate() + 30);
+  var fristIso = new Date(frist.getTime() - frist.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+  sheet.innerHTML = '<h3>Angebot erstellen</h3>'
+    + '<div class="sub">' + esc(j.kunde || '') + ' — ' + naechsteAngebotsnummer() + '</div>'
+    + '<div class="mailrow"><label>Leistung</label>'
+    + '<textarea id="agText" rows="3">' + esc(j.aufgabe || '') + '</textarea></div>'
+    + '<div class="two">'
+    + '<div class="mailrow"><label>Betrag (€)</label><input id="agBetrag" type="number" step="0.01" min="0" placeholder="z.B. 2400"></div>'
+    + '<div class="mailrow"><label>Gültig bis</label><input id="agFrist" type="date" value="' + fristIso + '"></div>'
+    + '</div>'
+    + '<div class="mailrow"><label>Mail des Kunden</label>'
+    + '<input id="agMail" type="email" value="' + esc(j.kunde_email || '') + '"></div>'
+    + '<div class="stack">'
+    + '<button class="btn btn-primary" id="agGo" onclick="angebotSpeichern(\'' + auftragId + '\')">Angebot anlegen</button>'
+    + '<button class="btn btn-ghost" onclick="zurueckZumAuftrag(\'' + auftragId + '\')">Zurück</button></div>'
+    + '<div class="note">Ein Angebot ist keine Rechnung: eigener Nummernkreis, keine Umsatzsteuerangaben, und wenn es nicht angenommen wird, bleibt einfach eine Lücke.</div>';
+  scrim.classList.add('show');
+};
+
+window.angebotSpeichern = async function (auftragId) {
+  var btn = el('agGo');
+  var text = el('agText') ? el('agText').value.trim() : '';
+  var betrag = parseFloat(el('agBetrag') ? el('agBetrag').value : '');
+  var frist = el('agFrist') ? el('agFrist').value : '';
+  var mail = el('agMail') ? el('agMail').value.trim() : '';
+  if (!text) { alert('Bitte die Leistung beschreiben.'); return; }
+  if (isNaN(betrag) || betrag <= 0) { alert('Bitte einen Betrag angeben.'); return; }
+  var liste = (typeof auftraege !== 'undefined' && auftraege) || [];
+  var j = liste.find(function (x) { return x.id === auftragId; });
+  if (btn) { btn.disabled = true; btn.textContent = 'Wird angelegt …'; }
+  try {
+    var zufall = (crypto && crypto.randomUUID) ? crypto.randomUUID().replace(/-/g, '') : String(Date.now()) + Math.random().toString(36).slice(2);
+    var q = await sb.from('rechnungen').insert({
+      betrieb_id: betrieb.id, auftrag_id: auftragId,
+      nummer: naechsteAngebotsnummer(), kreis: 'A', art: 'angebot',
+      kunde: j ? j.kunde : '', kunde_email: mail || (j ? j.kunde_email : ''),
+      kunde_adresse: j ? j.adresse : null,
+      positionstext: text, betrag: betrag,
+      datum: new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10),
+      gueltig_bis: frist || null, angebot_status: 'offen', angebot_token: zufall
+    }).select('id,nummer').single();
+    if (q.error) throw q.error;
+    await sb.from('auftraege').update({ status: 'angebot' }).eq('id', auftragId);
+    scrim.classList.remove('show');
+    await loadData();
+    showInvoice(q.data.id);
+  } catch (e) {
+    if (btn) { btn.disabled = false; btn.textContent = 'Angebot anlegen'; }
+    alert('Fehler: ' + (e && e.message ? e.message : e));
+  }
+};
+
+
+window.zurueckZumAuftrag = function (id) {
+  try { scrim.classList.remove('show'); } catch (e) {}
+  showJob(id);
 };
