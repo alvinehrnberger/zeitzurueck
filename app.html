@@ -476,7 +476,7 @@ function offeneMahnungen(){
   return rechnungen.filter(i=>{ const s=invStatus(i); return s.k==='ueberfaellig'||s.k==='mahnung'; });
 }
 function renderJobs(){
-  const open=auftraege.filter(j=>j.status==='offen'), done=auftraege.filter(j=>j.status!=='offen');
+  const open=auftraege.filter(j=>j.status==='offen'||j.status==='angebot'||j.status==='abgelehnt'), done=auftraege.filter(j=>j.status!=='offen');
   const vorname=(betrieb&&betrieb.inhaber?betrieb.inhaber.split(' ')[0]:'');
   const late=offeneMahnungen();
   screen.innerHTML=`
