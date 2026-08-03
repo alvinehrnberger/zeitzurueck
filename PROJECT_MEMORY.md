@@ -116,9 +116,9 @@ Opus 5 liegt bei agentischem Programmieren vorn (43 % gegen 33 %) und ausdrückl
 
 **Geld:** Zahlungsreferenz auf PDF und in der Mail. Stripe-Rückruf für bestätigte SEPA-Zahlungen — die Signatur wird geprüft, der Schlüssel liegt in einer Tabelle, die weder App noch Besucher lesen dürfen. Stripe steht im Testmodus; scharf geschaltet wird beim ersten Ja.
 
-**Angebote:** eigener Nummernkreis `A`, Angebotslayout ohne Zahlungssatz, Gültigkeitsdatum, Hinweis auf § 5 KSchG. Zwei Knöpfe in der Kundenmail.
+**Angebote:** eigener Nummernkreis `A`, Angebotslayout ohne Zahlungssatz, Gültigkeitsdatum, Hinweis auf § 5 KSchG. Zwei Knöpfe in der Kundenmail, dahinter eine Bestätigungsseite — der Klick zeigt nur, erst das abgeschickte Formular handelt. Angenommen macht den Auftrag wieder offen, abgelehnt vermerkt ihn; beides meldet sich per Mail. Abgelaufen und doppelt beantwortet haben eigene, ruhige Seiten.
 
-**Offen:** die Bestätigungsseite für angenommene und abgelehnte Angebote · Handy-Durchgang über alle Seiten · ein Gehirn für alle Chats · Stripe scharf schalten.
+**Offen:** Handy-Durchgang über alle Seiten · ein Gehirn für alle Chats · Stripe scharf schalten.
 
 ---
 
