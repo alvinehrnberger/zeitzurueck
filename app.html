@@ -635,6 +635,12 @@ function buildPDF(i, art){
   if(k.iban && art!=='storno'){
     const zt=doc.splitTextToSize('Ich ersuche um Überweisung des oben genannten Betrages '+(art==='rechnung'?('binnen '+k.zahlungsziel+' Tagen '):'')+'auf mein Konto bei der '+k.bank+', mit dem IBAN: '+k.iban+', BIC: '+k.bic+' und verbleibe', R-L);
     doc.text(zt,L,yF); yF+=zt.length*5+7;
+          if(art === 'rechnung'){
+            doc.setFont('helvetica','bold');
+            doc.text('Zahlungsreferenz: ' + zzReferenz(i, art), L, yF += 6);
+            doc.setFont('helvetica','normal');
+            doc.text('Bitte bei der Überweisung angeben.', L, yF += 4.6);
+          }
   }
   doc.text('mit freundlichen Grüßen', L, yF); yF+=12;
   doc.setTextColor(0); doc.setFontSize(10.5);
