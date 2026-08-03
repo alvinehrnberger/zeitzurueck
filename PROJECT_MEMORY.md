@@ -137,6 +137,22 @@ Ein im Kalender gelöschter Termin soll den Auftrag **nicht** löschen. An einem
 
 ---
 
+## Zwei Fehler, die nur das Fehlerprotokoll gezeigt hat
+
+**Der tägliche Weckruf war seit vier Tagen tot.** Um 06:30 fragt ein Ablauf die Datenbank an, damit Supabase das Projekt nicht wegen Untätigkeit pausiert. Er fragte die Tabelle `betriebe` ab — die die anonyme Rolle nicht lesen darf und auch nicht dürfen soll. Gefährlich war nicht die Fehlermail, sondern dass **nichts geweckt wurde**. Behoben mit einer Ansicht `public.ping`, die nur eine `1` zurückgibt und nichts verrät.
+**Lehre:** Ein Wächter, dessen Fehlschlag niemandem auffällt, ist kein Wächter. Überwachung braucht selbst Überwachung.
+
+**Ein gelöschter Termin ist kein Fehler.** Beim Löschen eines Auftrags antwortete Google mit *410 – Resource has been deleted*, weil der Termin schon von Hand entfernt worden war. Der Ablauf brach ab und schickte eine Fehlermail. Die drei Kalenderschritte laufen jetzt weiter, wenn der Eintrag ohnehin weg ist — der gewünschte Zustand darf keinen Alarm auslösen.
+**Nebenbei bewiesen:** Der Löschweg funktioniert. Er hat den richtigen Termin angesprochen.
+
+## Die Kalenderkennung holt sich das System jetzt selbst
+Statt darauf zu hoffen, dass der Chat die Kennung weiterreicht (er tat es nicht), sucht der Zwischenschritt beim Anlegen im Kalender nach dem Termin und übernimmt die Kennung von dort. Deterministisch, im Moment der Buchung, wo der Eintrag garantiert existiert. Damit funktionieren Löschen **und** Verschieben, ohne dass beide einzeln abgesichert werden müssen.
+
+## Der Kalender darf melden, nicht löschen
+Verschieben aus dem Backend ist gebaut: neuer Termin, Kalender zieht nach, Kunde bekommt eine Mail. Das ist der häufigere Fall als Löschen — ein Handwerker verlegt wöchentlich.
+
+---
+
 ## Bewusst verschoben — und warum
 
 | Verschoben | Warum |
