@@ -139,6 +139,16 @@
     .zurueck{display:block;padding:20px 56px 0;font-size:14px;color:var(--muted);text-decoration:none}
     .zurueck:hover{color:var(--ink)}
 </style>
+<style>
+.avvblock{margin:34px 0 8px;padding:22px 22px 18px;border:1px solid #DDD8CC;border-radius:14px;background:#FAF8F3}
+.avvblock h2{margin:0 0 8px;font-size:1.05rem;color:#1A3A2B}
+.avvblock p{margin:0 0 10px;line-height:1.55}
+.avvblock ul{margin:0 0 14px 18px;padding:0;line-height:1.6}
+.avvpdf{display:inline-block;margin:2px 0 14px;padding:10px 16px;border-radius:999px;background:#1A3A2B;color:#fff;text-decoration:none;font-weight:600;font-size:.94rem}
+.avvhaken{display:flex;gap:10px;align-items:flex-start;margin:14px 0 4px;line-height:1.5;cursor:pointer}
+.avvhaken input{margin-top:3px;width:18px;height:18px;flex:0 0 auto}
+.avvnote{font-size:.84rem;color:#6B7280;margin-top:10px;line-height:1.5}
+</style>
 </head>
 <body>
 <a class="zurueck" href="/">← Zur Startseite</a>
@@ -424,7 +434,28 @@
     </section>
 
     <div class="actions">
-      <button type="submit" class="btn btn-primary" id="sendBtn">Angaben senden</button>
+      <div class="avvblock">
+  <h2>Auftragsverarbeitungsvertrag</h2>
+  <p>Bevor Ihr Chat scharf geschaltet wird, brauchen wir eine Vereinbarung darüber, wie ZeitZurück die Daten Ihrer Kundinnen und Kunden verarbeitet. Das verlangt die DSGVO — und es schützt in erster Linie Sie.</p>
+  <a class="avvpdf" href="https://xn--zeitzurck-w9a.at/avv-v1.pdf" target="_blank" rel="noopener">Vertrag lesen (PDF, 7 Seiten)</a>
+  <p><strong>Das Wichtigste in Kürze:</strong></p>
+  <ul>
+    <li>Ihre Kundendaten gehören <strong>Ihnen</strong>. Wir verarbeiten sie nur in Ihrem Auftrag.</li>
+    <li>Verarbeitet wird in der EU. Ausnahme: die Chatnachrichten gehen zur Beantwortung an ein Sprachmodell in den USA — auf Grundlage der EU-Standardvertragsklauseln.</li>
+    <li>Chatverläufe werden nach zwölf Monaten gelöscht. Rechnungen bleiben sieben Jahre, weil das Gesetz es verlangt.</li>
+    <li>Bei Vertragsende bekommen Sie alles zurück oder es wird gelöscht — binnen 30 Tagen.</li>
+  </ul>
+  <div class="f"><label>Ihr vollständiger Name</label><input type="text" name="avv_name" placeholder="Vor- und Nachname" required></div>
+  <div class="f"><label>Ihre Funktion im Betrieb</label><input type="text" name="avv_funktion" placeholder="z.B. Inhaber"></div>
+  <div class="f"><label>E-Mail für die Vertragskopie</label><input type="email" name="avv_email" placeholder="name@betrieb.at" required></div>
+  <label class="avvhaken"><input type="checkbox" name="avv_zustimmung" value="ja" required>
+    <span>Ich habe den Auftragsverarbeitungsvertrag gelesen und stimme ihm zu.</span></label>
+  <input type="hidden" name="avv_version" value="1">
+  <input type="hidden" name="avv_pruefsumme" value="fa04891d04f2347c271f1e02bb06b4838520a49a953e3917f4855d50d04ab46b">
+  <input type="hidden" name="avv_dokument" value="https://xn--zeitzurck-w9a.at/avv-v1.pdf">
+  <div class="avvnote">Zeitpunkt, Fassung und Prüfsumme werden festgehalten. Sie bekommen den Vertrag sofort per Mail — als Nachweis für beide Seiten.</div>
+</div>
+<button type="submit" class="btn btn-primary" id="sendBtn">Angaben senden</button>
       <button type="button" class="btn btn-ghost noprint" onclick="window.print()">Ausdrucken</button>
     </div>
     <div id="msg"></div>
