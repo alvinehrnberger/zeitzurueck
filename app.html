@@ -586,7 +586,7 @@ function buildPDF(i, art){
   const doc=new jsPDF({unit:'mm',format:'a4'});
   const L=25,R=185,MID=105;
   const satz=betrieb?Number(betrieb.stundensatz):50, stunden=Number(i.stunden);
-  const titel = art==='storno' ? 'Stornorechnung Nr. '+(i.nummer||'')
+  const titel=art==='angebot'?('Angebot Nr. '+i.nummer):art==='storno' ? 'Stornorechnung Nr. '+(i.nummer||'')
               : art==='mahnung' ? 'Mahnung zu Rechnung Nr. '+(i.nummer||'')
               : art==='erinnerung' ? 'Zahlungserinnerung zu Rechnung Nr. '+(i.nummer||'')
               : 'Rechnung Nr. '+(i.nummer||'');
@@ -647,9 +647,16 @@ function buildPDF(i, art){
       : 'Die Rechnung Nr. '+(i.nummer||'')+' vom '+deDate(i.datum||i.created_at)+' war am '+f+' zur Zahlung fällig. Vermutlich ist sie in der Alltagshektik untergegangen — wir ersuchen höflich um Überweisung des offenen Betrages. Sollten Sie bereits bezahlt haben, betrachten Sie dieses Schreiben bitte als gegenstandslos.';
     const es=doc.splitTextToSize(et,R-L); doc.text(es,L,yF); yF+=es.length*5+7;
   }
-  if(!betrieb || betrieb.kleinunternehmer){ doc.text('Umsatzsteuerbefreiung gem. § 6 Abs. 1 Z 27 UStG.', L, yF); yF+=9; }
+  if(!betrieb || betrieb.kleinunternehmer){ if(art === 'angebot'){
+          doc.setFont('helvetica','bold');
+          doc.text('Dieses Angebot ist gültig bis ' + (i.gueltig_bis ? deDate(i.gueltig_bis) : 'auf Widerruf') + '.', L, yF += 7);
+          doc.setFont('helvetica','normal');
+          doc.text('Die Annahme erfolgt schriftlich oder über den Link in der begleitenden E-Mail.', L, yF += 5);
+          doc.text('Es handelt sich um einen Kostenvoranschlag ohne Gewähr im Sinne des § 5 KSchG.', L, yF += 5);
+        }
+        doc.text('Umsatzsteuerbefreiung gem. § 6 Abs. 1 Z 27 UStG.', L, yF); yF+=9; }
   if(art==='rechnung'){ doc.text((window.zzFuss?window.zzFuss(i,satz):'Abgerechnet wird nach tatsächlich geleisteter Zeit zu € '+satz+',— pro Stunde.'), L, yF); yF+=9; }
-  if(k.iban && art!=='storno'){
+  if(k.iban && art !== 'storno' && art !== 'angebot'){
     const zt=doc.splitTextToSize('Ich ersuche um Überweisung des oben genannten Betrages '+(art==='rechnung'?('binnen '+k.zahlungsziel+' Tagen '):'')+'auf mein Konto bei der '+k.bank+', mit dem IBAN: '+k.iban+', BIC: '+k.bic+' und verbleibe', R-L);
     doc.text(zt,L,yF); yF+=zt.length*5+7;
           if(art === 'rechnung'){
@@ -727,7 +734,7 @@ function downloadPDF(id,art){
   art = art||'rechnung';
   const doc=buildPDF(rec,art);
   const b64=doc.output('datauristring').split(',')[1];
-  const bez = art==='storno'?'Stornorechnung':(art==='mahnung'?'Mahnung':(art==='erinnerung'?'Zahlungserinnerung':'Rechnung'));
+  const bez=art==='angebot'?'Angebot':art==='storno'?'Stornorechnung':(art==='mahnung'?'Mahnung':(art==='erinnerung'?'Zahlungserinnerung':'Rechnung'));
   const k=konf();
   const betreff = art==='storno' ? ('Stornorechnung '+rec.nummer+' – '+(betrieb?betrieb.name:''))
                 : art==='mahnung' ? ('Mahnung zu Rechnung '+rec.nummer+' – '+(betrieb?betrieb.name:''))
@@ -745,11 +752,20 @@ function downloadPDF(id,art){
   }
   const zzRef = zzReferenz(rec, art);
             await zzArchivieren(rec, b64, art);
-            if(typeof text === 'string' && text.indexOf('Mit freundlichen') > -1){
+            if(art === 'angebot' && typeof text === 'string'){
+        text = 'Sehr geehrte/r ' + (rec.kunde || '') + ',\n\n'
+             + 'anbei unser Angebot ' + (rec.nummer || '') + ' über ' + eur(rec.betrag) + '.\n\n'
+             + 'Leistung: ' + (rec.positionstext || '') + '\n'
+             + (rec.gueltig_bis ? ('Gültig bis: ' + deDate(rec.gueltig_bis) + '\n') : '')
+             + '\nSie können das Angebot über die Schaltflächen in dieser Nachricht annehmen oder ablehnen.\n'
+             + 'Bei Fragen antworten Sie einfach auf diese Nachricht.\n\n'
+             + 'Mit freundlichen Grüßen\n' + (betrieb ? (betrieb.inhaber || betrieb.name || '') : '');
+      }
+      if(typeof text === 'string' && text.indexOf('Mit freundlichen') > -1){
               text = text.replace('Mit freundlichen', 'Zahlungsreferenz: ' + zzRef + ' (bitte bei der Überweisung angeben)\n\nMit freundlichen');
             }
             const res = await fetch(RECHNUNG_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({ referenz: zzRef, empfaenger, kunde:rec.kunde||'', nummer:rec.nummer||'', betrag:eur(rec.betrag),
+    body:JSON.stringify({ referenz: zzRef, zusage_url: (art==='angebot' && rec.angebot_token) ? ('https://alvvyn.app.n8n.cloud/webhook/angebot?t='+rec.angebot_token+'&a=annehmen') : '', absage_url: (art==='angebot' && rec.angebot_token) ? ('https://alvvyn.app.n8n.cloud/webhook/angebot?t='+rec.angebot_token+'&a=ablehnen') : '', gueltig_bis: rec.gueltig_bis || '', empfaenger, kunde:rec.kunde||'', nummer:rec.nummer||'', betrag:eur(rec.betrag),
       leistung:rec.positionstext||'', betrieb:betrieb?betrieb.name:'', inhaber:betrieb?(betrieb.inhaber||''):'',
       dateiname:pdfName(rec,art), pdf_base64:b64, betreff, text, dokumentart:bez })});
   if(!res.ok) throw new Error('Versand fehlgeschlagen');
