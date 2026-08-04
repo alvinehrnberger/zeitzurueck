@@ -1017,3 +1017,54 @@ window.zurueckZumAuftrag = function (id) {
     };
   }
 })();
+
+/* ============================================================
+   Weg vom Auftrag zu seinem Angebot.
+   Ohne diesen Weg waere ein erstelltes Angebot nicht mehr
+   erreichbar, seit Angebote aus den Belegen heraus sind.
+   ============================================================ */
+(function zzAngebotWeg () {
+  function angebotZu(auftragId) {
+    var alle = window._alleRechnungen || [];
+    for (var n = 0; n < alle.length; n++) {
+      if (alle[n].art === 'angebot' && alle[n].auftrag_id === auftragId) return alle[n];
+    }
+    return null;
+  }
+  function stand(a) {
+    if (a.angebot_status === 'angenommen') return ' \u00b7 angenommen';
+    if (a.angebot_status === 'abgelehnt')  return ' \u00b7 abgelehnt';
+    if (a.gesendet_am) return ' \u00b7 versendet';
+    return ' \u00b7 noch nicht versendet';
+  }
+  function herrichten(auftragId) {
+    if (document.getElementById('zzZumAngebot')) return;
+    var a = angebotZu(auftragId);
+    if (!a) return;
+    var ziel = null;
+    var alle = document.querySelectorAll('a, button, div');
+    for (var n = 0; n < alle.length; n++) {
+      var txt = (alle[n].textContent || '').trim();
+      if (txt === 'Angebot erstellen') { ziel = alle[n]; break; }
+    }
+    if (!ziel || !ziel.parentNode) return;
+    var l = document.createElement('a');
+    l.id = 'zzZumAngebot';
+    l.href = 'javascript:void(0)';
+    l.style.cssText = ziel.getAttribute('style') || '';
+    l.className = ziel.className || '';
+    l.textContent = 'Angebot ansehen \u00b7 ' + (a.nummer || '') + stand(a);
+    l.onclick = function () { if (typeof window.showInvoice === 'function') window.showInvoice(a.id); };
+    ziel.parentNode.insertBefore(l, ziel);
+    // Solange ein offenes Angebot da ist, kein zweites anlegen lassen.
+    if (!a.angebot_status || a.angebot_status === 'offen') ziel.style.display = 'none';
+  }
+  var vorher = window.showJob;
+  if (typeof vorher === 'function') {
+    window.showJob = function (id) {
+      var r = vorher.apply(this, arguments);
+      setTimeout(function () { try { herrichten(id); } catch (e) {} }, 0);
+      return r;
+    };
+  }
+})();
