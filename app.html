@@ -453,7 +453,7 @@ async function switchBetrieb(id){
 /* ---------- Rechnungsnummer (wird von nummernkreis.js ueberschrieben) ---------- */
 function naechsteNummer(){
   const k=konf(), jahr=new Date().getFullYear();
-  const bisher = rechnungen.filter(i=>{
+  const bisher = rechnungen.filter(i=>{ if(i.art==='angebot') return false;
         const istDemo = (k.praefix === 'DEMO ');
         const kz = String(i.kreis || String(i.nummer||'').trim().split(' ')[0] || 'M');
         if(((kz === 'DEMO') !== istDemo)) return false;
@@ -473,10 +473,10 @@ function showList(){
   tab==='jobs' ? renderJobs() : renderInvoices();
 }
 function offeneMahnungen(){
-  return rechnungen.filter(i=>{ const s=invStatus(i); return s.k==='ueberfaellig'||s.k==='mahnung'; });
+  return rechnungen.filter(i=>{ if(i.art==='angebot') return false; const s=invStatus(i); return s.k==='ueberfaellig'||s.k==='mahnung'; });
 }
 function renderJobs(){
-  const open=auftraege.filter(j=>j.status==='offen'||j.status==='angebot'||j.status==='abgelehnt'), done=auftraege.filter(j=>j.status!=='offen');
+  const open=auftraege.filter(j=>j.status==='offen'||j.status==='angebot'||j.status==='abgelehnt'), done=auftraege.filter(j=>j.status==='erledigt');
   const vorname=(betrieb&&betrieb.inhaber?betrieb.inhaber.split(' ')[0]:'');
   const late=offeneMahnungen();
   screen.innerHTML=`
@@ -784,10 +784,10 @@ function showInvoice(id){
   } else if(i.art==='rechnung'){
     if(s.k==='storniert'){
       aktion=`<div class="cta"><button class="btn btn-ghost" onclick="downloadPDF('${i.id}')">⬇ PDF</button>
-        ${i.gesendet_am ? `<button class="btn btn-dark" onclick="openSend('${i.id}')">✉ Geänderte Rechnung senden</button>` : ``}<button class="btn btn-ghost" onclick="showList()">Zurück</button></div>`;
+        ${i.gesendet_am ? `<button class="btn btn-dark" onclick="openSend('${i.id}')">✉ Geänderte ${i.art==='angebot'?'Angebot':'Rechnung'} senden</button>` : `<button class="btn btn-primary" onclick="openSend('${i.id}')">✉ ${i.art==='angebot'?'Angebot':'Rechnung'} senden</button>`}<button class="btn btn-ghost" onclick="showList()">Zurück</button></div>`;
     } else if(s.k==='bezahlt'){
       aktion=`<div class="cta"><button class="btn btn-ghost" onclick="downloadPDF('${i.id}')">⬇ PDF</button>
-        ${i.gesendet_am ? `<button class="btn btn-dark" onclick="openSend('${i.id}')">✉ Geänderte Rechnung senden</button>` : ``}<button class="btn btn-ghost" onclick="showList()">Zurück</button></div>`;
+        ${i.gesendet_am ? `<button class="btn btn-dark" onclick="openSend('${i.id}')">✉ Geänderte ${i.art==='angebot'?'Angebot':'Rechnung'} senden</button>` : `<button class="btn btn-primary" onclick="openSend('${i.id}')">✉ ${i.art==='angebot'?'Angebot':'Rechnung'} senden</button>`}<button class="btn btn-ghost" onclick="showList()">Zurück</button></div>`;
     } else if(s.k==='mahnung'){
       aktion=`<div class="cta"><button class="btn btn-ghost" onclick="markPaid('${i.id}')">✓ Bezahlt</button>
         <button class="btn btn-warn" onclick="openSend('${i.id}','mahnung')">⚠ Mahnung senden</button></div>`;
@@ -831,7 +831,7 @@ function invoiceHTML(i){
     <div class="sum"><span>${istStorno(i)?'Gutschrift':'Gesamt'}</span><span>${eur(i.betrag)}</span></div>
     ${klein?'<div class="kn">Umsatzsteuerbefreiung gem. § 6 Abs. 1 Z 27 UStG.</div>':''}
     ${istStorno(i)?'':`<div class="kn">Abgerechnet wird nach tatsächlich geleisteter Zeit zu ${eur(satz)} pro Stunde.</div>`}
-    ${(k.iban&&!istStorno(i))?`<div class="kn">Zahlbar binnen ${k.zahlungsziel} Tagen · ${esc(k.bank)}<br>IBAN ${esc(k.iban)} · BIC ${esc(k.bic)}</div>`:''}
+    ${(k.iban&&!istStorno(i)&&i.art!=='angebot')?`<div class="kn">Zahlbar binnen ${k.zahlungsziel} Tagen · ${esc(k.bank)}<br>IBAN ${esc(k.iban)} · BIC ${esc(k.bic)}</div>`:''}
   </div>`;
 }
 
@@ -846,7 +846,7 @@ async function markPaid(id){
 function openManage(id){
   const i=rechnungen.find(x=>x.id===id);
   const storniert=istStorniert(i);
-  sheet.innerHTML=`<h3>Rechnung verwalten</h3><p class="s">${esc(i.nummer||'')} · ${esc(i.kunde||'')} · ${eur(i.betrag)}</p>
+  sheet.innerHTML=`<h3>${i.art==='angebot'?'Angebot':'Rechnung'} verwalten</h3><p class="s">${esc(i.nummer||'')} · ${esc(i.kunde||'')} · ${eur(i.betrag)}</p>
     <div class="stack">
       <button class="btn btn-ghost" onclick="openEdit('${id}')">✎ Bearbeiten</button>
       ${storniert?'':`<button class="btn btn-warn" onclick="openStorno('${id}')">⊘ Stornorechnung erstellen</button>`}
@@ -952,7 +952,7 @@ function openSend(id, art){
   const i=rechnungen.find(x=>x.id===id);
   const j=auftraege.find(x=>x.id===i.auftrag_id);
   const vor=i.kunde_email||(j&&j.kunde_email)||'';
-  const bez = art==='storno'?'Stornorechnung':(art==='mahnung'?'Mahnung':(art==='erinnerung'?'Zahlungserinnerung':'Rechnung'));
+  const bez = art==='angebot'?'Angebot':art==='storno'?'Stornorechnung':(art==='mahnung'?'Mahnung':(art==='erinnerung'?'Zahlungserinnerung':'Rechnung'));
   sheet.innerHTML=`<h3>${bez} senden</h3><p class="s">${esc(i.nummer)} · ${esc(i.kunde||'')} · ${eur(i.betrag)}</p>
     <div class="mailrow"><label>E-Mail des Kunden</label><input id="sendMail" type="email" value="${esc(vor)}" placeholder="kunde@example.com"></div>
     <div class="stack">
@@ -977,7 +977,7 @@ async function doSend(id, art){
     if(art==='mahnung') upd.mahnung_am=heute;
     try{ await sb.from('rechnungen').update(upd).eq('id',id); }catch(e){}
     scrim.classList.remove('show'); await loadData();
-    const bez = art==='storno'?'Stornorechnung':(art==='mahnung'?'Mahnung':(art==='erinnerung'?'Erinnerung':'Rechnung'));
+    const bez = art==='angebot'?'Angebot':art==='storno'?'Stornorechnung':(art==='mahnung'?'Mahnung':(art==='erinnerung'?'Erinnerung':'Rechnung'));
     screen.innerHTML=`<div class="done-hero"><div class="big">✓</div><h2>${bez} gesendet</h2>
       <p>${esc(i.nummer)} als PDF an ${esc(mail)} — Kopie liegt in deiner Buchhaltung.</p></div>
       <div class="cta"><button class="btn btn-ghost" onclick="downloadPDF('${i.id}','${art}')">⬇ PDF</button>
