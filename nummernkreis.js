@@ -1082,3 +1082,35 @@ window.zurueckZumAuftrag = function (id) {
     };
   }
 })();
+
+/* Etiketten: eine Nummer wie "A 01/2026" ist ein Angebot. */
+(function zzEtiketten () {
+  var ANGEBOT = /(^|\s)A\s\d{2}\/\d{4}/;
+  function herrichten () {
+    var buehne = document.getElementById("screen");
+    if (!buehne) return;
+    if (!ANGEBOT.test(buehne.textContent || "")) return;
+    var alle = buehne.querySelectorAll("*");
+    for (var n = 0; n < alle.length; n++) {
+      var e = alle[n];
+      if (e.children.length) continue;
+      var s = (e.textContent || "").trim();
+      if (s === "Rechnung") e.textContent = "Angebot";
+      else if (s === "Rechnung ansehen") e.textContent = "Angebot ansehen";
+      else if (s === "Angebot erstellen" && e.parentNode) {
+        var o = e;
+        while (o.parentNode && o.parentNode.textContent &&
+               o.parentNode.textContent.trim() === s) o = o.parentNode;
+        o.style.display = "none";
+      }
+    }
+  }
+  var vorher = window.showJob;
+  if (typeof vorher === "function") {
+    window.showJob = function () {
+      var r = vorher.apply(this, arguments);
+      setTimeout(function () { try { herrichten(); } catch (e) {} }, 0);
+      return r;
+    };
+  }
+})();
