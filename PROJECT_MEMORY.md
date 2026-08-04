@@ -129,6 +129,20 @@ Opus 5 liegt bei agentischem Programmieren vorn (43 % gegen 33 %) und ausdrückl
 
 ---
 
+## Wo wir morgen weitermachen
+
+*Stand 4. August, spät. Der Angebotsweg läuft zur Hälfte.*
+
+**Fertig und geprüft:** Nummernkreis `DEMO A`, „Angebot Nr. …" in der Belegansicht, Gültigkeitsdatum, keine IBAN auf dem Angebot, Angebote raus aus den Belegen, Auftragsliste sauber getrennt.
+
+**Der nächste Handgriff — einer, an zwei Stellen.** Der Baustein `zzEtiketten` liest den Bildschirm und benennt um, was er findet. Er hängt an `showJob` und funktioniert. Dasselbe fehlt für `showInvoice`: Kopfzeile, „Angebot verwalten", die Zeile „Noch nicht versendet" und der Knopf „✉ Angebot senden". Der Code steht und ist geprüft, wurde aber bewusst nicht hochgeladen — zwei Fassungen waren auseinandergelaufen.
+
+**Danach:** Etikett in der Auftragsliste („Angebot offen" / „Angebot versendet" statt „Offen"), dann Alvins Durchgang: Angebot senden → Mail mit zwei Knöpfen → annehmen.
+
+**Dann die Liste:** Umbenennung aus einer Quelle nach dem WKO-Termin · Demo zeigt nur Demo-Daten · „ZeitZurück Rundum" raus aus der Kopfzeile · Stundensatz-Zeile weg beim Angebot mit Fixbetrag · Mailvorlagen auf die Betriebsfarben · die übrigen vier Chats auf die Hausordnung · Handy-Durchgang · Stripe scharf schalten.
+
+---
+
 ## Bewusst verschoben — und warum
 
 | Verschoben | Warum |
@@ -165,6 +179,8 @@ Opus 5 liegt bei agentischem Programmieren vorn (43 % gegen 33 %) und ausdrückl
 - **In fremdem Code, den man nicht lesen kann, schneidet man nicht.** Besser ein eigener Baustein am Dateiende, der sich zuletzt einhängt und still scheitert, als fünf geratene Änderungen mitten hinein.
 - **Prüfen kommt vor Hochladen, nicht danach.** Einmal falsch maskierte Zeilenumbrüche, sofort committet — die App war kaputt, bis die alte Fassung zurück war.
 - **Wer eine Liste filtert, muss den anderen Weg dorthin bauen.** Angebote aus den Belegen genommen, ohne Verweis vom Auftrag: das Angebot war nicht mehr erreichbar.
+- **Wer nicht sieht, rät — und rät fünfmal.** Eine einzige Beschriftung hat fünf Anläufe gekostet, weil ich aus dem Quelltext erschlossen habe, was auf dem Bildschirm steht. Erst als der Baustein aufhörte, Datensätze zu suchen, und stattdessen las, was ohnehin dastand — eine Nummer wie `A 01/2026` *ist* ein Angebot —, war es in einem Zug erledigt.
+- **Zwei Zeilen aus der Konsole schlagen zwei Stunden Vermutung.** Alvins Ausgabe `{"r":1,"j":157}` hat meine Erklärung in Sekunden widerlegt. Ich hätte viel früher danach fragen sollen.
 - **Betriebe kaufen kein Werkzeug.** Sie kaufen, dass das Telefon nicht mehr für Dinge läutet, die keine Arbeit sind.
 - **Der Vorsprung ist keine Technik, sondern Ortskenntnis.** Jeder kann einen Chat einbauen. Niemand sonst lernt die fünf Fragen, die der Frau vom Elektriker im Wienerwald wirklich gestellt werden.
 
