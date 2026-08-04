@@ -1052,7 +1052,8 @@ window.zurueckZumAuftrag = function (id) {
         break;
       }
     }
-    if (!ziel || !ziel.parentNode) return;
+    var buehne = document.getElementById('screen');
+    if ((!ziel || !ziel.parentNode) && !buehne) return;
     var l = document.createElement('a');
     l.id = 'zzZumAngebot';
     l.href = 'javascript:void(0)';
@@ -1060,9 +1061,17 @@ window.zurueckZumAuftrag = function (id) {
     l.className = ziel.className || '';
     l.textContent = 'Angebot ansehen \u00b7 ' + (a.nummer || '') + stand(a);
     l.onclick = function () { if (typeof window.showInvoice === 'function') window.showInvoice(a.id); };
-    ziel.parentNode.insertBefore(l, ziel);
+    if (ziel && ziel.parentNode) {
+      ziel.parentNode.insertBefore(l, ziel);
+    } else {
+      l.style.display = 'block';
+      l.style.margin = '16px 0';
+      l.style.textAlign = 'center';
+      l.style.fontWeight = '600';
+      buehne.appendChild(l);
+    }
     // Solange ein offenes Angebot da ist, kein zweites anlegen lassen.
-    if (!a.angebot_status || a.angebot_status === 'offen') ziel.style.display = 'none';
+    if (ziel && (!a.angebot_status || a.angebot_status === 'offen')) ziel.style.display = 'none';
   }
   var vorher = window.showJob;
   if (typeof vorher === 'function') {
