@@ -65,9 +65,11 @@ Die 59er-Stufe umgeht die gesamte Rechtszone: Aufbewahrung, Berichtigung, Nummer
 ### Kein Firmenname nach dem Nachnamen
 Der Betrieb soll übergebbar sein, oder leise beendbar. Ein Betrieb, der nach der Person heißt, ist beides nicht. Der Name darf nur versprechen, was der Gewerbeschein deckt — Entscheidung nach dem WKO-Termin.
 
-### Ein Gehirn für alle Chats *(entschieden, noch nicht gebaut)*
+### Ein Gehirn für alle Chats *(steht — Montage läuft darauf)*
 Heute hat jeder Chat seinen eigenen Text. Ein gefundener Fehler muss fünfmal repariert werden; bei zwanzig Kunden ist das das Ende des Geschäftsmodells.
 **Trennung:** **Hausordnung** (erfinde nichts, triff keine rechtlichen Aussagen, lies Angaben aus dem Gespräch, frag nicht doppelt) gilt für alle. **Betriebswissen** (was er tut, was nicht, Preise, häufige Fragen) ist je Betrieb.
+**Gebaut am 4. August.** Die Hausordnung liegt einmal in der Datenbank, versioniert. Das Betriebswissen liegt je Betrieb daneben. Eine Ansicht setzt beides zusammen; der Chat lädt nur noch den fertigen Text.
+**Der Beweis:** an diesem Tag wurden zwei Regeländerungen ausschließlich in der Datenbank gemacht — n8n wurde dabei kein einziges Mal angefasst.
 **Und der Anschluss:** Der Startfragebogen sammelt das Betriebswissen bereits ein. Künftig lädt der Chat es selbst. Damit wird aus „ich baue jedem einen Chat" ein „er füllt den Fragebogen aus und hat einen". Das ist der Unterschied zwischen Auftragsarbeit und Produkt.
 
 ### Der Kalender darf melden, nicht löschen
@@ -99,6 +101,11 @@ Eine versendete Rechnung lässt sich nicht mehr löschen — durchgesetzt über 
 Ein Kostenvoranschlag ist keine zweite Datenwelt, sondern eine Rechnung mit `art = 'angebot'`, eigener Nummer (`A …`) und Gültigkeitsdatum. Wird es angenommen, wird der Auftrag wieder ein normaler offener Auftrag — dieselben Stunden, dieselbe Rechnung, kein Umtragen.
 **Anlass:** Caesar Handmade Guitars. Dort ist der Voranschlag der Normalfall, nicht die Ausnahme.
 
+### Der Name wird zu „Alvin Ehrnberger Montage & Mehr“ *(entschieden, noch nicht umgesetzt)*
+Damit fällt die frühere Regel „kein Firmenname nach dem Nachnamen“. Bei einem Ein-Personen-Betrieb ist Übergebbarkeit ohnehin Theorie, und der eigene Name ist ehrlicher als ein Kunstwort.
+**Erst nach dem WKO-Termin am 7.8.**, weil der Name nur versprechen darf, was der Gewerbeschein deckt — und weil es ein Rundumschlag ist: Datenbank, fünf Seiten, Briefkopf, alle Mailvorlagen, Chat-Prompt, Signatur.
+**Der eigentliche Anlass:** heute laufen drei Schreibweisen nebeneinander — „Montageservice & Mehr“ in der Datenbank, „EHRNBERGER – Montage & Service“ im Chat und in den Mails, „Alvin Ehrnberger – Montageservice & mehr“ auf der Website. Ein Kunde sieht drei Firmen.
+
 ### Opus statt Fable für diese Arbeit
 Opus 5 liegt bei agentischem Programmieren vorn (43 % gegen 33 %) und ausdrücklich bei numerischem Denken und Präzision. Fable 5 ist auf lange autonome Läufe und Mehr-Agenten-Orchestrierung ausgelegt — das tun wir nicht; wir arbeiten in engen Schleifen mit Rückkopplung. Die 50 % Fable im Max-Plan sind zusätzlicher Spielraum, keine bessere Wahl.
 
@@ -110,7 +117,7 @@ Opus 5 liegt bei agentischem Programmieren vorn (43 % gegen 33 %) und ausdrückl
 
 **Termine:** Anlegen, **Verschieben** (Kalender zieht nach, Kunde bekommt eine Verlegungsmail), Löschen. Die Kalenderkennung holt sich der Ablauf beim Anlegen selbst aus dem Kalender, statt sich auf den Chat zu verlassen. Warnung, wenn ein Termin in der Vergangenheit liegt — mit Nennung des Jahres.
 
-**Chat:** trifft keine gewerberechtlichen Aussagen, kennt Alvins echte Grenze (kein Wasser- und Stromanschluss, alles Übrige an einer Küche schon), fragt Kontaktdaten nur wenn sie fehlen, bietet Lieferung ohne Preisnennung an. Drei pulsierende Punkte und nach 3,5 s ein Wartehinweis. Jedes Gespräch wird protokolliert und ist als Sitzung nachlesbar — Grundlage für den wöchentlichen Durchgang.
+**Chat:** läuft auf der gemeinsamen Hausordnung, Regeln ändert man in der Datenbank statt in n8n. Trifft keine gewerberechtlichen Aussagen, kennt Alvins echte Grenze (kein Wasser- und Stromanschluss, alles Übrige an einer Küche schon), fragt Kontaktdaten nur wenn sie fehlen, bietet Lieferung ohne Preisnennung an. Drei pulsierende Punkte und nach 3,5 s ein Wartehinweis. Jedes Gespräch wird protokolliert und ist als Sitzung nachlesbar — Grundlage für den wöchentlichen Durchgang.
 
 **Recht und Papier:** Auftragsverarbeitungsvertrag als PDF im Briefkopf, elektronisch über den Fragebogen zugestimmt, mit Prüfsumme belegt. Impressum und Datenschutzerklärung stehen. Aufbewahrung gestuft und automatisch aufgeräumt.
 
@@ -118,7 +125,7 @@ Opus 5 liegt bei agentischem Programmieren vorn (43 % gegen 33 %) und ausdrückl
 
 **Angebote:** eigener Nummernkreis `A`, Angebotslayout ohne Zahlungssatz, Gültigkeitsdatum, Hinweis auf § 5 KSchG. Zwei Knöpfe in der Kundenmail, dahinter eine Bestätigungsseite — der Klick zeigt nur, erst das abgeschickte Formular handelt. Angenommen macht den Auftrag wieder offen, abgelehnt vermerkt ihn; beides meldet sich per Mail. Abgelaufen und doppelt beantwortet haben eigene, ruhige Seiten.
 
-**Offen:** Handy-Durchgang über alle Seiten · ein Gehirn für alle Chats · Stripe scharf schalten.
+**Offen:** Handy-Durchgang über alle Seiten · die übrigen vier Chats auf die Hausordnung umhängen · Mailvorlagen auf die Betriebsfarben · Umbenennung nach dem WKO-Termin · Stripe scharf schalten.
 
 ---
 
@@ -152,6 +159,12 @@ Opus 5 liegt bei agentischem Programmieren vorn (43 % gegen 33 %) und ausdrückl
 - **Eine Sperre, die nur „nichts passiert" meldet, wird für Erfolg gehalten.** Die Datenbank verweigert das Löschen einer verschickten Rechnung — ohne Fehler, mit null Zeilen. Die App hätte „gelöscht" gesagt.
 - **Nicht jeder Klick kommt von einem Menschen.** Postfächer öffnen Links, bevor jemand sie sieht.
 - **Eine Änderung an zwei Stellen ist eine Änderung, die man einmal vergisst.** Der Nummernkreis stand in zwei Dateien; repariert war nur eine, und die Vorführung verbrauchte echte Rechnungsnummern.
+- **Gegen die Daten kommt kein Verbot an.** Der Chat fragte Kunden nach dem IKEA-Modell. Drei immer schärfere Verbote im Prompt haben nichts geändert — die Zeittabelle selbst hieß `KALLAX Regal`, `PAX Schrank`. Erst als die Zeilen nach Art und Größe benannt waren, hörte er auf. Wenn Anweisung und Daten sich widersprechen, gewinnen die Daten.
+- **In den Daten stecken Annahmen, die niemand beschlossen hat.** Dieselbe Tabelle unterstellte, dass jeder Kunde bei IKEA kauft. Wer ein Regal vom Tischler hatte, wurde nach einem BILLY gefragt.
+- **Dasselbe Ding an zwei Stellen — dreimal in drei Tagen.** Nummernkreis, Angebotsnummer, Belegansicht: jedes Mal lag die Logik in `app.html` *und* in `nummernkreis.js`, jedes Mal habe ich nur eine gepflegt und gemeldet, es sei erledigt.
+- **In fremdem Code, den man nicht lesen kann, schneidet man nicht.** Besser ein eigener Baustein am Dateiende, der sich zuletzt einhängt und still scheitert, als fünf geratene Änderungen mitten hinein.
+- **Prüfen kommt vor Hochladen, nicht danach.** Einmal falsch maskierte Zeilenumbrüche, sofort committet — die App war kaputt, bis die alte Fassung zurück war.
+- **Wer eine Liste filtert, muss den anderen Weg dorthin bauen.** Angebote aus den Belegen genommen, ohne Verweis vom Auftrag: das Angebot war nicht mehr erreichbar.
 - **Betriebe kaufen kein Werkzeug.** Sie kaufen, dass das Telefon nicht mehr für Dinge läutet, die keine Arbeit sind.
 - **Der Vorsprung ist keine Technik, sondern Ortskenntnis.** Jeder kann einen Chat einbauen. Niemand sonst lernt die fünf Fragen, die der Frau vom Elektriker im Wienerwald wirklich gestellt werden.
 
