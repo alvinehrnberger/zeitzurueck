@@ -952,3 +952,68 @@ window.zurueckZumAuftrag = function (id) {
   try { scrim.classList.remove('show'); } catch (e) {}
   showJob(id);
 };
+
+/* ============================================================
+   Angebotsansicht — laeuft NACH allen anderen Dekoratoren.
+   Additiv: schneidet nirgends in bestehenden Code hinein.
+   ============================================================ */
+(function zzAngebotsAnsicht () {
+  function beleg(id) {
+    var alle = window._alleRechnungen || [];
+    for (var n = 0; n < alle.length; n++) if (alle[n].id === id) return alle[n];
+    return null;
+  }
+  function deutsch(d) {
+    if (!d) return '';
+    var x = new Date(d);
+    return ('0'+x.getDate()).slice(-2)+'.'+('0'+(x.getMonth()+1)).slice(-2)+'.'+x.getFullYear();
+  }
+  function herrichten(id) {
+    var i = beleg(id);
+    if (!i) return;
+    var istAngebot = i.art === 'angebot';
+    var wort = istAngebot ? 'Angebot' : 'Rechnung';
+
+    // 1) Beschriftung des Verwalten-Feldes
+    var kopf = document.querySelector('.mk-t b');
+    if (kopf) kopf.textContent = wort + ' verwalten';
+
+    // 2) Versandstand sichtbar machen
+    var karte = document.querySelector('.nr');
+    if (karte && !document.getElementById('zzStand')) {
+      var z = document.createElement('div');
+      z.id = 'zzStand';
+      z.style.cssText = 'font:600 12.5px/1.5 inherit;letter-spacing:.02em;margin:6px 0 2px;';
+      var text, farbe;
+      if (istAngebot && i.angebot_status === 'angenommen') { text = 'Angenommen am ' + deutsch(i.beantwortet_am); farbe = '#1A3A2B'; }
+      else if (istAngebot && i.angebot_status === 'abgelehnt') { text = 'Abgelehnt am ' + deutsch(i.beantwortet_am); farbe = '#8a857c'; }
+      else if (i.gesendet_am) { text = 'Versendet am ' + deutsch(i.gesendet_am); farbe = '#1A3A2B'; }
+      else { text = 'Noch nicht versendet'; farbe = '#A9853C'; }
+      z.style.color = farbe;
+      z.textContent = text;
+      karte.parentNode.insertBefore(z, karte.nextSibling);
+    }
+
+    // 3) Senden als Hauptaktion, solange nichts beim Kunden ist
+    if (!i.gesendet_am && typeof window.openSend === 'function' && !document.getElementById('zzSenden')) {
+      var leiste = document.querySelector('.mk') || document.querySelector('.more');
+      if (leiste && leiste.parentNode) {
+        var k = document.createElement('button');
+        k.id = 'zzSenden';
+        k.className = 'btn btn-primary';
+        k.style.cssText = 'display:block;width:100%;margin:0 0 12px;';
+        k.textContent = '\u2709 ' + wort + ' senden';
+        k.onclick = function () { window.openSend(id); };
+        leiste.parentNode.insertBefore(k, leiste);
+      }
+    }
+  }
+  var vorher = window.showInvoice;
+  if (typeof vorher === 'function') {
+    window.showInvoice = function (id) {
+      var r = vorher.apply(this, arguments);
+      setTimeout(function () { try { herrichten(id); } catch (e) {} }, 0);
+      return r;
+    };
+  }
+})();
