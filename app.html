@@ -831,6 +831,7 @@ function invoiceHTML(i){
     <div class="sum"><span>${istStorno(i)?'Gutschrift':'Gesamt'}</span><span>${eur(i.betrag)}</span></div>
     ${klein?'<div class="kn">Umsatzsteuerbefreiung gem. § 6 Abs. 1 Z 27 UStG.</div>':''}
     ${istStorno(i)?'':`<div class="kn">Abgerechnet wird nach tatsächlich geleisteter Zeit zu ${eur(satz)} pro Stunde.</div>`}
+    ${(i.art==='angebot'&&i.gueltig_bis)?`<div class="kn">Dieses Angebot ist gültig bis ${deDate(i.gueltig_bis)}.</div>`:``}
     ${(k.iban&&!istStorno(i)&&i.art!=='angebot')?`<div class="kn">Zahlbar binnen ${k.zahlungsziel} Tagen · ${esc(k.bank)}<br>IBAN ${esc(k.iban)} · BIC ${esc(k.bic)}</div>`:''}
   </div>`;
 }
