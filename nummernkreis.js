@@ -880,12 +880,14 @@ window.terminSpeichern = async function (id) {
 /* ---------- Angebote ---------- */
 window.naechsteAngebotsnummer = function () {
   var jahr = new Date().getFullYear();
+  var kA = konf(); var istDemoA = String(kA.praefix || '').trim() === 'DEMO';
   var bisher = (window._alleRechnungen || []).filter(function (i) {
     if (i.art !== 'angebot') return false;
+    if ((String(i.nummer || '').trim().split(' ')[0] === 'DEMO') !== istDemoA) return false;
     var d = i.datum || i.created_at;
     return new Date(d).getFullYear() === jahr;
   }).length;
-  return 'A ' + String(bisher + 1).padStart(2, '0') + '/' + jahr;
+  return (istDemoA ? 'DEMO A ' : 'A ') + String(bisher + 1).padStart(2, '0') + '/' + jahr;
 };
 
 window.openAngebot = function (auftragId) {
