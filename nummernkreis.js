@@ -1042,10 +1042,15 @@ window.zurueckZumAuftrag = function (id) {
     var a = angebotZu(auftragId);
     if (!a) return;
     var ziel = null;
-    var alle = document.querySelectorAll('a, button, div');
+    var alle = document.querySelectorAll('*');
     for (var n = 0; n < alle.length; n++) {
       var txt = (alle[n].textContent || '').trim();
-      if (txt === 'Angebot erstellen') { ziel = alle[n]; break; }
+      if (alle[n].children.length === 0 && txt.indexOf('Angebot erstellen') > -1) {
+        ziel = alle[n];
+        while (ziel.parentNode && ziel.parentNode.textContent &&
+               ziel.parentNode.textContent.trim() === txt) ziel = ziel.parentNode;
+        break;
+      }
     }
     if (!ziel || !ziel.parentNode) return;
     var l = document.createElement('a');
