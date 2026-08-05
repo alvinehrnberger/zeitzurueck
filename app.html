@@ -486,12 +486,26 @@ function renderJobs(){
     ${open.length?`<div class="lbl">Offen</div>${open.map(jobCard).join('')}`:'<div class="empty">Keine offenen Aufträge.<br>Mit + legst du einen an. 🌿</div>'}
     ${done.length?`<div class="lbl">Erledigt</div>${done.map(jobCard).join('')}`:''}`;
 }
+function jobPill(j){
+  if(j.status==='erledigt') return '<span class="pill done">Erledigt ✓</span>';
+  if(j.status==='bar') return '<span class="pill cash">Bar</span>';
+  /* Haengt ein Angebot dran, sagt die Pille dasselbe wie die Detailansicht. */
+  if(j.status==='angebot'||j.status==='abgelehnt'){
+    const a=rechnungen.find(x=>x.art==='angebot'&&x.auftrag_id===j.id);
+    if(a){
+      if(a.angebot_status==='abgelehnt'||j.status==='abgelehnt') return '<span class="pill storno">Angebot abgelehnt</span>';
+      if(a.gesendet_am||(window.zzIstVersendet&&window.zzIstVersendet(a.nummer))) return '<span class="pill today">Angebot versendet</span>';
+      return '<span class="pill today">Angebot offen</span>';
+    }
+  }
+  return '<span class="pill today">Offen</span>';
+}
 function jobCard(j){
   return `<div class="card" onclick="showJob('${j.id}')">
     <div class="ic">${boxIcon}</div>
     <div class="info"><div class="t1">${esc(j.kunde)}</div><div class="t2">${esc(j.aufgabe||'')}</div>
       <div class="meta">${j.termin?`<span>🕒 ${fmtTermin(j.termin)}</span>`:''}${j.adresse?`<span>📍 ${esc(j.adresse)}</span>`:''}</div></div>
-    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:7px">${j.status==='erledigt'?'<span class="pill done">Erledigt ✓</span>':(j.status==='bar'?'<span class="pill cash">Bar</span>':'<span class="pill today">Offen</span>')}<span class="chev">›</span></div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:7px">${jobPill(j)}<span class="chev">›</span></div>
   </div>`;
 }
 function fmtTermin(t){
@@ -672,7 +686,7 @@ function buildPDF(i, art){
   return doc;
 }
 function pdfName(i,art){
-  const p = art==='storno'?'Storno-':(art==='mahnung'?'Mahnung-':(art==='erinnerung'?'Erinnerung-':'Rechnung-'));
+  const p = art==='angebot'?'Angebot-':(art==='storno'?'Storno-':(art==='mahnung'?'Mahnung-':(art==='erinnerung'?'Erinnerung-':'Rechnung-')));
   return p+String(i.nummer||'').replace(/[^\w]+/g,'-')+'.pdf';
 }
 function downloadPDF(id,art){
@@ -761,7 +775,7 @@ function downloadPDF(id,art){
              + 'Bei Fragen antworten Sie einfach auf diese Nachricht.\n\n'
              + 'Mit freundlichen Grüßen\n' + (betrieb ? (betrieb.inhaber || betrieb.name || '') : '');
       }
-      if(typeof text === 'string' && text.indexOf('Mit freundlichen') > -1){
+      if(art !== 'angebot' && typeof text === 'string' && text.indexOf('Mit freundlichen') > -1){
               text = text.replace('Mit freundlichen', 'Zahlungsreferenz: ' + zzRef + ' (bitte bei der Überweisung angeben)\n\nMit freundlichen');
             }
             const res = await fetch(RECHNUNG_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},
