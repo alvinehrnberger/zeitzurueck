@@ -517,12 +517,14 @@ function fmtTermin(t){
   return wd+' '+String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+' · '+hm;
 }
 function renderInvoices(){
-  const total=rechnungen.filter(i=>i.art!=='bar').reduce((a,b)=>a+Number(b.betrag),0);
-  const offen=rechnungen.filter(i=>i.art==='rechnung'&&!i.bezahlt_am&&!istStorniert(i)).reduce((a,b)=>a+Number(b.betrag),0);
+  /* Angebote sind keine Belege — sie haengen am Auftrag (Angebot ansehen). */
+  const belege=rechnungen.filter(i=>i.art!=='angebot');
+  const total=belege.filter(i=>i.art!=='bar').reduce((a,b)=>a+Number(b.betrag),0);
+  const offen=belege.filter(i=>i.art==='rechnung'&&!i.bezahlt_am&&!istStorniert(i)).reduce((a,b)=>a+Number(b.betrag),0);
   screen.innerHTML=`
     <div class="greet">Rechnungen</div>
-    <div class="gsub">${rechnungen.length} Belege · ${eur(total)} verrechnet${offen?` · <b style="color:var(--warn)">${eur(offen)} offen</b>`:''}</div>
-    ${rechnungen.length?rechnungen.map(i=>`
+    <div class="gsub">${belege.length} Belege · ${eur(total)} verrechnet${offen?` · <b style="color:var(--warn)">${eur(offen)} offen</b>`:''}</div>
+    ${belege.length?belege.map(i=>`
       <div class="card ${istStorniert(i)||istStorno(i)?'storniert':''}" onclick="showInvoice('${i.id}')">
         <div class="ic">${docIcon}</div>
         <div class="info"><div class="t1">${esc(i.kunde||'')}</div><div class="t2">${esc(i.positionstext||'')}</div>
@@ -750,7 +752,8 @@ function downloadPDF(id,art){
   const b64=doc.output('datauristring').split(',')[1];
   const bez=art==='angebot'?'Angebot':art==='storno'?'Stornorechnung':(art==='mahnung'?'Mahnung':(art==='erinnerung'?'Zahlungserinnerung':'Rechnung'));
   const k=konf();
-  const betreff = art==='storno' ? ('Stornorechnung '+rec.nummer+' – '+(betrieb?betrieb.name:''))
+  const betreff = art==='angebot' ? ('Ihr Angebot '+rec.nummer+' – '+(betrieb?betrieb.name:''))
+                : art==='storno' ? ('Stornorechnung '+rec.nummer+' – '+(betrieb?betrieb.name:''))
                 : art==='mahnung' ? ('Mahnung zu Rechnung '+rec.nummer+' – '+(betrieb?betrieb.name:''))
                 : art==='erinnerung' ? ('Zahlungserinnerung zu Rechnung '+rec.nummer+' – '+(betrieb?betrieb.name:''))
                 : ('Ihre Rechnung '+rec.nummer+' – '+(betrieb?betrieb.name:''));

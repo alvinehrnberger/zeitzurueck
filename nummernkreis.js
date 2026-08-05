@@ -19,7 +19,10 @@
 
   async function alleLaden() {
     try {
-      var r = await sb.from('rechnungen').select('nummer,datum,created_at,art');
+      /* angebot_status, gesendet_am, beantwortet_am: davon leben die
+         Etiketten-Bausteine unten. Ohne die Spalten zeigen sie nach einem
+         Neuladen "offen", auch wenn laengst versendet oder angenommen. */
+      var r = await sb.from('rechnungen').select('nummer,datum,created_at,art,angebot_status,gesendet_am,beantwortet_am');
       window._alleRechnungen = r.data || [];
     } catch (e) { /* App laeuft weiter */ }
   }
