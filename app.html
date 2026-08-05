@@ -566,6 +566,7 @@ function showJob(id){
 /* ---------- Neuer Auftrag / löschen ---------- */
 function openNewJob(){
   sheet.innerHTML=`<h3>Neuer Auftrag</h3><p class="s">Für ${esc(betrieb?betrieb.name:'')}</p>
+    ${tab==='inv'?`<div class="note" style="margin:0 0 14px;text-align:left">Eine Rechnung entsteht aus einem Auftrag: Auftrag anlegen, „Arbeit abgeschlossen" tippen — die Rechnung schreibt sich von selbst. Barzahlung geht denselben Weg.</div>`:''}
     <div class="mailrow"><label>Kunde *</label><input id="nKunde" placeholder="Katrin Ehrnberger"></div>
     <div class="mailrow"><label>E-Mail des Kunden</label><input id="nMail" type="email" placeholder="kunde@example.com"></div>
     <div class="mailrow"><label>Aufgabe *</label><input id="nAufgabe" placeholder="Möbelmontage – Kleiderschrank PAX"></div>
