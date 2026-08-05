@@ -46,6 +46,12 @@ Statusfarben-Logik: Grün = erledigt/angenommen · Goldbraun = wartet/offen · G
 
 `zeitzurueck-logo-light.svg` · `zeitzurueck-logo-dark.svg` · `zeitzurueck-favicon.svg` · Mail-Fassungen als PNG (`zeitzurueck-logo-mail.png`, `-hell.png`). Alle im Repo-Stamm.
 
+## Marken-Ordnung der Betriebe
+
+Jeder Betrieb hat zwei Namen aus einer Quelle: `betriebe.marke` ist der Auftritt (**groß** im Kopf — „Montage & Mehr"), `betriebe.name` der amtliche Wortlaut (Blattfuß, Unterschrift, Betreff — „Alvin Ehrnberger Montage & Mehr"). Der Inhaber steht **klein unter der Marke**; steckt sein Name schon im Betriebsnamen, steht er nirgends doppelt.
+
+Die Betriebsfarben `farbe_kopf` und `farbe_akzent` treiben **Kundenmails und Beleg-PDFs gemeinsam** — eine Änderung in der Datenbank zieht beide nach. ZZ-Belege (ZeitZurück-Abrechnung) tragen immer die ZeitZurück-Palette und zeichnen nur mit „ZeitZurück®".
+
 ## Grundsätze, die auch Gestaltung sind
 
 - Ein Klick zeigt nur — erst das Bestätigen handelt.
