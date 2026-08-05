@@ -837,7 +837,7 @@ function showInvoice(id){
 function invoiceHTML(i){
   const k=konf();
   const satz=betrieb?Number(betrieb.stundensatz):50, klein=betrieb?betrieb.kleinunternehmer:true;
-  return `<div class="inv">
+  return `<div class="inv" onclick="pdfVorschau('${i.id}')" style="cursor:pointer">
     <div class="top">
       <div class="co">${esc(betrieb?betrieb.name:'')}</div>
       <div class="ih">${esc(betrieb?(betrieb.inhaber||''):'')}</div>
@@ -854,7 +854,17 @@ function invoiceHTML(i){
     ${(istStorno(i)||i.art==='angebot')?'':`<div class="kn">${window.zzFuss?window.zzFuss(i,satz):'Abgerechnet wird nach tatsächlich geleisteter Zeit zu '+eur(satz)+' pro Stunde.'}</div>`}
     ${(i.art==='angebot'&&i.gueltig_bis)?`<div class="kn">Dieses Angebot ist gültig bis ${deDate(i.gueltig_bis)}.</div>`:``}
     ${(k.iban&&!istStorno(i)&&i.art!=='angebot')?`<div class="kn">Zahlbar binnen ${k.zahlungsziel} Tagen · ${esc(k.bank)}<br>IBAN ${esc(k.iban)} · BIC ${esc(k.bic)}</div>`:''}
+    <div style="text-align:right;color:var(--muted);font-size:12px;margin-top:12px">👁 PDF ansehen</div>
   </div>`;
+}
+function pdfVorschau(id){
+  const i=rechnungen.find(x=>x.id===id); if(!i) return;
+  const art=i.art==='angebot'?'angebot':(istStorno(i)?'storno':'rechnung');
+  try{
+    const url=buildPDF(i,art).output('bloburl');
+    const w=window.open(url,'_blank');
+    if(!w) downloadPDF(id,art); /* Popup geblockt: dann eben herunterladen */
+  }catch(e){ alert('PDF-Vorschau ging nicht: '+((e&&e.message)||e)); }
 }
 
 async function markPaid(id){
@@ -1139,6 +1149,11 @@ el('pw').addEventListener('keydown',e=>{ if(e.key==='Enter') submitAuth(); });
     b = b || document.getElementById("zzBurger");
     var s=document.getElementById("screen"), a=document.getElementById("app");
     if(!b||!s||!a) return;
+    /* Detailansichten (Tabs versteckt) brauchen keinen Bereichswechsel —
+       dort wuerde der Knopf nur den Beleg ueberdecken. */
+    var tabs=document.getElementById("tabs");
+    if(tabs && tabs.style.display==="none"){ b.style.display="none"; return; }
+    b.style.display="flex";
     var g=document.querySelector(".greet");
     var bez=(g && g.getBoundingClientRect().height>0) ? g : s;
     var rb=bez.getBoundingClientRect(), ra=a.getBoundingClientRect();
