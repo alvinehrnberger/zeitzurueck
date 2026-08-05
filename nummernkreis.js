@@ -157,11 +157,14 @@
   function verwaltenSichtbar() {
     var m = document.querySelector('.more');
     if (!m || m.classList.contains('mk')) return;
+    /* Liest, was app.html hingeschrieben hat: beim Angebot steht dort
+       kein "Stornieren", also verspricht auch die Kachel keines. */
+    var mitStorno = (m.textContent || '').indexOf('Stornieren') > -1;
     m.classList.add('mk');
     m.innerHTML =
       '<span class="mk-i">⚙</span>' +
       '<span class="mk-t"><b>Rechnung verwalten</b>' +
-      '<i>Bearbeiten · Stornieren · Löschen</i></span>' +
+      '<i>Bearbeiten · ' + (mitStorno ? 'Stornieren · ' : '') + 'Löschen</i></span>' +
       '<span class="mk-c">›</span>';
   }
 

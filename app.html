@@ -481,7 +481,7 @@ function renderJobs(){
   const late=offeneMahnungen();
   screen.innerHTML=`
     <div class="greet">Grüß dich${vorname?', '+esc(vorname):''} 👋</div>
-    <div class="gsub">${open.length} offene Aufträge${done.length?` · ${done.length} erledigt`:''}</div>
+    <div class="gsub">${open.length===1?'1 offener Auftrag':open.length+' offene Aufträge'}${done.length?` · ${done.length} erledigt`:''}</div>
     ${late.length?`<div class="alert"><b>${late.length} unbezahlte Rechnung${late.length>1?'en':''}</b> überfällig. <span style="text-decoration:underline;cursor:pointer" onclick="setTab('inv')">Ansehen ›</span></div>`:''}
     ${open.length?`<div class="lbl">Offen</div>${open.map(jobCard).join('')}`:'<div class="empty">Keine offenen Aufträge.<br>Mit + legst du einen an. 🌿</div>'}
     ${done.length?`<div class="lbl">Erledigt</div>${done.map(jobCard).join('')}`:''}`;
@@ -801,10 +801,10 @@ function showInvoice(id){
   } else if(i.art==='rechnung'){
     if(s.k==='storniert'){
       aktion=`<div class="cta"><button class="btn btn-ghost" onclick="downloadPDF('${i.id}')">⬇ PDF</button>
-        ${i.gesendet_am ? `<button class="btn btn-dark" onclick="openSend('${i.id}')">✉ Geänderte ${i.art==='angebot'?'Angebot':'Rechnung'} senden</button>` : `<button class="btn btn-primary" onclick="openSend('${i.id}')">✉ ${i.art==='angebot'?'Angebot':'Rechnung'} senden</button>`}<button class="btn btn-ghost" onclick="showList()">Zurück</button></div>`;
+        ${i.gesendet_am ? `<button class="btn btn-dark" onclick="openSend('${i.id}')">✉ ${i.art==='angebot'?'Geändertes Angebot':'Geänderte Rechnung'} senden</button>` : `<button class="btn btn-primary" onclick="openSend('${i.id}')">✉ ${i.art==='angebot'?'Angebot':'Rechnung'} senden</button>`}<button class="btn btn-ghost" onclick="showList()">Zurück</button></div>`;
     } else if(s.k==='bezahlt'){
       aktion=`<div class="cta"><button class="btn btn-ghost" onclick="downloadPDF('${i.id}')">⬇ PDF</button>
-        ${i.gesendet_am ? `<button class="btn btn-dark" onclick="openSend('${i.id}')">✉ Geänderte ${i.art==='angebot'?'Angebot':'Rechnung'} senden</button>` : `<button class="btn btn-primary" onclick="openSend('${i.id}')">✉ ${i.art==='angebot'?'Angebot':'Rechnung'} senden</button>`}<button class="btn btn-ghost" onclick="showList()">Zurück</button></div>`;
+        ${i.gesendet_am ? `<button class="btn btn-dark" onclick="openSend('${i.id}')">✉ ${i.art==='angebot'?'Geändertes Angebot':'Geänderte Rechnung'} senden</button>` : `<button class="btn btn-primary" onclick="openSend('${i.id}')">✉ ${i.art==='angebot'?'Angebot':'Rechnung'} senden</button>`}<button class="btn btn-ghost" onclick="showList()">Zurück</button></div>`;
     } else if(s.k==='mahnung'){
       aktion=`<div class="cta"><button class="btn btn-ghost" onclick="markPaid('${i.id}')">✓ Bezahlt</button>
         <button class="btn btn-warn" onclick="openSend('${i.id}','mahnung')">⚠ Mahnung senden</button></div>`;
@@ -825,7 +825,7 @@ function showInvoice(id){
     : s.k==='ueberfaellig' ? `<div class="alert"><b>Seit ${s.tage} Tagen überfällig</b> (fällig war ${deDate(faelligAm(i))}).</div>`
     : `<div class="alert" style="background:#eef3ee;border-color:#c9d8cd;color:var(--petrol)">Zahlbar bis ${deDate(faelligAm(i))}</div>`);
   const verwalten = istStorno(i) ? '' :
-    `<div class="more" onclick="openManage('${i.id}')">⋯ Bearbeiten · Stornieren · Löschen</div>`;
+    `<div class="more" onclick="openManage('${i.id}')">⋯ Bearbeiten · ${i.art==='angebot'?'':'Stornieren · '}Löschen</div>`;
   screen.innerHTML=`<div style="padding:4px 2px">${hinweis}${invoiceHTML(i)}
     ${i.mahnung_am?`<p class="note" style="text-align:left">Mahnung gesendet am ${deDate(i.mahnung_am)}</p>`:''}
     ${verwalten}</div>`+aktion;
@@ -847,7 +847,7 @@ function invoiceHTML(i){
     ${i.stunden?`<div class="li" style="color:var(--muted);font-size:11.5px"><span>${(''+i.stunden).replace('.',',')} h a ${eur(satz)}</span></div>`:''}
     <div class="sum"><span>${istStorno(i)?'Gutschrift':'Gesamt'}</span><span>${eur(i.betrag)}</span></div>
     ${klein?'<div class="kn">Umsatzsteuerbefreiung gem. § 6 Abs. 1 Z 27 UStG.</div>':''}
-    ${istStorno(i)?'':`<div class="kn">Abgerechnet wird nach tatsächlich geleisteter Zeit zu ${eur(satz)} pro Stunde.</div>`}
+    ${istStorno(i)?'':`<div class="kn">${i.art==='angebot'?'Pauschale.':(window.zzFuss?window.zzFuss(i,satz):'Abgerechnet wird nach tatsächlich geleisteter Zeit zu '+eur(satz)+' pro Stunde.')}</div>`}
     ${(i.art==='angebot'&&i.gueltig_bis)?`<div class="kn">Dieses Angebot ist gültig bis ${deDate(i.gueltig_bis)}.</div>`:``}
     ${(k.iban&&!istStorno(i)&&i.art!=='angebot')?`<div class="kn">Zahlbar binnen ${k.zahlungsziel} Tagen · ${esc(k.bank)}<br>IBAN ${esc(k.iban)} · BIC ${esc(k.bic)}</div>`:''}
   </div>`;
@@ -868,7 +868,7 @@ function openManage(id){
     <div class="stack">
       <button class="btn btn-ghost" onclick="openEdit('${id}')">✎ Bearbeiten</button>
       ${(storniert||i.art==='angebot')?'':`<button class="btn btn-warn" onclick="openStorno('${id}')">⊘ Stornorechnung erstellen</button>`}
-      <button class="btn btn-err" onclick="openDelete('${id}')">🗑 Löschen</button>
+      <button class="btn btn-ghost" style="color:var(--err)" onclick="openDelete('${id}')">🗑 Löschen</button>
       <button class="btn btn-ghost" onclick="scrim.classList.remove('show')">Abbrechen</button>
     </div>
     ${i.art==='angebot'
