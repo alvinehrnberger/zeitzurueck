@@ -101,10 +101,9 @@ Eine versendete Rechnung lässt sich nicht mehr löschen — durchgesetzt über 
 Ein Kostenvoranschlag ist keine zweite Datenwelt, sondern eine Rechnung mit `art = 'angebot'`, eigener Nummer (`A …`) und Gültigkeitsdatum. Wird es angenommen, wird der Auftrag wieder ein normaler offener Auftrag — dieselben Stunden, dieselbe Rechnung, kein Umtragen.
 **Anlass:** Caesar Handmade Guitars. Dort ist der Voranschlag der Normalfall, nicht die Ausnahme.
 
-### Der Name wird zu „Alvin Ehrnberger Montage & Mehr“ *(entschieden, noch nicht umgesetzt)*
-Damit fällt die frühere Regel „kein Firmenname nach dem Nachnamen“. Bei einem Ein-Personen-Betrieb ist Übergebbarkeit ohnehin Theorie, und der eigene Name ist ehrlicher als ein Kunstwort.
-**Erst nach dem WKO-Termin am 7.8.**, weil der Name nur versprechen darf, was der Gewerbeschein deckt — und weil es ein Rundumschlag ist: Datenbank, fünf Seiten, Briefkopf, alle Mailvorlagen, Chat-Prompt, Signatur.
-**Der eigentliche Anlass:** heute laufen drei Schreibweisen nebeneinander — „Montageservice & Mehr“ in der Datenbank, „EHRNBERGER – Montage & Service“ im Chat und in den Mails, „Alvin Ehrnberger – Montageservice & mehr“ auf der Website. Ein Kunde sieht drei Firmen.
+### Der Name ist „Alvin Ehrnberger Montage & Mehr“ *(umgesetzt am 5.8.)*
+Damit fiel die frühere Regel „kein Firmenname nach dem Nachnamen“. Bei einem Ein-Personen-Betrieb ist Übergebbarkeit ohnehin Theorie, und der eigene Name ist ehrlicher als ein Kunstwort. **Zwei Wahrheiten, eine Quelle:** `betriebe.name` trägt den amtlichen Wortlaut, die neue Spalte `betriebe.marke` den Auftritt („Montage & Mehr“ groß, „Alvin Ehrnberger“ klein darunter). App, PDF, Mails, beide Websites (zeitzurück.at-Referenzkarte + montageservice-Repo) und das Chat-Gehirn (`betrieb_wissen`) sind umgestellt; die View `v_chat_gehirn` kennt nur noch den neuen Namen. Die früheren drei Schreibweisen sind Geschichte.
+**Wichtig:** „Montage & Mehr“ allein war nicht zu haben — es gibt bereits eine „Montage & Mehr e.U.“ in Puch bei Hallein. Der eigene Name davor macht die Bezeichnung unterscheidungskräftig; der WKO-Termin am 7.8. bestätigt nur noch den Wortlaut (WKO-Rechtsservice zur Verwechslungsfrage befragen). Domain montageundmehr.at ist frei — sichern als Weiterleitung, Hauptauftritt mit Namen (z. B. ehrnberger-montage.at prüfen).
 
 ### BRAND.md ist die eine Quelle für die Marke
 Farben, Schrift, Formen und Ton liegen als `BRAND.md` im Repo, mit Verweis darauf, wo die Werte im Code leben (app.html, `betriebe`-Tabelle, n8n-Vorlagen). Wer gestaltet, liest zuerst dort; ändert sich die Marke, ändert sich zuerst diese Datei.
@@ -133,21 +132,19 @@ Opus 5 liegt bei agentischem Programmieren vorn (43 % gegen 33 %) und ausdrückl
 
 **Angebote:** eigener Nummernkreis `A`, Angebotslayout ohne Zahlungssatz, Gültigkeitsdatum, Hinweis auf § 5 KSchG. Zwei Knöpfe in der Kundenmail, dahinter eine Bestätigungsseite (Fußzeile nur „ZeitZurück®") — der Klick zeigt nur, erst das abgeschickte Formular handelt. Angenommen macht den Auftrag wieder offen, abgelehnt vermerkt ihn; beides meldet sich per Mail. Abgelaufen und doppelt beantwortet haben eigene, ruhige Seiten. Seit 5.8.: PDF-Anhang heißt `Angebot-…`, Betreff „Ihr Angebot", keine Zahlungsreferenz in der Angebotsmail, Angebote sind aus den Belegen raus (erreichbar über den Auftrag: „Angebot ansehen"), Auftragsliste und Detail sagen denselben Stand („Angebot offen / versendet / angenommen / abgelehnt"), „Pauschale" steht bei der Leistung (Beleg und PDF), Verwalten ohne Storno-Knopf.
 
-**Offen:** Umbenennung nach dem WKO-Termin (7.8.) · Demo zeigt nur Demo-Daten · „ZeitZurück Rundum" raus aus der Kopfzeile · Mailvorlagen auf die Betriebsfarben · die übrigen vier Chats auf die Hausordnung umhängen · Handy-Durchgang über alle Seiten · Stripe scharf schalten · Zeiten-Reiter: Feineinstellung scharf schalten oder bis dahin ausblenden.
+**Offen:** WKO-Termin 7.8. (Wortlaut + Verwechslungsfrage bestätigen) · Caesar-Setup (Betrieb anlegen, Chat, SEPA-Mandat-Strecke, automatische monatliche ZZ-Rechnung) · Demo zeigt nur Demo-Daten · Mailvorlagen auf die Betriebsfarben · Logo in den PDF-Kopf (`logo_url`) · die übrigen vier Chats auf die Hausordnung umhängen · Handy-Durchgang über alle Seiten · Stripe scharf schalten (nach Kanzlei-Antworten; Erinnerung am 10.8. eingerichtet) · Zeiten-Reiter: Feineinstellung scharf schalten oder ausblenden.
 
 ---
 
 ## Wo wir morgen weitermachen
 
-*Stand 5. August. Der Angebotsweg ist fertig und geprüft — samt Nachlese.*
+*Stand 5. August, spät. Ein großer Tag: Angebotsweg fertig, Belege im neuen Kleid, Umbenennung durch.*
 
-**Heute erledigt:** Angebots-Anhang heißt `Angebot-…` · Zahlungsreferenz raus aus der Angebotsmail · Betreff „Ihr Angebot" statt „Ihre Rechnung" · Fußzeile der Bestätigungsseiten nur „ZeitZurück®" · Angebote raus aus den Belegen, erreichbar über den Auftrag · Etiketten in Liste und Detail sagen denselben Stand · „Pauschale" bei der Leistung (Beleg + PDF) · Verwalten ohne Storno beim Angebot, Löschen leise · Einzahl „1 offener Auftrag" · Fragebogen fragt die Rechtsform · `BRAND.md` als eine Quelle für die Marke.
+**Heute erledigt:** der ganze Angebots-Feinschliff (Anhang, Betreff, Zahlungsreferenz, Etiketten, Pauschale, Storno raus) · `BRAND.md` als eine Quelle · **das neue Beleg-Design** nach freigegebenem Muster: Marke links / Absender rechts, Datenblock rechts, LEISTUNG/BETRAG-Tabelle, Zahlbox in voller Breite, Blattfuß Betrieb·Bank·Kontakt — alle fünf Belegarten, Farben aus `betriebe.farbe_kopf/farbe_akzent` (dieselbe Quelle wie die Mails), ZZ-Belege treten als ZeitZurück® auf und zeichnen nur so · Beleg antippen öffnet das echte PDF, Bereichs-Knopf nur auf Listen · Plus am Rechnungen-Reiter erklärt den Weg zur Rechnung · **die Umbenennung** (siehe Entscheidung oben) · App-Store aufs Regal, Claude Design verworfen.
 
-**Der nächste große Block ist der WKO-Termin am 7.8. und danach die Umbenennung** auf „Alvin Ehrnberger Montage & Mehr" aus einer Quelle: Datenbank, fünf Seiten, Briefkopf, Mailvorlagen, Chat-Prompt, Signatur — `BRAND.md` führt.
+**Morgen ist Caesar-Tag.** Caesar Handmade Guitars wird Kunde Nr. 1 mit dem kompletten Paket, Roli (Evolution Ears) danach mit Front Office. Das Angebot an Caesar: Einrichtung 199,– einmalig (Gründungskunden-Preis), 3 Monate Abo gratis, danach dauerhaft 30,–/Monat — dafür Referenz auf zeitzurück.at, Fallstudie und ehrliches Feedback, schriftlich als Einseiter. SEPA-Mandat am ersten Tag, erster Einzug nach den Gratismonaten. Zu bauen: Betrieb Caesar anlegen (Farben, Logo, Wissen — echte Preise erst von ihm), Chat auf die Hausordnung, die SEPA-Strecke einmal durchspielen und die automatische monatliche ZZ-Rechnung an Caesar (Zeitplan am Monatsersten → Rechnung ZZ-Kreis → Versand → Stripe-Einzug → Rückruf markiert bezahlt).
 
-**Dann die Liste:** Demo zeigt nur Demo-Daten · „ZeitZurück Rundum" raus aus der Kopfzeile · Mailvorlagen auf die Betriebsfarben · die übrigen vier Chats auf die Hausordnung (Fleißarbeit, keine Architektur: Prompt-Lader auf die zusammengesetzte Ansicht, Betriebswissen einpflegen, testen) · Handy-Durchgang · Stripe scharf schalten.
-
-**Neue Kundenseiten** entstehen erst mit einem echten, ausgefüllten Fragebogen — nach dem ersten Kunden. Der Fragebogen ist dafür geprüft und trägt fast alles; was er bewusst nicht sammelt, holt die Übergabe-Checkliste unten.
+**Neue Kundenseiten** entstehen erst mit einem echten, ausgefüllten Fragebogen. Der Fragebogen ist dafür geprüft und trägt fast alles; was er bewusst nicht sammelt, holt die Übergabe-Checkliste unten.
 
 ## Nach dem Fragebogen — die Übergabe-Checkliste
 
