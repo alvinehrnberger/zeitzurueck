@@ -1114,3 +1114,59 @@ window.zurueckZumAuftrag = function (id) {
     };
   }
 })();
+
+/* Etiketten im Beleg: liest die Nummer vom Bildschirm. */
+(function zzBelegEtiketten () {
+  var RE = /((?:DEMO |M |ZZ |V )?A \d{2}\/\d{4})/;
+  function deutsch(d){ if(!d) return ""; var x=new Date(d);
+    return ("0"+x.getDate()).slice(-2)+"."+("0"+(x.getMonth()+1)).slice(-2)+"."+x.getFullYear(); }
+  function herrichten () {
+    var b = document.getElementById("screen");
+    if (!b) return;
+    var m = RE.exec(b.textContent || "");
+    if (!m) return;
+    var nummer = m[1];
+    var i = null, alle = window._alleRechnungen || [];
+    for (var q = 0; q < alle.length; q++) if (alle[q].nummer === nummer) i = alle[q];
+    var alleE = document.querySelectorAll("*");
+    for (var n = 0; n < alleE.length; n++) {
+      var e = alleE[n];
+      if (e.children.length) continue;
+      var s = (e.textContent || "").trim();
+      if (s === "Rechnung verwalten") e.textContent = "Angebot verwalten";
+      else if (s === "Rechnung " + nummer) e.textContent = "Angebot " + nummer;
+      else if (s === "Rechnung ansehen") e.textContent = "Angebot ansehen";
+    }
+    if (!i) return;
+    var kopf = b.querySelector(".nr");
+    if (kopf && !document.getElementById("zzStand2")) {
+      var z = document.createElement("div");
+      z.id = "zzStand2";
+      var txt, farbe;
+      if (i.angebot_status === "angenommen") { txt = "Angenommen am " + deutsch(i.beantwortet_am); farbe = "#1A3A2B"; }
+      else if (i.angebot_status === "abgelehnt") { txt = "Abgelehnt am " + deutsch(i.beantwortet_am); farbe = "#8a857c"; }
+      else if (i.gesendet_am) { txt = "Versendet am " + deutsch(i.gesendet_am); farbe = "#1A3A2B"; }
+      else { txt = "Noch nicht versendet"; farbe = "#A9853C"; }
+      z.textContent = txt;
+      z.style.cssText = "font-weight:600;font-size:13px;margin:6px 0 2px;color:" + farbe;
+      kopf.parentNode.insertBefore(z, kopf.nextSibling);
+    }
+    if (!i.gesendet_am && typeof window.openSend === "function" && !document.getElementById("zzSend2")) {
+      var k = document.createElement("button");
+      k.id = "zzSend2";
+      k.className = "btn btn-primary";
+      k.style.cssText = "display:block;width:100%;margin:14px 0;";
+      k.textContent = "\u2709 Angebot senden";
+      k.onclick = function () { window.openSend(i.id); };
+      b.appendChild(k);
+    }
+  }
+  var v = window.showInvoice;
+  if (typeof v === "function") {
+    window.showInvoice = function () {
+      var r = v.apply(this, arguments);
+      setTimeout(function () { try { herrichten(); } catch (e) {} }, 0);
+      return r;
+    };
+  }
+})();
