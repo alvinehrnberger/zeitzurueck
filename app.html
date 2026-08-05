@@ -597,114 +597,171 @@ async function deleteJob(id){
 
 /* ---------- PDF: Rechnung / Erinnerung / Mahnung / Storno ---------- */
 function buildPDF(i, art){
+  /* Layout nach dem freigegebenen Muster vom 5.8.:
+     Marke links / Absender rechts / Petrol-Linie mit Gold-Akzent,
+     Empfaenger links, Datenblock rechts, Titel, Tabelle, Summe rechts,
+     Zahlbox in voller Textbreite, Gruss, Blattfuss Betrieb·Bank·Kontakt. */
   art = art || (istStorno(i)?'storno':'rechnung');
   const k=konf(); const { jsPDF }=window.jspdf;
   const doc=new jsPDF({unit:'mm',format:'a4'});
-  const L=25,R=185,MID=105;
+  const L=20,R=190,MID=105,B=283;
   const satz=betrieb?Number(betrieb.stundensatz):50, stunden=Number(i.stunden);
-  const titel=art==='angebot'?('Angebot Nr. '+i.nummer):art==='storno' ? 'Stornorechnung Nr. '+(i.nummer||'')
-              : art==='mahnung' ? 'Mahnung zu Rechnung Nr. '+(i.nummer||'')
-              : art==='erinnerung' ? 'Zahlungserinnerung zu Rechnung Nr. '+(i.nummer||'')
-              : 'Rechnung Nr. '+(i.nummer||'');
+  const kreis=String(i.nummer||'').trim().split(' ')[0];
+  const istZZ = kreis==='ZZ';
+  const marke = istZZ ? 'ZeitZurück®' : (betrieb?(betrieb.name||''):'');
+  const inhaber = betrieb?(betrieb.inhaber||''):'';
+  const geld=n=>Number(n).toLocaleString('de-AT',{minimumFractionDigits:2})+' €';
+  const PETROL=[26,58,43], GOLD=[201,160,84], MUTED=[92,106,99], LINIE=[228,225,218], INK=[20,34,27];
 
-  doc.setFont('helvetica','bold'); doc.setFontSize(15);
-  doc.text(betrieb?betrieb.name:'', MID, 22, {align:'center'});
-  doc.setFont('helvetica','normal'); doc.setFontSize(11);
-  doc.text(betrieb?(betrieb.inhaber||''):'', MID, 28, {align:'center'});
-  doc.setFontSize(9); doc.setTextColor(110);
-  const kz=[k.strasse,k.plzOrt].filter(Boolean).join(', '); if(kz) doc.text(kz, MID, 33.5, {align:'center'});
-  const kt=[k.telefon,k.email].filter(Boolean).join('  ·  '); if(kt) doc.text(kt, MID, 38, {align:'center'});
-  doc.setTextColor(0); doc.setDrawColor(26,58,43); doc.setLineWidth(0.6); doc.line(L,43,R,43);
+  /* Kopf */
+  doc.setTextColor.apply(doc,PETROL);
+  doc.setFont('helvetica','bold'); doc.setFontSize(16);
+  doc.text(marke, L, 26);
+  if(inhaber && !istZZ && !String(marke).toLowerCase().includes(inhaber.toLowerCase())){
+    doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor.apply(doc,MUTED);
+    doc.text(inhaber, L, 31.5);
+  }
+  doc.setFont('helvetica','normal'); doc.setFontSize(8.5); doc.setTextColor.apply(doc,MUTED);
+  const abs1=[k.strasse,k.plzOrt].filter(Boolean).join(', ');
+  const abs2=[k.telefon,k.email].filter(Boolean).join(' · ');
+  if(abs1) doc.text((istZZ&&inhaber?inhaber+' · ':'')+abs1, R, 24, {align:'right'});
+  if(abs2) doc.text(abs2, R, 28.5, {align:'right'});
+  doc.setDrawColor.apply(doc,PETROL); doc.setLineWidth(0.6); doc.line(L,36,R,36);
+  doc.setDrawColor.apply(doc,GOLD); doc.setLineWidth(0.9); doc.line(L,36,L+22,36);
 
-  doc.setFontSize(11); let y=57;
-  doc.setFont('helvetica','bold'); doc.text(i.kunde||'', L, y); y+=5.5;
+  /* Empfaenger links, Datenblock rechts */
+  const y0=50;
+  doc.setTextColor.apply(doc,INK);
+  doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.text(i.kunde||'', L, y0);
   doc.setFont('helvetica','normal'); doc.setFontSize(10.5);
-  (i.kunde_adresse||'').split(/\n|,\s*(?=\d{4}\b)/).filter(Boolean).forEach(z=>{ doc.text(z,L,y); y+=5; });
-  /* Absatz nach der Empfaengeradresse, dann rechtsbuendig Ort und Datum. */
-  y+=6;
-  doc.setFontSize(10.5);
-  doc.text((k.ausstellungsort?k.ausstellungsort+', am ':'')+deDate(art==='rechnung'||art==='storno'?(i.datum||new Date()):new Date()), R, y, {align:'right'});
+  let yA=y0+5.5;
+  (i.kunde_adresse||'').split(/\n|,\s*(?=\d{4}\b)/).filter(Boolean).forEach(z=>{ doc.text(z,L,yA); yA+=5; });
 
-  const yT=Math.max(y+12,82);
-  doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.text(titel, R, yT, {align:'right'});
-  let yR=yT+12;
+  const belegwort=art==='angebot'?'Angebot':art==='storno'?'Stornorechnung':'Rechnung';
+  const zeilen=[[belegwort+' Nr.', i.nummer||'—'],
+                ['Datum', deDate(art==='rechnung'||art==='storno'?(i.datum||new Date()):new Date())]];
+  if(art==='rechnung'){ zeilen.push(['Leistungsdatum', deDate(i.leistung_datum||i.datum||i.created_at)]);
+                        zeilen.push(['Zahlbar bis', deDate(faelligAm(i))]); }
+  if(art==='erinnerung'||art==='mahnung'){ zeilen.push(['Fällig war', deDate(faelligAm(i))]); }
+  if(art==='angebot'&&i.gueltig_bis){ zeilen.push(['Gültig bis', deDate(i.gueltig_bis)]); }
+  if(art==='storno'&&stornoZu(i)){ zeilen.push(['Zu Rechnung', stornoZu(i)]); }
+  const DBL=R-56; let yD=y0-3;
+  doc.setFontSize(9);
+  zeilen.forEach((z,ix)=>{
+    doc.setTextColor.apply(doc,MUTED); doc.setFont('helvetica','normal'); doc.text(z[0], DBL, yD+4);
+    doc.setTextColor.apply(doc,INK); doc.setFont('helvetica','bold'); doc.text(String(z[1]), R, yD+4, {align:'right'});
+    if(ix<zeilen.length-1){ doc.setDrawColor.apply(doc,LINIE); doc.setLineWidth(0.2); doc.line(DBL,yD+6.2,R,yD+6.2); }
+    yD+=7;
+  });
+
+  /* Titel */
+  const titelwort=art==='mahnung'?'Mahnung':art==='erinnerung'?'Zahlungserinnerung':belegwort;
+  let yT=Math.max(yA, yD)+14;
+  doc.setTextColor.apply(doc,PETROL); doc.setFont('helvetica','bold'); doc.setFontSize(16);
+  doc.text(titelwort, L, yT);
+  doc.setTextColor.apply(doc,INK);
+  if(art==='mahnung'||art==='erinnerung'){
+    doc.setFont('helvetica','normal'); doc.setFontSize(9.5); doc.setTextColor.apply(doc,MUTED);
+    doc.text('zu Rechnung Nr. '+(i.nummer||''), L, yT+5.5);
+    doc.setTextColor.apply(doc,INK); yT+=4;
+  }
   if(art==='storno'){
-    doc.setFont('helvetica','normal'); doc.setFontSize(10.5);
+    doc.setFont('helvetica','normal'); doc.setFontSize(10);
     const bez=doc.splitTextToSize('Hiermit stornieren wir die Rechnung Nr. '+(stornoZu(i)||'')+' vollständig. Der ursprünglich in Rechnung gestellte Betrag entfällt.', R-L);
-    doc.text(bez,L,yR); yR+=bez.length*5+6;
+    doc.text(bez,L,yT+6.5); yT+=bez.length*4.6+3;
   }
 
-  doc.setFontSize(8.5); doc.setTextColor(110); doc.setFont('helvetica','bold');
-  doc.text('DATUM',L,yR); doc.text('LEISTUNG',L+26,yR); doc.text('€',R,yR,{align:'right'});
-  doc.setTextColor(0); doc.setDrawColor(190); doc.setLineWidth(0.25); doc.line(L,yR+2.2,R,yR+2.2);
-  yR+=9;
-  doc.setFont('helvetica','normal'); doc.setFontSize(10.5);
-  doc.text(deDate(i.leistung_datum||i.datum||i.created_at), L, yR);
-  const txt=doc.splitTextToSize(i.positionstext||'',92);
-  doc.text(txt, L+26, yR);
-  doc.text(Number(i.betrag).toLocaleString('de-AT',{minimumFractionDigits:2}), R, yR, {align:'right'});
-  let yN=yR+(txt.length*5);
-  if(stunden){
-    doc.setFontSize(9.5); doc.setTextColor(90);
-    doc.text((window.zzPos?window.zzPos(i,stunden,satz):String(stunden).replace('.',',')+' h a € '+satz+',—'), L+26, yN);
-    doc.setTextColor(0);
-  } else if(art==='angebot'){
-    doc.setFontSize(9.5); doc.setTextColor(90);
-    doc.text('Pauschale', L+26, yN);
-    doc.setTextColor(0);
-  }
+  /* Positionstabelle */
+  let yR=yT+9;
+  doc.setFontSize(7.5); doc.setTextColor.apply(doc,MUTED); doc.setFont('helvetica','bold');
+  doc.text('L E I S T U N G', L, yR); doc.text('B E T R A G', R, yR, {align:'right'});
+  doc.setDrawColor(200,195,186); doc.setLineWidth(0.25); doc.line(L,yR+2,R,yR+2);
+  yR+=8;
+  doc.setTextColor.apply(doc,INK); doc.setFont('helvetica','normal'); doc.setFontSize(10.5);
+  const txt=doc.splitTextToSize(i.positionstext||'',118);
+  doc.text(txt, L, yR);
+  doc.text(geld(i.betrag), R, yR, {align:'right'});
+  let yN=yR+(txt.length*5)+1;
+  doc.setFontSize(9); doc.setTextColor.apply(doc,MUTED);
+  const detail = stunden ? (window.zzPos?window.zzPos(i,stunden,satz):String(stunden).replace('.',',')+' h à € '+satz+',—')
+               : ((art==='angebot'||art==='rechnung') ? 'Pauschale' : '');
+  if(detail){ doc.text(detail, L, yN); yN+=5; }
+  doc.setTextColor.apply(doc,INK);
 
-  const yS=yN+10;
-  doc.setDrawColor(26,58,43); doc.setLineWidth(0.6); doc.line(L,yS,R,yS);
-  doc.setFont('helvetica','bold'); doc.setFontSize(12.5);
-  doc.text(art==='storno'?'Gutschrift':(art==='rechnung'?'Gesamt':'Offener Betrag'), L, yS+7);
-  doc.text(Number(i.betrag).toLocaleString('de-AT',{minimumFractionDigits:2})+' €', R, yS+7, {align:'right'});
-
-  let yF=yS+20;
-  doc.setFont('helvetica','normal'); doc.setFontSize(9.5); doc.setTextColor(80);
-  if(art==='erinnerung'||art==='mahnung'){
-    const f=deDate(faelligAm(i));
-    const et = art==='mahnung'
-      ? 'Trotz unserer Zahlungserinnerung konnten wir bis heute keinen Zahlungseingang feststellen. Die Rechnung Nr. '+(i.nummer||'')+' vom '+deDate(i.datum||i.created_at)+' war am '+f+' zur Zahlung fällig. Wir ersuchen Sie höflich, den offenen Betrag binnen 7 Tagen zu überweisen.'
-      : 'Die Rechnung Nr. '+(i.nummer||'')+' vom '+deDate(i.datum||i.created_at)+' war am '+f+' zur Zahlung fällig. Vermutlich ist sie in der Alltagshektik untergegangen — wir ersuchen höflich um Überweisung des offenen Betrages. Sollten Sie bereits bezahlt haben, betrachten Sie dieses Schreiben bitte als gegenstandslos.';
-    const es=doc.splitTextToSize(et,R-L); doc.text(es,L,yF); yF+=es.length*5+7;
-  }
+  /* Summe rechts */
+  const yS=yN+7;
+  doc.setDrawColor.apply(doc,PETROL); doc.setLineWidth(0.6); doc.line(R-62,yS,R,yS);
+  doc.setFont('helvetica','bold'); doc.setFontSize(13);
+  doc.text(art==='storno'?'Gutschrift':((art==='erinnerung'||art==='mahnung')?'Offener Betrag':'Gesamt'), R-62, yS+7);
+  doc.text(geld(i.betrag), R, yS+7, {align:'right'});
+  let yF=yS+12;
   if(!betrieb || betrieb.kleinunternehmer){
-    if(art === 'angebot'){
-      doc.setFont('helvetica','bold');
-      doc.text('Dieses Angebot ist gültig bis ' + (i.gueltig_bis ? deDate(i.gueltig_bis) : 'auf Widerruf') + '.', L, yF += 7);
-      doc.setFont('helvetica','normal');
-      /* Pro Satz ein Absatz — und danach rueckt der Zeilenzaehler weiter,
-         statt die Umsatzsteuerzeile ueber den letzten Satz zu schreiben. */
-      doc.text('Die Annahme erfolgt schriftlich oder über den Link in der begleitenden E-Mail.', L, yF += 7);
-      doc.text('Es handelt sich um einen Kostenvoranschlag ohne Gewähr im Sinne des § 5 KSchG.', L, yF += 7);
-      yF += 7;
-    }
-    doc.text('Umsatzsteuerbefreiung gem. § 6 Abs. 1 Z 27 UStG.', L, yF); yF+=9;
+    doc.setFont('helvetica','normal'); doc.setFontSize(8.5); doc.setTextColor.apply(doc,MUTED);
+    doc.text('Umsatzsteuerbefreiung gem. § 6 Abs. 1 Z 27 UStG.', R, yF+3, {align:'right'});
+    yF+=6;
   }
-  if(art==='rechnung'){ doc.text((window.zzFuss?window.zzFuss(i,satz):'Abgerechnet wird nach tatsächlich geleisteter Zeit zu € '+satz+',— pro Stunde.'), L, yF); yF+=9; }
-  if(k.iban && art !== 'storno' && art !== 'angebot'){
-    const zt=doc.splitTextToSize('Ich ersuche um Überweisung des oben genannten Betrages '+(art==='rechnung'?('binnen '+k.zahlungsziel+' Tagen '):'')+'auf mein Konto bei der '+k.bank+', mit dem IBAN: '+k.iban+', BIC: '+k.bic+' und verbleibe', R-L);
-    doc.text(zt,L,yF); yF+=zt.length*5+7;
-          if(art === 'rechnung'){
-            doc.setFont('helvetica','bold');
-            doc.text('Zahlungsreferenz: ' + zzReferenz(i, art), L, yF += 6);
-            doc.setFont('helvetica','normal');
-            doc.text('Bitte bei der Überweisung angeben.', L, yF += 4.6);
-          }
+
+  /* Zahlbox: was jetzt zu tun ist — volle Textbreite, Text laeuft durch */
+  const saetze=[];
+  if(art==='rechnung'){
+    saetze.push(window.zzFuss?window.zzFuss(i,satz):'Abgerechnet wird nach tatsächlich geleisteter Zeit zu € '+satz+',— pro Stunde.');
+    if(k.iban) saetze.push('Ich ersuche um Überweisung binnen '+k.zahlungsziel+' Tagen auf mein Konto bei der '+k.bank+', IBAN '+k.iban+' · BIC '+k.bic+'.');
+    saetze.push('REF::Zahlungsreferenz: '+zzReferenz(i,art)+' — bitte bei der Überweisung angeben.');
+  } else if(art==='erinnerung'||art==='mahnung'){
+    const f=deDate(faelligAm(i));
+    saetze.push(art==='mahnung'
+      ? 'Trotz unserer Zahlungserinnerung konnten wir bis heute keinen Zahlungseingang feststellen. Die Rechnung Nr. '+(i.nummer||'')+' vom '+deDate(i.datum||i.created_at)+' war am '+f+' zur Zahlung fällig. Wir ersuchen Sie höflich, den offenen Betrag binnen 7 Tagen zu überweisen.'
+      : 'Die Rechnung Nr. '+(i.nummer||'')+' vom '+deDate(i.datum||i.created_at)+' war am '+f+' zur Zahlung fällig. Vermutlich ist sie in der Alltagshektik untergegangen — wir ersuchen höflich um Überweisung des offenen Betrages. Sollten Sie bereits bezahlt haben, betrachten Sie dieses Schreiben bitte als gegenstandslos.');
+    if(k.iban) saetze.push('Konto: '+k.bank+', IBAN '+k.iban+' · BIC '+k.bic+'.');
+    saetze.push('REF::Zahlungsreferenz: '+zzReferenz(i,'rechnung')+' — bitte bei der Überweisung angeben.');
+  } else if(art==='angebot'){
+    saetze.push('REF::Dieses Angebot ist gültig bis '+(i.gueltig_bis?deDate(i.gueltig_bis):'auf Widerruf')+'.');
+    saetze.push('Die Annahme erfolgt schriftlich oder über die Schaltflächen in der begleitenden E-Mail.');
+    saetze.push('Es handelt sich um einen Kostenvoranschlag ohne Gewähr im Sinne des § 5 KSchG.');
   }
-  doc.text('mit freundlichen Grüßen', L, yF); yF+=12;
-  doc.setTextColor(0); doc.setFontSize(10.5);
-  /* Unterschrift: ZZ-Belege zeichnen nur als ZeitZurück®. Alle anderen mit
-     Name und Betrieb — steckt der Name schon im Betriebsnamen, nur der Betrieb. */
-  const kreisU=String(i.nummer||'').trim().split(' ')[0];
+  if(saetze.length){
+    doc.setFontSize(9.5);
+    const breit=R-L-11;
+    let hoehe=4.5;
+    const bloecke=saetze.map(s=>{
+      const fett=s.indexOf('REF::')===0;
+      const zl=doc.splitTextToSize(s.replace(/^REF::/,''),breit);
+      hoehe+=zl.length*4.6+2.2;
+      return {zl:zl,fett:fett};
+    });
+    hoehe+=2.3;
+    const yB=yF+6;
+    doc.setFillColor(250,249,247); doc.setDrawColor.apply(doc,LINIE); doc.setLineWidth(0.25);
+    doc.roundedRect(L,yB,R-L,hoehe,2,2,'FD');
+    let yI=yB+7;
+    bloecke.forEach(b=>{
+      doc.setFont('helvetica',b.fett?'bold':'normal'); doc.setTextColor.apply(doc,INK);
+      doc.text(b.zl, L+5.5, yI);
+      yI+=b.zl.length*4.6+2.2;
+    });
+    yF=yB+hoehe;
+  }
+
+  /* Gruss und Unterschrift */
+  doc.setFont('helvetica','normal'); doc.setFontSize(10.5); doc.setTextColor.apply(doc,INK);
+  doc.text('mit freundlichen Grüßen', L, yF+13);
+  doc.setFont('helvetica','bold');
   let unterschrift;
-  if(kreisU==='ZZ'){ unterschrift='ZeitZurück®'; }
+  if(istZZ){ unterschrift='ZeitZurück®'; }
   else{
-    const inh=betrieb?(betrieb.inhaber||''):'', bn=betrieb?(betrieb.name||''):'';
-    unterschrift=(!inh||bn.toLowerCase().includes(inh.toLowerCase()))?(bn||inh):(inh+' – '+bn);
+    const bn=betrieb?(betrieb.name||''):'';
+    unterschrift=(!inhaber||bn.toLowerCase().includes(inhaber.toLowerCase()))?(bn||inhaber):(inhaber+' – '+bn);
   }
-  doc.text(unterschrift, L, yF);
+  doc.text(unterschrift, L, yF+24);
+
+  /* Blattfuss: Betrieb · Bank · Kontakt */
+  doc.setDrawColor.apply(doc,LINIE); doc.setLineWidth(0.25); doc.line(L,B-13,R,B-13);
+  doc.setFontSize(7.5);
+  const spalte=(zs,x,align)=>{ let yy=B-9; zs.forEach((z,ix)=>{ doc.setFont('helvetica',ix===0?'bold':'normal'); doc.setTextColor.apply(doc,ix===0?INK:MUTED); doc.text(z,x,yy,align?{align:align}:undefined); yy+=3.6; }); };
+  spalte([marke, inhaber, [k.strasse,k.plzOrt].filter(Boolean).join(', ')].filter(Boolean), L);
+  spalte(['Bank', (k.bank||'')+(k.bic?' · BIC '+k.bic:''), k.iban?('IBAN '+k.iban):''].filter(Boolean), MID, 'center');
+  spalte(['Kontakt', k.telefon||'', k.email||''].filter(Boolean), R, 'right');
+  doc.setTextColor(0);
   return doc;
 }
 function pdfName(i,art){
