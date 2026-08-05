@@ -1157,7 +1157,7 @@ window.zurueckZumAuftrag = function (id) {
       k.className = "btn btn-primary";
       k.style.cssText = "display:block;width:100%;margin:14px 0;";
       k.textContent = "\u2709 Angebot senden";
-      k.onclick = function () { window.openSend(i.id); };
+      k.onclick = function () { try { window.openSend(i.id, i.art); } catch (e) { alert("Senden ging nicht: " + ((e && e.message) ? e.message : e)); } };
       b.appendChild(k);
     }
   }
