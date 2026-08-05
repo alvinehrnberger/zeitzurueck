@@ -187,7 +187,7 @@ body.demolauf #fab{background:#8A4B00}
       <div class="mark" id="brandMark"><img src="zeitzurueck-icon.svg" alt=""></div>
       <div>
         <div class="ttl" id="barTitle" onclick="openBetriebPicker()">…</div>
-        <div class="sub" id="barSub">ZeitZurück Rundum</div>
+        <div class="sub" id="barSub"></div>
       </div>
       <div class="spacer"></div>
       <div class="out" onclick="logout()">Abmelden</div>
@@ -426,7 +426,7 @@ async function loadData(){
 }
 function paintBrand(){
   if(betrieb){
-    el('barTitle').innerHTML = esc(betrieb.name) + (betriebe.length>1?' <span class="caret">▾</span>':'');
+    el('barTitle').innerHTML = esc(betrieb.marke||betrieb.name) + (betriebe.length>1?' <span class="caret">▾</span>':'');
     if(betrieb.logo_url) el('brandMark').innerHTML = '<img src="'+esc(betrieb.logo_url)+'" alt="">';
   } else el('barTitle').textContent='Kein Betrieb verknüpft';
 }
@@ -469,7 +469,7 @@ function naechsteNummer(){
 function setTab(t){ tab=t; el('tabJobs').classList.toggle('on',t==='jobs'); el('tabInv').classList.toggle('on',t==='inv'); showList(); }
 function showList(){
   backBtn.style.display='none'; el('tabs').style.display='flex'; el('fab').style.display='flex';
-  el('barSub').textContent='ZeitZurück Rundum'; screen.scrollTop=0;
+  el('barSub').textContent=betrieb?(betrieb.inhaber||''):''; screen.scrollTop=0;
   tab==='jobs' ? renderJobs() : renderInvoices();
 }
 function offeneMahnungen(){
@@ -565,7 +565,7 @@ function showJob(id){
 
 /* ---------- Neuer Auftrag / löschen ---------- */
 function openNewJob(){
-  sheet.innerHTML=`<h3>Neuer Auftrag</h3><p class="s">Für ${esc(betrieb?betrieb.name:'')}</p>
+  sheet.innerHTML=`<h3>Neuer Auftrag</h3><p class="s">Für ${esc(betrieb?(betrieb.marke||betrieb.name):'')}</p>
     ${tab==='inv'?`<div class="note" style="margin:0 0 14px;text-align:left">Eine Rechnung entsteht aus einem Auftrag: Auftrag anlegen, „Arbeit abgeschlossen" tippen — die Rechnung schreibt sich von selbst. Barzahlung geht denselben Weg.</div>`:''}
     <div class="mailrow"><label>Kunde *</label><input id="nKunde" placeholder="Katrin Ehrnberger"></div>
     <div class="mailrow"><label>E-Mail des Kunden</label><input id="nMail" type="email" placeholder="kunde@example.com"></div>
@@ -609,7 +609,9 @@ function buildPDF(i, art){
   const satz=betrieb?Number(betrieb.stundensatz):50, stunden=Number(i.stunden);
   const kreis=String(i.nummer||'').trim().split(' ')[0];
   const istZZ = kreis==='ZZ';
-  const marke = istZZ ? 'ZeitZurück®' : (betrieb?(betrieb.name||''):'');
+  /* marke = Anzeigename (gross im Kopf), name = amtlicher Wortlaut (Fuss, Unterschrift). */
+  const marke = istZZ ? 'ZeitZurück®' : (betrieb?(betrieb.marke||betrieb.name||''):'');
+  const voll = istZZ ? 'ZeitZurück®' : (betrieb?(betrieb.name||''):'');
   const inhaber = betrieb?(betrieb.inhaber||''):'';
   const geld=n=>Number(n).toLocaleString('de-AT',{minimumFractionDigits:2})+' €';
   /* Farben aus derselben Quelle wie die Kundenmails: betriebe.farbe_kopf/farbe_akzent.
@@ -764,7 +766,7 @@ function buildPDF(i, art){
   doc.setDrawColor.apply(doc,LINIE); doc.setLineWidth(0.25); doc.line(L,B-13,R,B-13);
   doc.setFontSize(7.5);
   const spalte=(zs,x,align)=>{ let yy=B-9; zs.forEach((z,ix)=>{ doc.setFont('helvetica',ix===0?'bold':'normal'); doc.setTextColor.apply(doc,ix===0?INK:MUTED); doc.text(z,x,yy,align?{align:align}:undefined); yy+=3.6; }); };
-  spalte([marke, inhaber, [k.strasse,k.plzOrt].filter(Boolean).join(', ')].filter(Boolean), L);
+  spalte([voll, (inhaber&&voll.toLowerCase().includes(inhaber.toLowerCase()))?'':inhaber, [k.strasse,k.plzOrt].filter(Boolean).join(', ')].filter(Boolean), L);
   spalte(['Bank', (k.bank||'')+(k.bic?' · BIC '+k.bic:''), k.iban?('IBAN '+k.iban):''].filter(Boolean), MID, 'center');
   spalte(['Kontakt', k.telefon||'', k.email||''].filter(Boolean), R, 'right');
   doc.setTextColor(0);
@@ -829,6 +831,11 @@ function downloadPDF(id,art){
       }
     }
 
+    /* Mail-Unterschrift: steckt der Inhaber schon im Betriebsnamen, nur der Name — nichts doppelt. */
+    function mailGruss(){
+      const inh=betrieb?(betrieb.inhaber||''):'', bn=betrieb?(betrieb.name||''):'';
+      return (!inh||bn.toLowerCase().includes(inh.toLowerCase()))?(bn||inh):(inh+'\n'+bn);
+    }
     async function sendDoc(rec, empfaenger, art){
   art = art||'rechnung';
   const doc=buildPDF(rec,art);
@@ -842,13 +849,13 @@ function downloadPDF(id,art){
                 : ('Ihre Rechnung '+rec.nummer+' – '+(betrieb?betrieb.name:''));
   let text;
   if(art==='rechnung'){
-    text='Sehr geehrte/r '+(rec.kunde||'')+',\n\nvielen Dank für Ihren Auftrag. Im Anhang finden Sie Ihre Rechnung '+rec.nummer+' über '+eur(rec.betrag)+'.\n\nLeistung: '+(rec.positionstext||'')+'\n\nAbgerechnet '+(window.zzMailSatz?window.zzMailSatz():'wird nach tatsächlich geleisteter Zeit zu '+eur(betrieb?betrieb.stundensatz:50)+' pro Stunde.')+'\n\nIch ersuche um Überweisung des Betrages binnen '+k.zahlungsziel+' Tagen auf mein Konto bei der '+k.bank+',\nIBAN: '+k.iban+', BIC: '+k.bic+'.\n\nMit freundlichen Grüßen\n'+(betrieb?betrieb.inhaber:'')+'\n'+(betrieb?betrieb.name:'');
+    text='Sehr geehrte/r '+(rec.kunde||'')+',\n\nvielen Dank für Ihren Auftrag. Im Anhang finden Sie Ihre Rechnung '+rec.nummer+' über '+eur(rec.betrag)+'.\n\nLeistung: '+(rec.positionstext||'')+'\n\nAbgerechnet '+(window.zzMailSatz?window.zzMailSatz():'wird nach tatsächlich geleisteter Zeit zu '+eur(betrieb?betrieb.stundensatz:50)+' pro Stunde.')+'\n\nIch ersuche um Überweisung des Betrages binnen '+k.zahlungsziel+' Tagen auf mein Konto bei der '+k.bank+',\nIBAN: '+k.iban+', BIC: '+k.bic+'.\n\nMit freundlichen Grüßen\n'+mailGruss();
   } else if(art==='erinnerung'){
-    text='Sehr geehrte/r '+(rec.kunde||'')+',\n\ndarf ich höflich an die offene Rechnung '+rec.nummer+' über '+eur(rec.betrag)+' erinnern? Sie war am '+deDate(faelligAm(rec))+' zur Zahlung fällig.\n\nVermutlich ist sie im Alltag untergegangen. Sollten Sie bereits bezahlt haben, betrachten Sie diese Nachricht bitte als gegenstandslos.\n\nDie Rechnung finden Sie noch einmal im Anhang.\nIBAN: '+k.iban+', BIC: '+k.bic+' ('+k.bank+').\n\nMit freundlichen Grüßen\n'+(betrieb?betrieb.inhaber:'')+'\n'+(betrieb?betrieb.name:'');
+    text='Sehr geehrte/r '+(rec.kunde||'')+',\n\ndarf ich höflich an die offene Rechnung '+rec.nummer+' über '+eur(rec.betrag)+' erinnern? Sie war am '+deDate(faelligAm(rec))+' zur Zahlung fällig.\n\nVermutlich ist sie im Alltag untergegangen. Sollten Sie bereits bezahlt haben, betrachten Sie diese Nachricht bitte als gegenstandslos.\n\nDie Rechnung finden Sie noch einmal im Anhang.\nIBAN: '+k.iban+', BIC: '+k.bic+' ('+k.bank+').\n\nMit freundlichen Grüßen\n'+mailGruss();
   } else if(art==='mahnung'){
-    text='Sehr geehrte/r '+(rec.kunde||'')+',\n\ntrotz meiner Zahlungserinnerung konnte ich bis heute keinen Zahlungseingang für die Rechnung '+rec.nummer+' über '+eur(rec.betrag)+' feststellen (fällig am '+deDate(faelligAm(rec))+').\n\nIch ersuche Sie, den offenen Betrag binnen 7 Tagen zu überweisen.\nIBAN: '+k.iban+', BIC: '+k.bic+' ('+k.bank+').\n\nSollten Sie Fragen zur Rechnung haben, melden Sie sich bitte einfach bei mir.\n\nMit freundlichen Grüßen\n'+(betrieb?betrieb.inhaber:'')+'\n'+(betrieb?betrieb.name:'');
+    text='Sehr geehrte/r '+(rec.kunde||'')+',\n\ntrotz meiner Zahlungserinnerung konnte ich bis heute keinen Zahlungseingang für die Rechnung '+rec.nummer+' über '+eur(rec.betrag)+' feststellen (fällig am '+deDate(faelligAm(rec))+').\n\nIch ersuche Sie, den offenen Betrag binnen 7 Tagen zu überweisen.\nIBAN: '+k.iban+', BIC: '+k.bic+' ('+k.bank+').\n\nSollten Sie Fragen zur Rechnung haben, melden Sie sich bitte einfach bei mir.\n\nMit freundlichen Grüßen\n'+mailGruss();
   } else {
-    text='Sehr geehrte/r '+(rec.kunde||'')+',\n\nim Anhang erhalten Sie die Stornorechnung '+rec.nummer+' zur Rechnung '+(stornoZu(rec)||'')+'.\n\nDie ursprüngliche Rechnung ist damit vollständig storniert; der Betrag entfällt.\n\nMit freundlichen Grüßen\n'+(betrieb?betrieb.inhaber:'')+'\n'+(betrieb?betrieb.name:'');
+    text='Sehr geehrte/r '+(rec.kunde||'')+',\n\nim Anhang erhalten Sie die Stornorechnung '+rec.nummer+' zur Rechnung '+(stornoZu(rec)||'')+'.\n\nDie ursprüngliche Rechnung ist damit vollständig storniert; der Betrag entfällt.\n\nMit freundlichen Grüßen\n'+mailGruss();
   }
   const zzRef = zzReferenz(rec, art);
             await zzArchivieren(rec, b64, art);
@@ -859,7 +866,7 @@ function downloadPDF(id,art){
              + (rec.gueltig_bis ? ('Gültig bis: ' + deDate(rec.gueltig_bis) + '\n') : '')
              + '\nSie können das Angebot über die Schaltflächen in dieser Nachricht annehmen oder ablehnen.\n'
              + 'Bei Fragen antworten Sie einfach auf diese Nachricht.\n\n'
-             + 'Mit freundlichen Grüßen\n' + (betrieb ? (betrieb.inhaber || betrieb.name || '') : '');
+             + 'Mit freundlichen Grüßen\n' + mailGruss();
       }
       if(art !== 'angebot' && typeof text === 'string' && text.indexOf('Mit freundlichen') > -1){
               text = text.replace('Mit freundlichen', 'Zahlungsreferenz: ' + zzRef + ' (bitte bei der Überweisung angeben)\n\nMit freundlichen');
@@ -918,7 +925,7 @@ function invoiceHTML(i){
   const satz=betrieb?Number(betrieb.stundensatz):50, klein=betrieb?betrieb.kleinunternehmer:true;
   return `<div class="inv" onclick="pdfVorschau('${i.id}')" style="cursor:pointer">
     <div class="top">
-      <div class="co">${esc(betrieb?betrieb.name:'')}</div>
+      <div class="co">${esc(betrieb?(betrieb.marke||betrieb.name):'')}</div>
       <div class="ih">${esc(betrieb?(betrieb.inhaber||''):'')}</div>
       <div class="ct">${esc([k.strasse,k.plzOrt].filter(Boolean).join(', '))}${k.telefon?' · '+esc(k.telefon):''}</div>
     </div>
