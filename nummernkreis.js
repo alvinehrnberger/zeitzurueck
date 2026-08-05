@@ -1229,3 +1229,47 @@ window.zurueckZumAuftrag = function (id) {
       .observe(b, { childList: true, subtree: true });
   }
 })();
+
+/* Aktionen im Auftrag als Knoepfe, und ein Textfehler im Sendedialog. */
+(function zzKnopfLook () {
+  var AKTION = { "Angebot erstellen": "ruhig", "Termin \u00e4ndern": "ruhig", "Auftrag l\u00f6schen": "warnung" };
+  function herrichten () {
+    var b = document.getElementById("screen");
+    if (!b) return;
+    var alle = document.querySelectorAll("*");
+    for (var n = 0; n < alle.length; n++) {
+      var e = alle[n];
+      if (e.children.length) continue;
+      var s = (e.textContent || "").trim();
+      if (s === "Angebot mit PDF senden") { e.textContent = "Angebot als PDF senden"; continue; }
+      if (s === "Rechnung mit PDF senden") { e.textContent = "Rechnung als PDF senden"; continue; }
+      if (!AKTION[s] || e.dataset.zzKnopf) continue;
+      var ziel = e;
+      while (ziel.parentNode && ziel.parentNode.textContent &&
+             ziel.parentNode.textContent.trim() === s) ziel = ziel.parentNode;
+      if (!b.contains(ziel)) continue;
+      ziel.dataset.zzKnopf = "1";
+      var warnung = AKTION[s] === "warnung";
+      ziel.style.cssText = "display:block;width:100%;box-sizing:border-box;text-align:center;" +
+        "padding:14px 18px;margin:10px 0;border-radius:12px;cursor:pointer;" +
+        "font:600 15px/1.2 inherit;text-decoration:none;" +
+        (warnung
+          ? "background:transparent;border:1px solid #d9c2bd;color:#8a3b32;"
+          : "background:#ffffff;border:1px solid #d8d2c4;color:#1A3A2B;");
+    }
+  }
+  ["showJob", "showInvoice"].forEach(function (name) {
+    var vorher = window[name];
+    if (typeof vorher !== "function") return;
+    window[name] = function () {
+      var r = vorher.apply(this, arguments);
+      setTimeout(function () { try { herrichten(); } catch (e) {} }, 0);
+      return r;
+    };
+  });
+  var b = document.getElementById("screen");
+  if (b && window.MutationObserver) {
+    new MutationObserver(function () { try { herrichten(); } catch (e) {} })
+      .observe(b, { childList: true, subtree: true });
+  }
+})();
