@@ -1170,3 +1170,39 @@ window.zurueckZumAuftrag = function (id) {
     };
   }
 })();
+
+/* Auftragsansicht: Status und Stunden lesbar machen, wenn ein Angebot dranhaengt. */
+(function zzAuftragStatus () {
+  var RE = /((?:DEMO |M |ZZ |V )?A \d{2}\/\d{4})/;
+  function herrichten () {
+    var b = document.getElementById("screen");
+    if (!b) return;
+    var m = RE.exec(b.textContent || "");
+    var nummer = m ? m[1] : null;
+    var i = null, alle = window._alleRechnungen || [];
+    if (nummer) for (var q = 0; q < alle.length; q++) if (alle[q].nummer === nummer) i = alle[q];
+    var wort = null;
+    if (i) {
+      if (i.angebot_status === "angenommen") wort = "Angebot angenommen";
+      else if (i.angebot_status === "abgelehnt") wort = "Angebot abgelehnt";
+      else if (i.gesendet_am) wort = "Angebot versendet";
+      else wort = "Angebot offen";
+    }
+    var alleE = b.querySelectorAll("*");
+    for (var n = 0; n < alleE.length; n++) {
+      var e = alleE[n];
+      if (e.children.length) continue;
+      var s = (e.textContent || "").trim();
+      if (s === "null Std" || s === "null") e.textContent = "\u2014";
+      else if (wort && (s === "Erledigt" || s === "Offen")) e.textContent = wort;
+    }
+  }
+  var v = window.showJob;
+  if (typeof v === "function") {
+    window.showJob = function () {
+      var r = v.apply(this, arguments);
+      setTimeout(function () { try { herrichten(); } catch (e) {} }, 0);
+      return r;
+    };
+  }
+})();
