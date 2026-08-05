@@ -127,8 +127,8 @@
   .inv .top .ct{font-size:10.5px;color:var(--muted);margin-top:3px}
   .inv .an{font-size:12.5px;margin-bottom:2px}
   .inv .an b{font-family:'Poppins'}
-  .inv .nr{font-family:'Poppins';font-weight:600;color:var(--petrol);font-size:14.5px;margin:12px 0 8px}
-  .inv .dt{font-size:11.5px;color:var(--muted);text-align:right;margin-top:-18px}
+  .inv .nr{font-family:'Poppins';font-weight:600;color:var(--petrol);font-size:14.5px;margin:12px 0 8px;text-align:center}
+  .inv .dt{font-size:11.5px;color:var(--muted);text-align:right;margin-top:10px}
   .inv .li{display:flex;justify-content:space-between;padding:5px 0;gap:12px}
   .inv .li span:first-child{flex:1}
   .inv .sum{display:flex;justify-content:space-between;border-top:2px solid var(--petrol);margin-top:7px;padding-top:9px;font-family:'Poppins';font-weight:600;font-size:15.5px;color:var(--petrol)}
@@ -620,11 +620,13 @@ function buildPDF(i, art){
   doc.setFont('helvetica','bold'); doc.text(i.kunde||'', L, y); y+=5.5;
   doc.setFont('helvetica','normal'); doc.setFontSize(10.5);
   (i.kunde_adresse||'').split(/\n|,\s*(?=\d{4}\b)/).filter(Boolean).forEach(z=>{ doc.text(z,L,y); y+=5; });
+  /* Absatz nach der Empfaengeradresse, dann rechtsbuendig Ort und Datum. */
+  y+=6;
   doc.setFontSize(10.5);
-  doc.text((k.ausstellungsort?k.ausstellungsort+', am ':'')+deDate(art==='rechnung'||art==='storno'?(i.datum||new Date()):new Date()), R, 57, {align:'right'});
+  doc.text((k.ausstellungsort?k.ausstellungsort+', am ':'')+deDate(art==='rechnung'||art==='storno'?(i.datum||new Date()):new Date()), R, y, {align:'right'});
 
   const yT=Math.max(y+12,82);
-  doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.text(titel, L, yT);
+  doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.text(titel, MID, yT, {align:'center'});
   let yR=yT+12;
   if(art==='storno'){
     doc.setFont('helvetica','normal'); doc.setFontSize(10.5);
@@ -667,14 +669,19 @@ function buildPDF(i, art){
       : 'Die Rechnung Nr. '+(i.nummer||'')+' vom '+deDate(i.datum||i.created_at)+' war am '+f+' zur Zahlung fällig. Vermutlich ist sie in der Alltagshektik untergegangen — wir ersuchen höflich um Überweisung des offenen Betrages. Sollten Sie bereits bezahlt haben, betrachten Sie dieses Schreiben bitte als gegenstandslos.';
     const es=doc.splitTextToSize(et,R-L); doc.text(es,L,yF); yF+=es.length*5+7;
   }
-  if(!betrieb || betrieb.kleinunternehmer){ if(art === 'angebot'){
-          doc.setFont('helvetica','bold');
-          doc.text('Dieses Angebot ist gültig bis ' + (i.gueltig_bis ? deDate(i.gueltig_bis) : 'auf Widerruf') + '.', L, yF += 7);
-          doc.setFont('helvetica','normal');
-          doc.text('Die Annahme erfolgt schriftlich oder über den Link in der begleitenden E-Mail.', L, yF += 5);
-          doc.text('Es handelt sich um einen Kostenvoranschlag ohne Gewähr im Sinne des § 5 KSchG.', L, yF += 5);
-        }
-        doc.text('Umsatzsteuerbefreiung gem. § 6 Abs. 1 Z 27 UStG.', L, yF); yF+=9; }
+  if(!betrieb || betrieb.kleinunternehmer){
+    if(art === 'angebot'){
+      doc.setFont('helvetica','bold');
+      doc.text('Dieses Angebot ist gültig bis ' + (i.gueltig_bis ? deDate(i.gueltig_bis) : 'auf Widerruf') + '.', L, yF += 7);
+      doc.setFont('helvetica','normal');
+      /* Pro Satz ein Absatz — und danach rueckt der Zeilenzaehler weiter,
+         statt die Umsatzsteuerzeile ueber den letzten Satz zu schreiben. */
+      doc.text('Die Annahme erfolgt schriftlich oder über den Link in der begleitenden E-Mail.', L, yF += 7);
+      doc.text('Es handelt sich um einen Kostenvoranschlag ohne Gewähr im Sinne des § 5 KSchG.', L, yF += 7);
+      yF += 7;
+    }
+    doc.text('Umsatzsteuerbefreiung gem. § 6 Abs. 1 Z 27 UStG.', L, yF); yF+=9;
+  }
   if(art==='rechnung'){ doc.text((window.zzFuss?window.zzFuss(i,satz):'Abgerechnet wird nach tatsächlich geleisteter Zeit zu € '+satz+',— pro Stunde.'), L, yF); yF+=9; }
   if(k.iban && art !== 'storno' && art !== 'angebot'){
     const zt=doc.splitTextToSize('Ich ersuche um Überweisung des oben genannten Betrages '+(art==='rechnung'?('binnen '+k.zahlungsziel+' Tagen '):'')+'auf mein Konto bei der '+k.bank+', mit dem IBAN: '+k.iban+', BIC: '+k.bic+' und verbleibe', R-L);
@@ -688,7 +695,16 @@ function buildPDF(i, art){
   }
   doc.text('mit freundlichen Grüßen', L, yF); yF+=12;
   doc.setTextColor(0); doc.setFontSize(10.5);
-  doc.text(betrieb?(betrieb.inhaber||''):'', L, yF);
+  /* Unterschrift: ZZ-Belege zeichnen nur als ZeitZurück®. Alle anderen mit
+     Name und Betrieb — steckt der Name schon im Betriebsnamen, nur der Betrieb. */
+  const kreisU=String(i.nummer||'').trim().split(' ')[0];
+  let unterschrift;
+  if(kreisU==='ZZ'){ unterschrift='ZeitZurück®'; }
+  else{
+    const inh=betrieb?(betrieb.inhaber||''):'', bn=betrieb?(betrieb.name||''):'';
+    unterschrift=(!inh||bn.toLowerCase().includes(inh.toLowerCase()))?(bn||inh):(inh+' – '+bn);
+  }
+  doc.text(unterschrift, L, yF);
   return doc;
 }
 function pdfName(i,art){
@@ -845,8 +861,8 @@ function invoiceHTML(i){
     </div>
     <div class="an"><b>${esc(i.kunde||'')}</b></div>
     ${(i.kunde_adresse||'').split(/\n|,\s*(?=\d{4}\b)/).filter(Boolean).map(z=>`<div class="an" style="color:var(--muted)">${esc(z)}</div>`).join('')}
-    <div class="nr">${i.art==='angebot'?'Angebot':istStorno(i)?'Stornorechnung':'Rechnung'} Nr. ${esc(i.nummer||'—')}</div>
     <div class="dt">${k.ausstellungsort?esc(k.ausstellungsort)+', am ':''}${deDate(i.datum||i.created_at)}</div>
+    <div class="nr">${i.art==='angebot'?'Angebot':istStorno(i)?'Stornorechnung':'Rechnung'} Nr. ${esc(i.nummer||'—')}</div>
     <div class="li"><span>${esc(i.positionstext||'')}</span><span>${eur(i.betrag)}</span></div>
     ${i.stunden?`<div class="li" style="color:var(--muted);font-size:11.5px"><span>${(''+i.stunden).replace('.',',')} h a ${eur(satz)}</span></div>`:(i.art==='angebot'?`<div class="li" style="color:var(--muted);font-size:11.5px"><span>Pauschale</span></div>`:'')}
     <div class="sum"><span>${istStorno(i)?'Gutschrift':'Gesamt'}</span><span>${eur(i.betrag)}</span></div>
