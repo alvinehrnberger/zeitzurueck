@@ -612,7 +612,12 @@ function buildPDF(i, art){
   const marke = istZZ ? 'ZeitZurück®' : (betrieb?(betrieb.name||''):'');
   const inhaber = betrieb?(betrieb.inhaber||''):'';
   const geld=n=>Number(n).toLocaleString('de-AT',{minimumFractionDigits:2})+' €';
-  const PETROL=[26,58,43], GOLD=[201,160,84], MUTED=[92,106,99], LINIE=[228,225,218], INK=[20,34,27];
+  /* Farben aus derselben Quelle wie die Kundenmails: betriebe.farbe_kopf/farbe_akzent.
+     ZZ-Belege tragen immer die ZeitZurück-Palette. */
+  const hex2rgb=h=>{const m=/^#?([0-9a-fA-F]{6})$/.exec(String(h||'').trim());if(!m)return null;const n=parseInt(m[1],16);return [(n>>16)&255,(n>>8)&255,n&255];};
+  const PETROL=(!istZZ&&betrieb&&hex2rgb(betrieb.farbe_kopf))||[26,58,43];
+  const GOLD=(!istZZ&&betrieb&&hex2rgb(betrieb.farbe_akzent))||[201,160,84];
+  const MUTED=[92,106,99], LINIE=[228,225,218], INK=[20,34,27];
 
   /* Kopf */
   doc.setTextColor.apply(doc,PETROL);
