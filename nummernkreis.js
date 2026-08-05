@@ -1157,13 +1157,13 @@ window.zurueckZumAuftrag = function (id) {
       k.className = "btn btn-primary";
       k.style.cssText = "display:block;width:100%;margin:14px 0;";
       k.textContent = "\u2709 Angebot senden";
-      k.onclick = function () { try { window.openSend(i.id, i.art); } catch (e) { alert("Senden ging nicht: " + ((e && e.message) ? e.message : e)); } };
+      k.onclick = function () { try { window.openSend(window.__zzId, "angebot"); } catch (e) { alert("Senden ging nicht: " + ((e && e.message) ? e.message : e)); } };
       b.appendChild(k);
     }
   }
   var v = window.showInvoice;
   if (typeof v === "function") {
-    window.showInvoice = function () {
+    window.showInvoice = function (idVonApp) { window.__zzId = idVonApp;
       var r = v.apply(this, arguments);
       setTimeout(function () { try { herrichten(); } catch (e) {} }, 0);
       return r;
