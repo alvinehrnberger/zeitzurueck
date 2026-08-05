@@ -1146,12 +1146,13 @@ window.zurueckZumAuftrag = function (id) {
       if (i.angebot_status === "angenommen") { txt = "Angenommen am " + deutsch(i.beantwortet_am); farbe = "#1A3A2B"; }
       else if (i.angebot_status === "abgelehnt") { txt = "Abgelehnt am " + deutsch(i.beantwortet_am); farbe = "#8a857c"; }
       else if (i.gesendet_am) { txt = "Versendet am " + deutsch(i.gesendet_am); farbe = "#1A3A2B"; }
+      else if (window.zzIstVersendet && window.zzIstVersendet(nummer)) { txt = "Versendet"; farbe = "#1A3A2B"; }
       else { txt = "Noch nicht versendet"; farbe = "#A9853C"; }
       z.textContent = txt;
       z.style.cssText = "font-weight:600;font-size:13px;margin:6px 0 2px;color:" + farbe;
       kopf.parentNode.insertBefore(z, kopf.nextSibling);
     }
-    if (!i.gesendet_am && typeof window.openSend === "function" && !document.getElementById("zzSend2")) {
+    if (!i.gesendet_am && !(window.zzIstVersendet && window.zzIstVersendet(nummer)) && typeof window.openSend === "function" && !document.getElementById("zzSend2")) {
       var k = document.createElement("button");
       k.id = "zzSend2";
       k.className = "btn btn-primary";
@@ -1185,7 +1186,7 @@ window.zurueckZumAuftrag = function (id) {
     if (i) {
       if (i.angebot_status === "angenommen") wort = "Angebot angenommen";
       else if (i.angebot_status === "abgelehnt") wort = "Angebot abgelehnt";
-      else if (i.gesendet_am) wort = "Angebot versendet";
+      else if (i.gesendet_am || (window.zzIstVersendet && nummer && window.zzIstVersendet(nummer))) wort = "Angebot versendet";
       else wort = "Angebot offen";
     }
     var alleE = b.querySelectorAll("*");
@@ -1204,5 +1205,27 @@ window.zurueckZumAuftrag = function (id) {
       setTimeout(function () { try { herrichten(); } catch (e) {} }, 0);
       return r;
     };
+  }
+})();
+
+/* Merkt sich, dass etwas versendet wurde - die Liste im Speicher weiss es nicht. */
+(function zzVersandMerker () {
+  var RE = /((?:DEMO |M |ZZ |V )?A \d{2}\/\d{4})/;
+  window.zzIstVersendet = function (nummer) {
+    try { return sessionStorage.getItem("zzGesendet:" + nummer) === "1"; } catch (e) { return false; }
+  };
+  function merken () {
+    var b = document.getElementById("screen");
+    if (!b) return;
+    var txt = b.textContent || "";
+    if (txt.indexOf("gesendet") === -1) return;
+    var m = RE.exec(txt);
+    if (!m) return;
+    try { sessionStorage.setItem("zzGesendet:" + m[1], "1"); } catch (e) {}
+  }
+  var b = document.getElementById("screen");
+  if (b && window.MutationObserver) {
+    new MutationObserver(function () { try { merken(); } catch (e) {} })
+      .observe(b, { childList: true, subtree: true });
   }
 })();
