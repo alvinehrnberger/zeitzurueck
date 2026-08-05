@@ -1028,7 +1028,10 @@ window.zurueckZumAuftrag = function (id) {
    ============================================================ */
 (function zzAngebotWeg () {
   function angebotZu(auftragId) {
-    var alle = window._alleRechnungen || [];
+    /* Die App-Liste zuerst: sie traegt alle Spalten (id, auftrag_id, Stand).
+       _alleRechnungen ist nur der schmale Zaehl-Auszug und kennt sie nicht. */
+    var alle = (typeof rechnungen !== 'undefined' && rechnungen && rechnungen.length)
+               ? rechnungen : (window._alleRechnungen || []);
     for (var n = 0; n < alle.length; n++) {
       if (alle[n].art === 'angebot' && alle[n].auftrag_id === auftragId) return alle[n];
     }
