@@ -867,17 +867,19 @@ function openManage(id){
   sheet.innerHTML=`<h3>${i.art==='angebot'?'Angebot':'Rechnung'} verwalten</h3><p class="s">${esc(i.nummer||'')} · ${esc(i.kunde||'')} · ${eur(i.betrag)}</p>
     <div class="stack">
       <button class="btn btn-ghost" onclick="openEdit('${id}')">✎ Bearbeiten</button>
-      ${storniert?'':`<button class="btn btn-warn" onclick="openStorno('${id}')">⊘ Stornorechnung erstellen</button>`}
+      ${(storniert||i.art==='angebot')?'':`<button class="btn btn-warn" onclick="openStorno('${id}')">⊘ Stornorechnung erstellen</button>`}
       <button class="btn btn-err" onclick="openDelete('${id}')">🗑 Löschen</button>
       <button class="btn btn-ghost" onclick="scrim.classList.remove('show')">Abbrechen</button>
     </div>
-    <div class="note"><b>Bereits versendet?</b> Dann bitte <b>stornieren</b> statt löschen —<br>eine ausgegebene Rechnungsnummer darf nicht verschwinden.</div>`;
+    ${i.art==='angebot'
+      ?`<div class="note">Ein Angebot braucht kein Storno — wird es nicht angenommen,<br>bleibt im Kreis A einfach eine Lücke.</div>`
+      :`<div class="note"><b>Bereits versendet?</b> Dann bitte <b>stornieren</b> statt löschen —<br>eine ausgegebene Rechnungsnummer darf nicht verschwinden.</div>`}`;
   scrim.classList.add('show');
 }
 function openEdit(id){
   const i=rechnungen.find(x=>x.id===id);
   const satz=betrieb?Number(betrieb.stundensatz):50;
-  sheet.innerHTML=`<h3>Rechnung bearbeiten</h3><p class="s">${esc(i.nummer||'')}</p>
+  sheet.innerHTML=`<h3>${i.art==='angebot'?'Angebot':'Rechnung'} bearbeiten</h3><p class="s">${esc(i.nummer||'')}</p>
     <div class="mailrow"><label>Kunde</label><input id="eKunde" value="${esc(i.kunde||'')}"></div><div class="mailrow"><label>Rechnungsadresse</label><input id="eAdresse" value="${esc(i.kunde_adresse||'')}" placeholder="leer lassen: Adresse vom Auftrag"></div>
     <div class="mailrow"><label>Leistung</label><textarea id="eText">${esc(i.positionstext||'')}</textarea></div>
     <div class="two">
