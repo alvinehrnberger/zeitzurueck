@@ -646,6 +646,10 @@ function buildPDF(i, art){
     doc.setFontSize(9.5); doc.setTextColor(90);
     doc.text((window.zzPos?window.zzPos(i,stunden,satz):String(stunden).replace('.',',')+' h a € '+satz+',—'), L+26, yN);
     doc.setTextColor(0);
+  } else if(art==='angebot'){
+    doc.setFontSize(9.5); doc.setTextColor(90);
+    doc.text('Pauschale', L+26, yN);
+    doc.setTextColor(0);
   }
 
   const yS=yN+10;
@@ -844,10 +848,10 @@ function invoiceHTML(i){
     <div class="nr">${i.art==='angebot'?'Angebot':istStorno(i)?'Stornorechnung':'Rechnung'} Nr. ${esc(i.nummer||'—')}</div>
     <div class="dt">${k.ausstellungsort?esc(k.ausstellungsort)+', am ':''}${deDate(i.datum||i.created_at)}</div>
     <div class="li"><span>${esc(i.positionstext||'')}</span><span>${eur(i.betrag)}</span></div>
-    ${i.stunden?`<div class="li" style="color:var(--muted);font-size:11.5px"><span>${(''+i.stunden).replace('.',',')} h a ${eur(satz)}</span></div>`:''}
+    ${i.stunden?`<div class="li" style="color:var(--muted);font-size:11.5px"><span>${(''+i.stunden).replace('.',',')} h a ${eur(satz)}</span></div>`:(i.art==='angebot'?`<div class="li" style="color:var(--muted);font-size:11.5px"><span>Pauschale</span></div>`:'')}
     <div class="sum"><span>${istStorno(i)?'Gutschrift':'Gesamt'}</span><span>${eur(i.betrag)}</span></div>
     ${klein?'<div class="kn">Umsatzsteuerbefreiung gem. § 6 Abs. 1 Z 27 UStG.</div>':''}
-    ${istStorno(i)?'':`<div class="kn">${i.art==='angebot'?'Pauschale.':(window.zzFuss?window.zzFuss(i,satz):'Abgerechnet wird nach tatsächlich geleisteter Zeit zu '+eur(satz)+' pro Stunde.')}</div>`}
+    ${(istStorno(i)||i.art==='angebot')?'':`<div class="kn">${window.zzFuss?window.zzFuss(i,satz):'Abgerechnet wird nach tatsächlich geleisteter Zeit zu '+eur(satz)+' pro Stunde.'}</div>`}
     ${(i.art==='angebot'&&i.gueltig_bis)?`<div class="kn">Dieses Angebot ist gültig bis ${deDate(i.gueltig_bis)}.</div>`:``}
     ${(k.iban&&!istStorno(i)&&i.art!=='angebot')?`<div class="kn">Zahlbar binnen ${k.zahlungsziel} Tagen · ${esc(k.bank)}<br>IBAN ${esc(k.iban)} · BIC ${esc(k.bic)}</div>`:''}
   </div>`;
