@@ -1282,3 +1282,80 @@ window.zurueckZumAuftrag = function (id) {
       .observe(b, { childList: true, subtree: true });
   }
 })();
+
+/* ============================================================
+   6) Suche in den Listen (Aufträge und Rechnungen)
+   Eigener Baustein: filtert die fertig gezeichneten Karten im DOM,
+   statt in die Render-Logik zu schneiden. Erscheint ab 6 Einträgen,
+   bleibt beim Scrollen oben stehen, merkt sich den Suchtext beim
+   Wechsel zwischen den Reitern. Scheitert still.
+   ============================================================ */
+(function () {
+  window.__zzSuchWert = window.__zzSuchWert || '';
+
+  window.zzFiltern = function () {
+    try {
+      var feld = document.getElementById('zzSuchfeld');
+      var s = document.getElementById('screen');
+      if (!feld || !s) return;
+      var w = feld.value.trim().toLowerCase();
+      window.__zzSuchWert = feld.value;
+      var treffer = 0, gesamt = 0;
+      s.querySelectorAll('.card').forEach(function (k) {
+        gesamt++;
+        var passt = !w || k.textContent.toLowerCase().indexOf(w) !== -1;
+        k.style.display = passt ? '' : 'none';
+        if (passt) treffer++;
+      });
+      /* Abschnitts-Überschriften (Offen/Erledigt) verstecken, wenn leer */
+      s.querySelectorAll('.lbl').forEach(function (l) {
+        var n = l.nextElementSibling, sichtbar = false;
+        while (n && !(n.classList && n.classList.contains('lbl'))) {
+          if (n.classList && n.classList.contains('card') && n.style.display !== 'none') { sichtbar = true; break; }
+          n = n.nextElementSibling;
+        }
+        l.style.display = sichtbar ? '' : 'none';
+      });
+      var info = document.getElementById('zzSuchinfo');
+      if (info) {
+        if (w) {
+          info.style.display = '';
+          info.textContent = treffer
+            ? (treffer + ' von ' + gesamt + ' Einträgen')
+            : 'Nichts gefunden — Tippfehler?';
+        } else { info.style.display = 'none'; }
+      }
+    } catch (e) { /* still */ }
+  };
+
+  function sucheEinbauen() {
+    var s = document.getElementById('screen');
+    var tabs = document.getElementById('tabs');
+    if (!s || !tabs || tabs.style.display === 'none') return;
+    if (document.getElementById('zzSuchfeld')) return;
+    var karten = s.querySelectorAll('.card');
+    if (karten.length < 6) return;
+    var kasten = document.createElement('div');
+    kasten.id = 'zzSuchkasten';
+    kasten.style.cssText = 'position:sticky;top:0;z-index:5;background:var(--paper,#FAF9F7);margin:0 0 10px;padding:2px 0 8px;';
+    kasten.innerHTML =
+      '<input id="zzSuchfeld" type="search" placeholder="Suchen: Name, Nummer, Adresse …" autocomplete="off" oninput="zzFiltern()" ' +
+      'style="width:100%;box-sizing:border-box;padding:10px 13px;border:1px solid var(--line,#e4e1da);border-radius:12px;font-size:15px;background:#fff;color:inherit;outline:none">' +
+      '<div id="zzSuchinfo" style="font-size:12px;color:var(--muted,#8a857c);margin:6px 3px 0;display:none"></div>';
+    /* Nach der Unterzeile (und einem etwaigen Hinweis) einsetzen */
+    var anker = s.querySelector('.alert') || s.querySelector('.gsub');
+    if (anker && anker.parentNode === s) { s.insertBefore(kasten, anker.nextSibling); }
+    else { s.insertBefore(kasten, s.firstChild); }
+    /* Suchtext vom letzten Mal übernehmen */
+    if (window.__zzSuchWert) {
+      document.getElementById('zzSuchfeld').value = window.__zzSuchWert;
+      window.zzFiltern();
+    }
+  }
+
+  var origShowList2 = window.showList;
+  window.showList = function () {
+    origShowList2.apply(this, arguments);
+    try { sucheEinbauen(); } catch (e) { /* still */ }
+  };
+})();
