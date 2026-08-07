@@ -693,10 +693,12 @@ function buildPDF(i, art){
   const satz=betrieb?Number(betrieb.stundensatz):50, stunden=Number(i.stunden);
   const kreis=String(i.nummer||'').trim().split(' ')[0];
   const istZZ = kreis==='ZZ';
+  /* Veranstaltungstechnik läuft unter Alvins eigenem Namen, nicht unter der Montage-Marke. */
+  const istV  = kreis==='V';
   /* marke = Anzeigename (gross im Kopf), name = amtlicher Wortlaut (Fuss, Unterschrift). */
-  const marke = istZZ ? 'ZeitZurück®' : (betrieb?(betrieb.marke||betrieb.name||''):'');
-  const voll = istZZ ? 'ZeitZurück®' : (betrieb?(betrieb.name||''):'');
   const inhaber = betrieb?(betrieb.inhaber||''):'';
+  const marke = istZZ ? 'ZeitZurück®' : istV ? (inhaber||'Alvin Ehrnberger') : (betrieb?(betrieb.marke||betrieb.name||''):'');
+  const voll = istZZ ? 'ZeitZurück®' : istV ? (inhaber||'Alvin Ehrnberger') : (betrieb?(betrieb.name||''):'');
   const geld=n=>Number(n).toLocaleString('de-AT',{minimumFractionDigits:2})+' €';
   /* Farben aus derselben Quelle wie die Kundenmails: betriebe.farbe_kopf/farbe_akzent.
      ZZ-Belege tragen immer die ZeitZurück-Palette. */
@@ -712,7 +714,7 @@ function buildPDF(i, art){
   doc.setTextColor.apply(doc,PETROL);
   let logoGesetzt = false;
   const L0 = window.__zzLogo;
-  if(!istZZ && L0 && L0.daten && L0.w > 0 && L0.h > 0){
+  if(!istZZ && !istV && L0 && L0.daten && L0.w > 0 && L0.h > 0){
     try{
       const MAXH = 14, MAXW = 60;
       let hoehe = MAXH, breite = hoehe * (L0.w / L0.h);
