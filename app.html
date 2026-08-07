@@ -109,6 +109,16 @@
   .mailrow input,.mailrow textarea{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:15px;font-family:var(--sans);outline:none;background:#fff;color:var(--ink)}
   .mailrow textarea{resize:none;min-height:64px}
   .mailrow input:focus,.mailrow textarea:focus{border-color:var(--petrol)}
+  /* Termin: Der Kalender des Browsers uebernimmt unser Gold statt seinem Blau. */
+  .mailrow input[type="datetime-local"]{accent-color:var(--gold);color-scheme:light}
+  .tagchips{display:flex;gap:7px;overflow-x:auto;padding-bottom:8px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .tagchips::-webkit-scrollbar{display:none}
+  .tagchip{flex:0 0 auto;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;
+    padding:8px 13px;font-size:13.5px;font-weight:500;font-family:var(--sans);cursor:pointer;white-space:nowrap;
+    transition:background .12s ease,border-color .12s ease,color .12s ease}
+  .tagchip:hover{border-color:var(--petrol)}
+  .tagchip.on{background:var(--petrol);border-color:var(--petrol);color:var(--ivory)}
+  .tagchip small{display:block;font-size:11px;font-weight:400;opacity:.65;margin-top:1px}
   .two{display:flex;gap:10px}
   .two>div{flex:1}
   .stack{display:flex;flex-direction:column;gap:9px}
@@ -592,13 +602,66 @@ function openNewJob(){
     <div class="mailrow"><label>E-Mail des Kunden</label><input id="nMail" type="email" placeholder="kunde@example.com"></div>
     <div class="mailrow"><label>Aufgabe *</label><input id="nAufgabe" placeholder="Möbelmontage – Kleiderschrank PAX"></div>
     <div class="mailrow"><label>Adresse</label><input id="nAdresse" placeholder="Straße 1, 3012 Wolfsgraben"></div>
-    <div class="mailrow"><label>Termin</label><input id="nTermin" type="datetime-local"></div>
+    <div class="mailrow">
+      <label>Termin</label>
+      <div class="tagchips" id="nTagChips"></div>
+      <div class="tagchips" id="nZeitChips"></div>
+      <input id="nTermin" type="datetime-local">
+    </div>
     <div class="stack">
       <button class="btn btn-primary" id="nGo" onclick="createJob()">Auftrag anlegen</button>
       <button class="btn btn-ghost" onclick="scrim.classList.remove('show')">Abbrechen</button>
     </div>`;
   scrim.classList.add('show');
+  terminChips();
   setTimeout(()=>el('nKunde').focus(),80);
+}
+
+/* Termin in zwei Tipps: Tag wählen, Uhrzeit wählen.
+   Das Datumsfeld darunter bleibt für alles, was nicht in die Reihe passt.
+   Beide Reihen halten sich gegenseitig auf Stand. */
+function terminChips(){
+  const feld = el('nTermin'), tagBox = el('nTagChips'), zeitBox = el('nZeitChips');
+  if(!feld || !tagBox || !zeitBox) return;
+  const WT = ['So','Mo','Di','Mi','Do','Fr','Sa'];
+  const zwei = n => String(n).padStart(2,'0');
+  const tagWert = d => d.getFullYear()+'-'+zwei(d.getMonth()+1)+'-'+zwei(d.getDate());
+
+  /* Sechs Tage ab heute — mehr passt auf kein Handy und braucht auch niemand. */
+  const tage = [];
+  for(let i=0;i<6;i++){
+    const d = new Date(); d.setDate(d.getDate()+i);
+    const name = i===0 ? 'Heute' : i===1 ? 'Morgen' : WT[d.getDay()];
+    tage.push({ wert: tagWert(d), name, sub: zwei(d.getDate())+'.'+zwei(d.getMonth()+1)+'.' });
+  }
+  const zeiten = ['08:00','10:00','12:00','13:00','15:00','17:00','18:00','19:00'];
+
+  tagBox.innerHTML = tage.map(t =>
+    `<button type="button" class="tagchip" data-tag="${t.wert}">${t.name}<small>${t.sub}</small></button>`).join('');
+  zeitBox.innerHTML = zeiten.map(z =>
+    `<button type="button" class="tagchip" data-zeit="${z}">${z}</button>`).join('');
+
+  function teile(){
+    const v = feld.value || '';
+    return { tag: v.slice(0,10), zeit: v.slice(11,16) };
+  }
+  function setze(tag, zeit){
+    feld.value = (tag||'') && (zeit||'') ? tag+'T'+zeit : (tag ? tag+'T09:00' : '');
+    markiere();
+  }
+  function markiere(){
+    const t = teile();
+    tagBox.querySelectorAll('.tagchip').forEach(b => b.classList.toggle('on', b.dataset.tag === t.tag));
+    zeitBox.querySelectorAll('.tagchip').forEach(b => b.classList.toggle('on', b.dataset.zeit === t.zeit));
+  }
+  tagBox.querySelectorAll('.tagchip').forEach(b => b.addEventListener('click', () => {
+    const t = teile(); setze(b.dataset.tag, t.zeit || '17:00');
+  }));
+  zeitBox.querySelectorAll('.tagchip').forEach(b => b.addEventListener('click', () => {
+    const t = teile(); setze(t.tag || tage[0].wert, b.dataset.zeit);
+  }));
+  feld.addEventListener('change', markiere);
+  markiere();
 }
 async function createJob(){
   const kunde=(el('nKunde').value||'').trim(), aufgabe=(el('nAufgabe').value||'').trim();
