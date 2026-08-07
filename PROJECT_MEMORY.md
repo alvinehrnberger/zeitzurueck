@@ -1,6 +1,6 @@
 # PROJECT_MEMORY — ZeitZurück®
 
-*Stand: 5. August 2026 · lebendes Dokument im Repository `zeitzurueck`*
+*Stand: 7. August 2026 · lebendes Dokument im Repository `zeitzurueck`*
 
 ---
 
@@ -137,6 +137,40 @@ Opus 5 liegt bei agentischem Programmieren vorn (43 % gegen 33 %) und ausdrückl
 ---
 
 ## Wo wir morgen weitermachen
+
+*Stand 7. August, Abend. Der Tag gehörte fast ganz ZeitZurück® Legal.*
+
+**Heute erledigt (7.8., Legal-Tag):**
+
+Der WKO-Termin war informativ. Die Gewerbe sind sortiert: Veranstaltungstechnik gelöscht (Alvin war dort Tonhelfer, nicht Veranstalter), Montage und Montage von Regalsystemen bleiben. Für Ausbau, Trockenbau und Ähnliches gibt es kein freies Gewerbe — dafür braucht es einen Befähigungsnachweis. Die meisten melden Hausbetreuung an und pfuschen; das machen wir nicht.
+
+**Auf der Handwerk-Seite:** Das Logo sitzt im Rechnungskopf (async vorgeladen, weil buildPDF synchron ist; Seitenverhältnis wird in beide Richtungen skaliert). Der Zeiten-Reiter ist scharf geschaltet, mit einem Satz statt eines Warnhinweises. Datum und Uhrzeit lassen sich über Chips wählen statt über das rohe Feld. Veranstaltungstechnik läuft im Briefkopf unter Alvins eigenem Namen.
+
+**ZeitZurück® Legal** ist der eigentliche Fortschritt des Tages. Eigenes Repo `zeitzurueck-legal`, eigenes Supabase-Projekt in Frankfurt, live über GitHub Pages. Die Produktseite steht im ZeitZurück-Layout mit Legal-Farben. Der Demo-Chat ist echt: Intake, Rechtsgebiet, Routing, Rechtsschutz-Sequenz bis zur Frage nach der freien Anwaltswahl (Alvins Fund aus der Praxis — ohne freie Wahl gibt die Versicherung die Kanzlei vor, und das klärt man besser vor dem Erstgespräch als danach).
+
+**Unterlagen im Chat:** Foto oder PDF geht über drei Wege hinein — Klammer, Ziehen und Ablegen, Einfügen aus der Zwischenablage. Der häufigste Praxisfall ist nicht „ich brauche einen Anwalt für X", sondern „ich habe dieses Schreiben bekommen und kenne mich nicht aus". Genau darauf antwortet der Assistent jetzt zweistufig: erst zwei, drei einfache Sätze für den Menschen, dann ein Block „Für die Kanzlei zusammengefasst" mit Dokumentart, Absender, Empfänger, Datum, Beträgen, allen genannten Terminen, Aktenzeichen und einer eigenen Zeile für Unklares. Getestet mit einer erfundenen zweiten Mahnung — alles richtig übernommen, nichts erfunden, nichts bewertet.
+
+**Das Dashboard (Alvin nennt es „App")** hat drei Bereiche. **Heute** ist die Tagesübersicht und das Erste nach der Anmeldung: Begrüßung, ein Satz mit dem ganzen Tag darin, Termine und Fristen von heute, was Aufmerksamkeit braucht, und was in den nächsten sieben Tagen heranrückt. **Anfragen** ist auf zwei Listen geschrumpft — Offen zum Abarbeiten und Erledigt; dringend, fehlende Angaben und unsichere Einordnung stehen jetzt als Merkmal auf der Karte statt als eigene Warteschlange. **Fristenbuch** hat zwei Ansichten: die Doppelseite wie im Papierbuch (links Mo–Mi, rechts Do–So, je Tag Termine und Fristen in getrennten Spalten) und die ganze Woche zum Scrollen mit allen Details. In eine freie Zeile klicken legt einen Eintrag an.
+
+**Der Vorschlag als eigener Zustand** zieht sich durch alles: schraffiert, gestricheltes Etikett, Herkunft benannt, Übernehmen oder Verwerfen. Denn die Fristen berechnet die Kanzlei — wir zeigen, erinnern und schlagen vor.
+
+**Bei den Kundenseiten:** Kopf- und Fußzeile laufen bei Caesar, Evolution Ears und Barisits jetzt über die volle Breite wie bei ZeitZurück. Barisits hat Impressum und Datenschutz als Rohbau bekommen, mit gold markierten Lücken aus dem Fragebogen. Offen dort: Fußzeile auf die gemeinsame Struktur, Navigation nach rechts neben die Telefonnummer, Chat auf „Guten Tag".
+
+**Entschieden am 7.8.:**
+
+*Produktsprache statt Einzelstücke.* Alle Kundenseiten teilen die Architektur und unterscheiden sich in Identität — Farben, Schrift, Fotos, Wortwahl, Tonfall des Chats. Gleicher Grundriss, anderes Haus. Alvins Ziel: dass die Kunden unserer Kunden das für so normal halten wie Google oder eine KI zu benutzen. Individualisierung wird angeboten, aber bepreist, sonst wird aus dem Produkt eine Agentur.
+
+*Wir behaupten nicht, das Layout sei getestet.* Wir sagen, was stimmt: Es folgt einer Logik — ein Versprechen, eine Handlung, keine Umwege — und ab dem ersten Kunden messen wir es. Daraus wird ein eigenes Produktmerkmal: vier Zahlen je Betrieb (Besuche, gestartete Chats, abgeschickte Anfragen, daraus entstandene Termine), ein Reiter, monatlich per Mail.
+
+*Farben und Zugänge bei Legal:* Was der Mandant sieht, gehört der Kanzlei — Intake auf ihrer Domain, in ihren Farben. Was der Anwalt sieht, bleibt ZeitZurück — die App ist Werkzeug, nicht Auftritt.
+
+*Gemeinsame Fußzeile für alle Kundenseiten:* links der Firmenname, darunter „Powered by ZeitZurück®", rechts Impressum und Datenschutz.
+
+*„Guten Tag", nie „Grüß Gott"* — in allen ZeitZurück-Chats.
+
+**Alvins Leitsatz für das Legal-Dashboard**, aufgeschrieben, weil er die Positionierung ist: Es soll das Erste sein, was ein Anwalt am Morgen sieht — ein Überblick über die E-Mails (was wichtig ist und was nur Lärm), der Tag auf einen Blick, und am liebsten erzählt es ihm das, während er sich die Zähne putzt. Vier verkaufbare Versprechen: besser eingeteilter Tag, vorbereiteter Start, gesparte Zeit, mehr verrechenbare Stunden. Die Tagesübersicht ist der erste der drei Bausteine; es folgen der sortierte Posteingang und das Vorlesen. Dazu neu auf der Liste: Videotermine über das Dashboard (vorher Verschwiegenheit, Serverstandort und Aufzeichnung klären).
+
+---
 
 *Stand 6. August, Abend. Caesar ist fertig geschnürt — es fehlt nur noch sein Ja.*
 
