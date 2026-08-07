@@ -1361,3 +1361,5 @@ window.zurueckZumAuftrag = function (id) {
 })();
 
 
+
+/* Frischer Anlauf 7.8. */
