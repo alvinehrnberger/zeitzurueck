@@ -425,7 +425,7 @@
         '</div>' +
       '</div>' +
 
-      '<div class="zt-hinweis"><b>Noch nicht scharf geschaltet.</b> Diese Angaben werden gespeichert, aber der Terminfinder rechnet vorläufig noch mit den fest hinterlegten Zeiten. Der Umbau kommt als Nächstes.</div>' +
+      '<div class="zt-hinweis">Diese Angaben gelten sofort: Der Terminfinder rechnet mit deinen Arbeitszeiten, überspringt deine freien Tage und hält sich an Vorlauf, Dauer und Puffer.</div>' +
 
       (Z.fehler ? '<div class="alert" style="margin-top:14px">Konnte nicht laden: ' + esc(Z.fehler) + '</div>' : '') +
       '</div>';

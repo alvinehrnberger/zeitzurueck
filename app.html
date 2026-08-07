@@ -429,6 +429,27 @@ function paintBrand(){
     el('barTitle').innerHTML = esc(betrieb.marke||betrieb.name) + (betriebe.length>1?' <span class="caret">▾</span>':'');
     if(betrieb.logo_url) el('brandMark').innerHTML = '<img src="'+esc(betrieb.logo_url)+'" alt="">';
   } else el('barTitle').textContent='Kein Betrieb verknüpft';
+  logoVorladen();
+}
+
+/* Logo für den Rechnungskopf im Voraus laden.
+   Der PDF-Bau läuft ohne Warten durch, deshalb muss das Bild vorher bereitliegen.
+   Klappt es nicht (kein Logo, Datei weg, fremder Server), bleibt window.__zzLogo leer
+   und der Kopf zeigt wie bisher den Schriftzug. */
+window.__zzLogo = null;
+async function logoVorladen(){
+  try{
+    const url = betrieb && betrieb.logo_url;
+    if(!url){ window.__zzLogo = null; return; }
+    if(window.__zzLogo && window.__zzLogo.url === url) return;
+    const antwort = await fetch(url, {mode:'cors'});
+    if(!antwort.ok) return;
+    const blob = await antwort.blob();
+    const daten = await new Promise((ok,nein)=>{ const fr=new FileReader(); fr.onload=()=>ok(fr.result); fr.onerror=nein; fr.readAsDataURL(blob); });
+    const masse = await new Promise((ok)=>{ const b=new Image(); b.onload=()=>ok({w:b.naturalWidth,h:b.naturalHeight}); b.onerror=()=>ok(null); b.src=daten; });
+    if(!masse || !masse.w || !masse.h) return;
+    window.__zzLogo = { url, daten, w: masse.w, h: masse.h };
+  }catch(e){ /* Kopf bleibt beim Schriftzug */ }
 }
 async function enterApp(){
   el('login').style.display='none'; el('app').style.display='flex';
@@ -621,11 +642,28 @@ function buildPDF(i, art){
   const GOLD=(!istZZ&&betrieb&&hex2rgb(betrieb.farbe_akzent))||[201,160,84];
   const MUTED=[92,106,99], LINIE=[228,225,218], INK=[20,34,27];
 
-  /* Kopf */
+  /* Kopf: Logo, wenn eines hinterlegt ist — sonst wie bisher der Schriftzug.
+     Das Bild passt sich in 14 mm Höhe und 60 mm Breite ein, immer seitenrichtig.
+     Es steht auf derselben Grundlinie wie vorher der Schriftzug (28 mm).
+     ZZ-Belege behalten immer den ZeitZurück-Schriftzug. */
   doc.setTextColor.apply(doc,PETROL);
-  doc.setFont('helvetica','bold'); doc.setFontSize(16);
-  doc.text(marke, L, 26);
-  if(inhaber && !istZZ && !String(marke).toLowerCase().includes(inhaber.toLowerCase())){
+  let logoGesetzt = false;
+  const L0 = window.__zzLogo;
+  if(!istZZ && L0 && L0.daten && L0.w > 0 && L0.h > 0){
+    try{
+      const MAXH = 14, MAXW = 60;
+      let hoehe = MAXH, breite = hoehe * (L0.w / L0.h);
+      if(breite > MAXW){ breite = MAXW; hoehe = breite * (L0.h / L0.w); }
+      const art = /^data:image\/jpe?g/i.test(L0.daten) ? 'JPEG' : 'PNG';
+      doc.addImage(L0.daten, art, L, 28 - hoehe, breite, hoehe);
+      logoGesetzt = true;
+    }catch(e){ logoGesetzt = false; }
+  }
+  if(!logoGesetzt){
+    doc.setFont('helvetica','bold'); doc.setFontSize(16);
+    doc.text(marke, L, 26);
+  }
+  if(inhaber && !istZZ && !logoGesetzt && !String(marke).toLowerCase().includes(inhaber.toLowerCase())){
     doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor.apply(doc,MUTED);
     doc.text(inhaber, L, 31.5);
   }
