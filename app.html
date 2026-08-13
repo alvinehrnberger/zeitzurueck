@@ -481,7 +481,28 @@ async function switchBetrieb(id){
   await loadData(); paintBrand(); showList();
 }
 
-/* ---------- Rechnungsnummer (wird von nummernkreis.js ueberschrieben) ---------- */
+/* ---------- Rechnungsnummer ----------
+   naechsteNummer() ist eine VORSCHAU. Sie zaehlt im Browser und darf sich um
+   eins irren; deshalb steht ueberall "voraussichtlich" dabei.
+
+   Vergeben wird ausschliesslich von nummerZiehen(): eine Zeile in der
+   Datenbank, ein Schloss, ein Hochzaehlen. Bis 13.8.2026 hat die Zaehlerei
+   die Nummer wirklich vergeben — dann bekommen zwei Rechnungen kurz
+   hintereinander dieselbe, und eine geloeschte Zeile vergibt eine Nummer ein
+   zweites Mal. Genau das ist das Einzige, was § 11 UStG verbietet.
+
+   Kein Rueckfall auf die Zaehlerei, wenn der Aufruf scheitert: lieber gar
+   keine Rechnung als eine mit einer Nummer, die es schon gibt.
+   (wird von nummernkreis.js teilweise ueberschrieben)                      */
+async function nummerZiehen(){
+  const k = konf(), pre = String(k.praefix || '').trim();
+  if(!pre) throw new Error('Für diesen Bereich ist kein Nummernkreis hinterlegt.');
+  const r = await sb.rpc('naechste_rechnungsnummer', { p_praefix: pre });
+  if(r && r.error) throw new Error('Rechnungsnummer nicht vergeben: ' + r.error.message);
+  if(!r || !r.data) throw new Error('Rechnungsnummer nicht vergeben — bitte noch einmal versuchen.');
+  return r.data;
+}
+
 function naechsteNummer(){
   const k=konf(), jahr=new Date().getFullYear();
   const bisher = rechnungen.filter(i=>{ if(i.art==='angebot') return false;
@@ -587,7 +608,7 @@ function showJob(id){
       ${j.adresse?`<div class="row"><span class="k">Adresse</span><span class="v"><a href="${mapsLink(j.adresse)}" target="_blank" rel="noopener">${esc(j.adresse)} ↗</a></span></div>`:''}
       ${j.kunde_email?`<div class="row"><span class="k">E-Mail</span><span class="v">${esc(j.kunde_email)}</span></div>`:''}
       <div class="row"><span class="k">Stundensatz</span><span class="v">${eur(satz)} / Std</span></div>
-      <div class="row"><span class="k">Nächste Rechnung</span><span class="v">${naechsteNummer()}</span></div>
+      <div class="row"><span class="k">Nächste Rechnung</span><span class="v">${naechsteNummer()} <span style="opacity:.55">(vorauss.)</span></span></div>
     </div>
     <p style="color:var(--muted);font-size:13px;margin-top:14px">Wenn du fertig bist: „Arbeit abgeschlossen" tippen, echte Stunden eintragen — den Rest erledigt ZeitZurück.</p>
     <div class="dngr" onclick="deleteJob('${j.id}')">Auftrag löschen</div></div>
@@ -1126,7 +1147,7 @@ function openStorno(id){
     <p class="s">Für Rechnung ${esc(i.nummer||'')} · ${esc(i.kunde||'')} · ${eur(i.betrag)}</p>
     <div class="mailrow"><label>Grund (erscheint auf dem Beleg)</label><input id="stGrund" value="Storno zu Rechnung ${esc(i.nummer||'')}" ></div>
     <div class="stack">
-      <button class="btn btn-warn" id="stGo" onclick="doStorno('${id}')">⊘ Stornorechnung ${naechsteNummer()} erstellen</button>
+      <button class="btn btn-warn" id="stGo" onclick="doStorno('${id}')">⊘ Stornorechnung erstellen</button>
       <button class="btn btn-ghost" onclick="openManage('${id}')">Zurück</button>
     </div>
     <div class="note">Es entsteht ein <b>eigener Beleg</b> mit der nächsten Nummer und<br>dem Betrag <b>${eur(-Math.abs(Number(i.betrag)))}</b>. Die Originalrechnung bleibt erhalten —<br>so bleibt deine Buchhaltung lückenlos.</div>`;
@@ -1136,7 +1157,8 @@ async function doStorno(id){
   const i=rechnungen.find(x=>x.id===id);
   const btn=el('stGo'); btn.disabled=true; btn.textContent='Wird erstellt…';
   const grund=(el('stGrund').value||('Storno zu Rechnung '+(i.nummer||''))).trim();
-  const payload={ betrieb_id:betrieb.id, auftrag_id:i.auftrag_id||null, nummer:naechsteNummer(),
+  const stornoNummer = await nummerZiehen();
+  const payload={ betrieb_id:betrieb.id, auftrag_id:i.auftrag_id||null, nummer:stornoNummer,
     kunde:i.kunde, positionstext:grund, stunden:i.stunden, betrag:-Math.abs(Number(i.betrag)), art:'storno', storno_zu:i.nummer };
   try{
     const {data:rec}=await sb.from('rechnungen').insert(payload).select().single();
@@ -1222,7 +1244,7 @@ function openComplete(id){
       <button class="btn btn-primary" id="cRech" onclick="finish('${id}','rechnung')">Rechnung erstellen &amp; senden</button>
       <button class="btn btn-ghost" id="cBar" onclick="finish('${id}','bar')">💶 Bar erhalten (Cash)</button>
     </div>
-    <div class="note">Rechnungsnummer wird automatisch vergeben: <b>${naechsteNummer()}</b><br>Bar = Auftrag wird nur auf „erledigt" gesetzt, ZeitZurück stellt <b>keinen</b> Beleg aus.</div>`;
+    <div class="note">Rechnungsnummer wird automatisch vergeben, voraussichtlich: <b>${naechsteNummer()}</b><br>Bar = Auftrag wird nur auf „erledigt" gesetzt, ZeitZurück stellt <b>keinen</b> Beleg aus.</div>`;
   scrim.classList.add('show');
 }
 function stepH(d){
@@ -1240,7 +1262,7 @@ async function finish(id,art){
   const satz=betrieb?Number(betrieb.stundensatz):50, sum=curHours*satz;
   try{
     await sb.from('auftraege').update({ status: art==='bar'?'bar':'erledigt', stunden: curHours }).eq('id', id);
-    const nummer = art==='rechnung' ? naechsteNummer() : null;
+    const nummer = art==='rechnung' ? await nummerZiehen() : null;
     const payload={ betrieb_id:betrieb.id, auftrag_id:id, nummer, kunde:j.kunde,
       positionstext:j.aufgabe, stunden:curHours, betrag:sum, art };
     if(art==='rechnung') payload.kunde_email=mail;

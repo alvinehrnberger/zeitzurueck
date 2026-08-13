@@ -33,6 +33,16 @@
     await alleLaden();
   };
 
+  /* naechsteNummer() ist eine VORSCHAU und sonst nichts.
+     Sie zaehlt im Browser und darf sich um eins irren — etwa wenn zwischen
+     Anzeigen und Ausstellen anderswo eine Rechnung entsteht. Deshalb steht
+     ueberall, wo sie erscheint, "voraussichtlich".
+
+     Vergeben wird die Nummer ausschliesslich von nummerZiehen() unten.
+     Bis 13.8.2026 hat diese Zaehlerei die Nummer wirklich vergeben — dann
+     bekommen zwei Rechnungen kurz hintereinander dieselbe, und eine
+     geloeschte Zeile vergibt eine Nummer ein zweites Mal. Genau das ist
+     das Einzige, was § 11 UStG verbietet. */
   window.naechsteNummer = function () {
     var k = konf(), istDemo = String(k.praefix || '').trim() === 'DEMO', jahr = new Date().getFullYear();
     var bisher = (window._alleRechnungen || []).filter(function (i) {
@@ -45,6 +55,7 @@
     var offset = istDemo ? 0 : ((GLOBAL_JAHR === jahr) ? GLOBAL_NUMMER : 0);
     return k.praefix + String(offset + bisher + 1).padStart(2, '0') + '/' + jahr;
   };
+
 
   /* ---------- 2) Geld erhalten beim Auftrag ----------
      Der Handwerker denkt in Auftraegen, nicht in Belegen.
@@ -113,7 +124,7 @@
         (j.adresse ? '<div class="row"><span class="k">Adresse</span><span class="v"><a href="' + mapsLink(j.adresse) + '" target="_blank" rel="noopener">' + esc(j.adresse) + ' ↗</a></span></div>' : '') +
         (j.kunde_email ? '<div class="row"><span class="k">E-Mail</span><span class="v">' + esc(j.kunde_email) + '</span></div>' : '') +
         '<div class="row"><span class="k">Stundensatz</span><span class="v">' + eur(satz) + ' / Std</span></div>' +
-        '<div class="row"><span class="k">Nächste Rechnung</span><span class="v">' + naechsteNummer() + '</span></div>' +
+        '<div class="row"><span class="k">Nächste Rechnung</span><span class="v">' + naechsteNummer() + ' <span style="opacity:.55">(vorauss.)</span></span></div>' +
       '</div>' +
       '<p style="color:var(--muted);font-size:13px;margin-top:14px">Wenn du fertig bist: „Arbeit abgeschlossen" tippen, echte Stunden eintragen — den Rest erledigt ZeitZurück.</p>' +
       '<div class="verlegen" onclick="openAngebot(\'' + j.id + '\')">Angebot erstellen</div><div class="verlegen" onclick="openTermin(\'' + j.id + '\')">Termin ändern</div><div class="dngr" onclick="deleteJob(\'' + j.id + '\')">Auftrag löschen</div></div>' +
@@ -597,7 +608,7 @@
     var j=auftraege.find(function(x){return x.id===id;});
     try{
       await sb.from('auftraege').update({ status: art==='bar'?'bar':'erledigt', stunden: null, abrechnung:'pauschale', pauschale_betrag: betrag }).eq('id', id);
-      var nummer = art==='rechnung' ? naechsteNummer() : null;
+      var nummer = art==='rechnung' ? await nummerZiehen() : null;
       var payload={ betrieb_id:betrieb.id, auftrag_id:id, leistung_datum:(j&&j.termin)?(function(d){return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10);})(new Date(j.termin)):null,nummer:nummer, kunde:j.kunde, positionstext:j.aufgabe, stunden:null, betrag:betrag, art:art };
       if(art==='rechnung') payload.kunde_email=mail;
       var rec=null;
@@ -636,7 +647,7 @@
   if(typeof _oc==='function'){ window.openComplete = function(id){ var r=_oc.apply(this,arguments); setTimeout(function(){
     window.__zzZahlart=null;
     var b=document.getElementById('cBar'); if(b){ b.textContent='Ohne Rechnung abschließen'; b.setAttribute('onclick','zzOhneRechnung(\''+id+'\')'); }
-    try{ var n=sheet.querySelector('.note'); if(n) n.innerHTML='Rechnungsnummer wird automatisch vergeben: <b>'+naechsteNummer()+'</b><br>Ohne Rechnung = Auftrag wird nur auf „erledigt“ gesetzt, ZeitZurück erstellt keinen Beleg.'; }catch(e){}
+    try{ var n=sheet.querySelector('.note'); if(n) n.innerHTML='Rechnungsnummer wird automatisch vergeben, voraussichtlich: <b>'+naechsteNummer()+'</b><br>Ohne Rechnung = Auftrag wird nur auf „erledigt“ gesetzt, ZeitZurück erstellt keinen Beleg.'; }catch(e){}
   },0); return r; }; }
 
   window.zzZahlart = function(id, art){ window.__zzZahlart=art; window.finish(id,'rechnung'); };
@@ -665,7 +676,7 @@
     var j=auftraege.find(function(x){return x.id===id;});
     try{
       await sb.from('auftraege').update({ status: art==='bar'?'bar':'erledigt', stunden: pausch?null:curHours, abrechnung: pausch?'pauschale':'zeit', pauschale_betrag: pausch?betrag:null }).eq('id', id);
-      var nummer = art==='rechnung' ? naechsteNummer() : null;
+      var nummer = art==='rechnung' ? await nummerZiehen() : null;
       var payload={ betrieb_id:betrieb.id, auftrag_id:id, leistung_datum:(j&&j.termin)?(function(d){return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10);})(new Date(j.termin)):null,nummer:nummer, kunde:j.kunde, positionstext:j.aufgabe, stunden: pausch?null:curHours, betrag:betrag, art:art };
       if(art==='rechnung'){ payload.kunde_email=mail; payload.zahlart=zahlart; if(zahlart==='bar') payload.bezahlt_am=isoDate(); }
       var rec=null;
