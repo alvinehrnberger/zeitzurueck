@@ -96,6 +96,15 @@
 
   .scrim{position:fixed;inset:0;background:rgba(18,40,29,.45);display:none;align-items:flex-end;justify-content:center;z-index:60}
   .scrim.show{display:flex}
+  /* Die Wache meldet sich nur, wenn sie etwas zu sagen hat. */
+  .wache{position:fixed;left:50%;transform:translateX(-50%);bottom:14px;z-index:70;
+    display:none;align-items:center;gap:10px;padding:9px 14px;border-radius:999px;
+    background:var(--petrol);color:var(--ivory);font-size:13px;
+    box-shadow:0 10px 30px rgba(18,40,29,.35);max-width:92vw}
+  .wache.zeig{display:flex}
+  .wache.alt{background:var(--warn)}
+  .wache button{background:rgba(247,244,235,.16);border:0;color:var(--ivory);font:inherit;
+    font-size:12px;padding:5px 11px;border-radius:999px;cursor:pointer}
   .sheet{width:100%;max-width:460px;background:var(--ivory);border-radius:22px 22px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom));animation:up .28s ease;max-height:92vh;overflow-y:auto}
   @keyframes up{from{transform:translateY(100%)}to{transform:none}}
   .sheet h3{font-family:'Poppins';font-weight:600;font-size:18px;color:var(--petrol)}
@@ -212,6 +221,7 @@ body.demolauf #fab{background:#8A4B00}
 </div>
 
 <div class="scrim" id="scrim"><div class="sheet" id="sheet"></div></div>
+<div class="wache" id="wache"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -416,7 +426,7 @@ function translateErr(m){
   if(/Retryable|Failed to fetch|NetworkError|\{\}|500|^$/i.test(m)) return 'Verbindungsfehler – bitte in ein paar Sekunden erneut versuchen.';
   return m;
 }
-async function logout(){ await sb.auth.signOut(); location.reload(); }
+async function logout(){ try{ wacheStoppen(); }catch(e){} await sb.auth.signOut(); location.reload(); }
 
 /* ---------- Daten ---------- */
 async function loadBetriebe(){
@@ -461,10 +471,107 @@ async function logoVorladen(){
     window.__zzLogo = { url, daten, w: masse.w, h: masse.h };
   }catch(e){ /* Kopf bleibt beim Schriftzug */ }
 }
+/* ---------- Die Wache: Selbstaktualisierung ----------
+   Alvin, 15.8.: „Ich kann von Kunden nicht verlangen, dass sie immer neu
+   laden." Gilt fuer die Handwerk-App genauso wie fuer Legal. Drei
+   Sicherungen: die Datenbank meldet selbst (Realtime), ein leiser Takt
+   fragt trotzdem nach, und wer die App wieder nach vorn holt, bekommt
+   sofort den frischen Stand. Neu gezeichnet wird nur, wenn niemand mitten
+   in etwas steckt — sonst kommt eine Blase, die man antippen kann. */
+let wKanal=null, wTakt=null, wStand=null, wVerbunden=false, wLaeuft=false, wWartet=false, wZaehler=0, wTimer=null;
+
+function wacheStarten(){
+  if(!betrieb) return;
+  wStand = new Date();
+  wKanalAufbauen();
+  if(wTakt) clearInterval(wTakt);
+  wTakt = setInterval(()=>{
+    if(document.hidden) return;
+    wZaehler++;
+    if(!wVerbunden || wZaehler % 6 === 0) wacheHolen(); else wStandZeigen();
+  }, 20000);
+  document.addEventListener('visibilitychange', ()=>{ if(!document.hidden && betrieb) wacheHolen(); });
+  window.addEventListener('online', ()=>{ if(betrieb){ wKanalAufbauen(); wacheHolen(); } });
+}
+
+function wacheStoppen(){
+  if(wTakt){ clearInterval(wTakt); wTakt=null; }
+  try{ if(wKanal) sb.removeChannel(wKanal); }catch(e){}
+  wKanal=null; wVerbunden=false; wWartet=false;
+  const z=el('wache'); if(z) z.classList.remove('zeig');
+}
+
+function wKanalAufbauen(){
+  try{ if(wKanal) sb.removeChannel(wKanal); }catch(e){}
+  try{
+    const k = sb.channel('wache-'+betrieb.id);
+    ['auftraege','rechnungen'].forEach(t=>{
+      k.on('postgres_changes',
+        {event:'*', schema:'public', table:t, filter:'betrieb_id=eq.'+betrieb.id},
+        ()=>wAnstoss());
+    });
+    k.subscribe(st=>{ wVerbunden = (st==='SUBSCRIBED'); wStandZeigen(); });
+    wKanal = k;
+  }catch(e){ wVerbunden=false; }
+}
+
+/* Ein Auftrag und seine Rechnung entstehen im selben Atemzug —
+   kurz sammeln statt zweimal nachladen. */
+function wAnstoss(){
+  if(wTimer) clearTimeout(wTimer);
+  wTimer = setTimeout(()=>wacheHolen(), 600);
+}
+
+/* Wann darf nicht gezeichnet werden? Wenn ein Blatt offen ist, ein Feld
+   den Finger hat, oder gerade ein einzelner Auftrag gelesen wird. */
+function wacheStoert(){
+  if(scrim.classList.contains('show')) return true;
+  if(backBtn && backBtn.style.display !== 'none') return true;
+  const a = document.activeElement;
+  if(a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) return true;
+  return false;
+}
+
+async function wacheHolen(){
+  if(wLaeuft || !betrieb) return;
+  wLaeuft = true;
+  try{
+    await loadData();
+    wStand = new Date();
+    if(wacheStoert()){ wWartet = true; }
+    else wacheJetztZeichnen();
+    wStandZeigen();
+  }catch(e){ wStandZeigen(); }
+  finally{ wLaeuft = false; }
+}
+
+/* Neu zeichnen, ohne den Leser nach oben zu werfen. */
+function wacheJetztZeichnen(){
+  wWartet = false;
+  const y = screen.scrollTop;
+  showList();
+  screen.scrollTop = y;
+  wStandZeigen();
+}
+
+function wStandZeigen(){
+  const z = el('wache'); if(!z) return;
+  const alt = wStand ? Math.floor((Date.now()-wStand.getTime())/60000) : 0;
+  if(!wWartet && alt < 3){ z.classList.remove('zeig'); return; }
+  z.classList.add('zeig');
+  z.classList.toggle('alt', !wWartet);
+  const uhr = wStand ? String(wStand.getHours()).padStart(2,'0')+':'+String(wStand.getMinutes()).padStart(2,'0') : '';
+  z.innerHTML = wWartet
+    ? '<span>Neues da</span><button type="button" id="wJetzt">Anzeigen</button>'
+    : '<span>Stand '+uhr+' — Verbindung stockt</span><button type="button" id="wJetzt">Neu laden</button>';
+  el('wJetzt').onclick = wWartet ? wacheJetztZeichnen : ()=>{ wKanalAufbauen(); wacheHolen(); };
+}
+
 async function enterApp(){
   el('login').style.display='none'; el('app').style.display='flex';
   screen.innerHTML='<div class="loading">Lade deinen Betrieb…</div>';
   await loadBetriebe(); await loadData(); paintBrand(); showList();
+  wacheStarten();
 }
 function openBetriebPicker(){
   if(betriebe.length<2) return;
@@ -520,6 +627,7 @@ function naechsteNummer(){
 /* ---------- Render ---------- */
 function setTab(t){ tab=t; el('tabJobs').classList.toggle('on',t==='jobs'); el('tabInv').classList.toggle('on',t==='inv'); showList(); }
 function showList(){
+  if(typeof wWartet !== 'undefined' && wWartet){ wWartet = false; if(typeof wStandZeigen === 'function') wStandZeigen(); }
   backBtn.style.display='none'; el('tabs').style.display='flex'; el('fab').style.display='flex';
   el('barSub').textContent=betrieb?(betrieb.inhaber||''):''; screen.scrollTop=0;
   tab==='jobs' ? renderJobs() : renderInvoices();
