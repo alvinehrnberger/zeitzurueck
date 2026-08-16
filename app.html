@@ -60,6 +60,14 @@
   .greet{font-family:'Poppins';font-weight:600;font-size:19px;color:var(--petrol);margin:4px 2px 2px}
   .gsub{color:var(--muted);font-size:13.5px;margin:0 2px 14px}
   .lbl{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:600;margin:16px 4px 9px}
+  /* Sortierung der Auftragsliste. Zwei Sichten, mehr braucht es nicht:
+     der naechste Termin fuers Fahren, zuletzt angelegt fuers Nachschauen.
+     Die Wahl bleibt gespeichert. (Alvin, 16.8.) */
+  .sortzeile{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:16px 2px 4px}
+  .sortzeile .lbl{margin:0}
+  .sortwahl{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:999px;padding:2px}
+  .sortwahl button{border:0;background:none;font-family:var(--sans);font-size:12px;font-weight:600;color:var(--muted);padding:6px 11px;border-radius:999px;cursor:pointer;white-space:nowrap}
+  .sortwahl button.on{background:var(--petrol);color:var(--ivory)}
   .alert{background:#fdf3e6;border:1px solid #e8c99a;border-radius:14px;padding:12px 14px;margin-bottom:12px;font-size:13.5px;color:#8a5a13}
   .alert b{font-family:'Poppins'}
   .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 15px;margin-bottom:11px;cursor:pointer;display:flex;gap:12px;align-items:flex-start;transition:transform .1s}
@@ -334,6 +342,8 @@ function konf(kreis){
     }
 
 let betriebe=[], betrieb=null, auftraege=[], rechnungen=[], tab='jobs', curHours=3, mode='login';
+/* 'termin' = naechster Termin zuerst · 'neu' = zuletzt angelegt zuerst */
+let sortJobs = (localStorage.getItem('zz_sort_jobs') === 'neu') ? 'neu' : 'termin';
 
 const boxIcon='<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/></svg>';
 const docIcon='<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg>';
@@ -635,15 +645,42 @@ function showList(){
 function offeneMahnungen(){
   return rechnungen.filter(i=>{ if(i.art==='angebot') return false; const s=invStatus(i); return s.k==='ueberfaellig'||s.k==='mahnung'; });
 }
+function jobsSortieren(liste){
+  /* Ohne Termin ist kein Fehler, aber es gehoert ans Ende - sonst
+     stehen unfertige Auftraege vor der Arbeit von morgen. */
+  const kopie = liste.slice();
+  if(sortJobs === 'neu'){
+    kopie.sort((a,b)=> new Date(b.created_at||0) - new Date(a.created_at||0));
+  } else {
+    kopie.sort((a,b)=>{
+      const at = a.termin ? new Date(a.termin).getTime() : Infinity;
+      const bt = b.termin ? new Date(b.termin).getTime() : Infinity;
+      if(at !== bt) return at - bt;
+      return new Date(b.created_at||0) - new Date(a.created_at||0);
+    });
+  }
+  return kopie;
+}
+function setSortJobs(art){
+  sortJobs = (art === 'neu') ? 'neu' : 'termin';
+  localStorage.setItem('zz_sort_jobs', sortJobs);
+  renderJobs();
+}
+function sortSchalter(){
+  return `<div class="sortwahl">
+    <button class="${sortJobs==='termin'?'on':''}" onclick="setSortJobs('termin')">Nächster Termin</button>
+    <button class="${sortJobs==='neu'?'on':''}" onclick="setSortJobs('neu')">Zuletzt angelegt</button>
+  </div>`;
+}
 function renderJobs(){
-  const open=auftraege.filter(j=>j.status==='offen'||j.status==='angebot'||j.status==='abgelehnt'), done=auftraege.filter(j=>j.status==='erledigt');
+  const open=jobsSortieren(auftraege.filter(j=>j.status==='offen'||j.status==='angebot'||j.status==='abgelehnt')), done=jobsSortieren(auftraege.filter(j=>j.status==='erledigt'));
   const vorname=(betrieb&&betrieb.inhaber?betrieb.inhaber.split(' ')[0]:'');
   const late=offeneMahnungen();
   screen.innerHTML=`
     <div class="greet">Grüß dich${vorname?', '+esc(vorname):''} 👋</div>
     <div class="gsub">${open.length===1?'1 offener Auftrag':open.length+' offene Aufträge'}${done.length?` · ${done.length} erledigt`:''}</div>
     ${late.length?`<div class="alert"><b>${late.length} unbezahlte Rechnung${late.length>1?'en':''}</b> überfällig. <span style="text-decoration:underline;cursor:pointer" onclick="setTab('inv')">Ansehen ›</span></div>`:''}
-    ${open.length?`<div class="lbl">Offen</div>${open.map(jobCard).join('')}`:'<div class="empty">Keine offenen Aufträge.<br>Mit + legst du einen an. 🌿</div>'}
+    ${open.length?`<div class="sortzeile"><div class="lbl">Offen</div>${sortSchalter()}</div>${open.map(jobCard).join('')}`:'<div class="empty">Keine offenen Aufträge.<br>Mit + legst du einen an. 🌿</div>'}
     ${done.length?`<div class="lbl">Erledigt</div>${done.map(jobCard).join('')}`:''}`;
 }
 function jobPill(j){
