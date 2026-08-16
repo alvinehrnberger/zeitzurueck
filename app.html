@@ -840,8 +840,40 @@ async function createJob(){
   try{ await sb.from('auftraege').insert(rec); scrim.classList.remove('show'); await loadData(); setTab('jobs'); }
   catch(e){ btn.disabled=false; btn.textContent='Auftrag anlegen'; alert('Fehler: '+e.message); }
 }
+/* Loescht den Google-Kalendereintrag zum Auftrag. Wer das darf, entscheidet
+   nicht der Browser, sondern Supabase: der Ablauf liest den Auftrag mit dem
+   Anmelde-Token und akzeptiert nur die Rolle Inhaber. Antwortet er nicht
+   sauber, sagen wir das - ein stiller Fehler waere schlimmer. (Alvin, 16.8.) */
+const KALENDER_WEG = 'https://alvvyn.app.n8n.cloud/webhook/kalender-loeschen';
+async function kalenderEintragEntfernen(auftragId){
+  try{
+    const { data } = await sb.auth.getSession();
+    const token = data && data.session ? data.session.access_token : '';
+    if(!token) return { ok:false, text:'Die Anmeldung ist abgelaufen. Bitte neu anmelden.' };
+    const antwort = await fetch(KALENDER_WEG, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ token: token, auftrag_id: auftragId })
+    });
+    const roh = await antwort.text();
+    let erg = null;
+    try{ erg = JSON.parse(roh); }catch(e){ erg = null; }
+    if(!erg || typeof erg.ok !== 'boolean') return { ok:false, text:'Der Kalender hat nicht geantwortet.' };
+    return erg;
+  }catch(e){
+    return { ok:false, text:'Keine Verbindung zum Kalender.' };
+  }
+}
 async function deleteJob(id){
   if(!confirm('Diesen Auftrag wirklich löschen?')) return;
+  const j = auftraege.find(x=>x.id===id);
+  if(j && j.event_id){
+    if(confirm('Auch den Termin aus dem Kalender entfernen?')){
+      const erg = await kalenderEintragEntfernen(id);
+      if(!erg.ok){
+        if(!confirm('Der Kalendereintrag konnte nicht entfernt werden.\n\n' + (erg.text||'') + '\n\nDen Auftrag trotzdem löschen?')) return;
+      }
+    }
+  }
   try{ await sb.from('auftraege').delete().eq('id',id); await loadData(); showList(); }
   catch(e){ alert('Fehler: '+e.message); }
 }
