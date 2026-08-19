@@ -6,6 +6,13 @@
 <title>ZeitZurück — Mein Betrieb</title>
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/svg+xml" href="zeitzurueck-favicon.svg">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1A3A2B">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="ZeitZurück">
 <style>
   @font-face{font-family:'Poppins';font-weight:400;src:url('poppins-400.woff2') format('woff2')}
   @font-face{font-family:'Poppins';font-weight:500;src:url('poppins-500.woff2') format('woff2')}
@@ -1597,6 +1604,12 @@ el('pw').addEventListener('keydown',e=>{ if(e.key==='Enter') submitAuth(); });
   if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", bauen); else bauen();
   setTimeout(bauen, 600); setTimeout(bauen, 1800);
 })();
+
+/* Als App installierbar (PWA). Der Worker cached nichts — er ist nur da,
+   damit das Handy „Zum Home-Bildschirm hinzufügen“ anbietet. */
+if('serviceWorker' in navigator){
+  try{ navigator.serviceWorker.register('sw.js'); }catch(e){}
+}
 </script>
 </body>
 </html>
