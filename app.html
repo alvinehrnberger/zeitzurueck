@@ -446,11 +446,27 @@ function translateErr(m){
 async function logout(){ try{ wacheStoppen(); }catch(e){} await sb.auth.signOut(); location.reload(); }
 
 /* ---------- Daten ---------- */
+/* Mein Betrieb oder betreuter Betrieb? Die Rolle steht in betrieb_mitglieder.
+   Alvin ist Inhaber von Montage und Betreuer von Caesar und Berni. Die betreuten
+   Betriebe sollen nicht in seiner täglichen Liste stehen – ein Schalter im
+   Betriebs-Picker blendet sie ein. Wer keinen eigenen Betrieb hat, sieht
+   immer alles (sonst wäre die App leer). */
+let rollen = {};
+function istBetreut(b){ return rollen[b.id] === 'betreuer'; }
+function hatEigenen(){ return betriebe.some(b=>!istBetreut(b)); }
+function betreuteAn(){ return !hatEigenen() || localStorage.getItem('zz_betreute') === '1'; }
+function sichtbareBetriebe(){ return betreuteAn() ? betriebe : betriebe.filter(b=>!istBetreut(b)); }
 async function loadBetriebe(){
-  const { data } = await sb.from('betriebe').select('*').order('name');
+  const [{ data }, m] = await Promise.all([
+    sb.from('betriebe').select('*').order('name'),
+    sb.from('betrieb_mitglieder').select('betrieb_id,rolle')
+  ]);
   betriebe = data || [];
+  rollen = {};
+  (m.data || []).forEach(x => { rollen[x.betrieb_id] = x.rolle; });
   const saved = localStorage.getItem('zz_betrieb');
-  betrieb = betriebe.find(b=>b.id===saved) || betriebe[0] || null;
+  const sicht = sichtbareBetriebe();
+  betrieb = sicht.find(b=>b.id===saved) || sicht[0] || betriebe[0] || null;
 }
 async function loadData(){
   if(!betrieb){ auftraege=[]; rechnungen=[]; return; }
@@ -590,12 +606,36 @@ async function enterApp(){
   await loadBetriebe(); await loadData(); paintBrand(); showList();
   wacheStarten();
 }
+function pickZeile(b){
+  return `<div class="pick ${b.id===betrieb.id?'on':''}" onclick="switchBetrieb('${b.id}')">
+      <div class="n">${esc(b.name)}</div><div class="o">${esc(b.inhaber||'')} · Präfix ${esc((BETRIEB_KONFIG[b.name]||{}).praefix||'—')}</div></div>`;
+}
 function openBetriebPicker(){
   if(betriebe.length<2) return;
-  sheet.innerHTML='<h3>Betrieb wechseln</h3><p class="s">Die Rechnungsnummer läuft fortlaufend über beide Betriebe.</p>'+
-    betriebe.map(b=>`<div class="pick ${b.id===betrieb.id?'on':''}" onclick="switchBetrieb('${b.id}')">
-      <div class="n">${esc(b.name)}</div><div class="o">${esc(b.inhaber||'')} · Präfix ${esc((BETRIEB_KONFIG[b.name]||{}).praefix||'—')}</div></div>`).join('');
+  const eigene = betriebe.filter(b=>!istBetreut(b)), betreute = betriebe.filter(istBetreut);
+  const an = betreuteAn();
+  let html = '<h3>Betrieb wechseln</h3>';
+  if(eigene.length){
+    html += '<div class="lbl" style="margin-top:4px">Mein Betrieb</div>' + eigene.map(pickZeile).join('');
+  }
+  if(betreute.length){
+    html += '<div class="lbl" style="display:flex;align-items:center;justify-content:space-between">Betreute Betriebe' +
+      (hatEigenen() ? `<label class="zt-sw" title="Betreute Betriebe anzeigen"><input type="checkbox" ${an?'checked':''} onchange="betreuteSchalten(this.checked)"><i></i></label>` : '') +
+      '</div>';
+    html += an ? betreute.map(pickZeile).join('')
+               : '<p class="s" style="margin:0 0 6px">Ausgeblendet. Schalter an, wenn du für einen Kunden nachsiehst.</p>';
+  }
+  html += '<p class="s" style="margin-top:12px">Die Rechnungsnummer läuft fortlaufend über beide Betriebe.</p>';
+  sheet.innerHTML = html;
   scrim.classList.add('show');
+}
+function betreuteSchalten(an){
+  localStorage.setItem('zz_betreute', an ? '1' : '0');
+  if(!an && betrieb && istBetreut(betrieb)){
+    const erster = sichtbareBetriebe()[0];
+    if(erster){ switchBetrieb(erster.id); return; }
+  }
+  openBetriebPicker();
 }
 async function switchBetrieb(id){
   betrieb = betriebe.find(b=>b.id===id) || betrieb;
@@ -1488,6 +1528,7 @@ scrim.addEventListener('click',e=>{ if(e.target===scrim) scrim.classList.remove(
 el('pw').addEventListener('keydown',e=>{ if(e.key==='Enter') submitAuth(); });
 </script>
 <script src="nummernkreis.js?v=20260729c"></script>
+<script src="fotos.js?v=20260908"></script>
 <script>
 (async function(){
   const { data } = await sb.auth.getSession();
