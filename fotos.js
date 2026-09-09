@@ -214,8 +214,17 @@
     });
   }
 
-  /* ---------- Reiter einhängen (wie beim Zeiten-Reiter) ---------- */
+  /* ---------- Reiter einhängen (wie beim Zeiten-Reiter) ----------
+     Der Reiter zeigt sich nur bei Betrieben mit Galerie (betriebe.hat_galerie).
+     Montage hat keine — dort wäre ein Upload ein Bild, das nirgends erscheint. */
   var meinTab = null;
+  function hatGalerie() { try { return !!(betrieb && betrieb.hat_galerie); } catch (e) { return false; } }
+  function sichtbarkeit() {
+    if (!meinTab) return;
+    var an = hatGalerie();
+    meinTab.style.display = an ? '' : 'none';
+    if (!an && meinTab.classList.contains('on')) { meinTab.classList.remove('on'); if (typeof setTab === 'function') setTab('jobs'); }
+  }
 
   window.fotosOeffnen = async function () {
     var leiste = document.querySelector('.tabs');
@@ -240,6 +249,18 @@
     meinTab.textContent = 'Fotos';
     meinTab.addEventListener('click', function () { window.fotosOeffnen(); });
     leiste.appendChild(meinTab);
+    sichtbarkeit();
+
+    // Nach einem Betriebswechsel neu entscheiden, ob der Reiter da ist.
+    var origSwitch = window.switchBetrieb;
+    if (typeof origSwitch === 'function' && !origSwitch.__fo) {
+      window.switchBetrieb = async function () {
+        var r = await origSwitch.apply(this, arguments);
+        sichtbarkeit();
+        return r;
+      };
+      window.switchBetrieb.__fo = true;
+    }
 
     var origSetTab = window.setTab;
     if (typeof origSetTab === 'function' && !origSetTab.__fo) {
@@ -259,7 +280,7 @@
     }
   }
 
-  var beob = new MutationObserver(function () { tabEinhaengen(); });
+  var beob = new MutationObserver(function () { tabEinhaengen(); sichtbarkeit(); });
   beob.observe(document.body, { childList: true, subtree: true });
   tabEinhaengen();
 })();
