@@ -45,6 +45,18 @@
      das Einzige, was § 11 UStG verbietet. */
   window.naechsteNummer = function () {
     var k = konf(), istDemo = String(k.praefix || '').trim() === 'DEMO', jahr = new Date().getFullYear();
+    if (k.eigen) {
+      /* Eigener Nummernkreis des Betriebs (z. B. Berni): nur seine Belege zaehlen,
+         Startnummer aus dem Betriebsprofil (steht der Betrieb bei 19, kommt 20). */
+      var eigene = (typeof rechnungen !== 'undefined' ? rechnungen : []).filter(function (i) {
+        if (i.art !== 'rechnung' && i.art !== 'storno') return false;
+        if (i.betrieb_id && betrieb && i.betrieb_id !== betrieb.id) return false;
+        var d = i.datum || i.created_at;
+        return d ? (new Date(d)).getFullYear() === jahr : true;
+      }).length;
+      var start = (k.startJahr === jahr) ? k.startNummer : 0;
+      return k.praefix + String(start + eigene + 1).padStart(2, '0') + '/' + jahr;
+    }
     var bisher = (window._alleRechnungen || []).filter(function (i) {
       if (i.art !== 'rechnung' && i.art !== 'storno') return false;
       var kz = String(i.nummer || '').trim().split(' ')[0];
@@ -899,6 +911,16 @@ window.terminSpeichern = async function (id) {
 window.naechsteAngebotsnummer = function () {
   var jahr = new Date().getFullYear();
   var kA = konf(); var istDemoA = String(kA.praefix || '').trim() === 'DEMO';
+  if (kA.eigen) {
+    /* Eigener Kreis: Angebote nur dieses Betriebs zaehlen (Angebote muessen nicht lueckenlos sein). */
+    var eigeneA = (typeof rechnungen !== 'undefined' ? rechnungen : []).filter(function (i) {
+      if (i.art !== 'angebot') return false;
+      if (i.betrieb_id && betrieb && i.betrieb_id !== betrieb.id) return false;
+      var dA = i.datum || i.created_at;
+      return new Date(dA).getFullYear() === jahr;
+    }).length;
+    return 'A ' + String(eigeneA + 1).padStart(2, '0') + '/' + jahr;
+  }
   var bisher = (window._alleRechnungen || []).filter(function (i) {
     if (i.art !== 'angebot') return false;
     if ((String(i.nummer || '').trim().split(' ')[0] === 'DEMO') !== istDemoA) return false;

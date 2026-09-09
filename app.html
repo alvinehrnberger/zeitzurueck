@@ -342,6 +342,29 @@ const BETRIEB_KONFIG = {
   }
 };
 function konf(kreis){
+      // Jeder Betrieb hat sein eigenes Rechnungsprofil (betriebe.rechnung_eigen):
+      // Kopf, Bank, Nummernkreis kommen aus seiner Zeile - nie aus Alvins
+      // Bereichsschalter. Der Bereichsschalter (M/ZZ/V/DEMO) gilt nur noch fuer
+      // Betriebe ohne eigenes Profil, also Alvins eigene. (9.9.2026)
+      if(typeof betrieb !== 'undefined' && betrieb && betrieb.rechnung_eigen){
+        return {
+          praefix: String(betrieb.rechnung_praefix || '').trim() ? String(betrieb.rechnung_praefix).trim() + ' ' : '',
+          startJahr: Number(betrieb.rechnung_start_jahr) || 0,
+          startNummer: Number(betrieb.rechnung_start_nummer) || 0,
+          strasse: betrieb.strasse || '',
+          plzOrt: betrieb.plz_ort || '',
+          telefon: betrieb.telefon || '',
+          email: betrieb.email || '',
+          ausstellungsort: betrieb.ausstellungsort || (betrieb.plz_ort || '').replace(/^\d{4}\s*/, ''),
+          bank: betrieb.bank || '',
+          iban: betrieb.iban || '',
+          bic: betrieb.bic || '',
+          zahlungsziel: Number(betrieb.zahlungsziel) || 14,
+          bezeichnung: betrieb.rechnung_bezeichnung || 'Rechnung',
+          belegwort: betrieb.rechnung_bezeichnung || 'Rechnung',
+          eigen: true
+        };
+      }
       // Absenderprofil je Bereich: M, ZZ, V oder DEMO.
       // Faellt nie auf einen leeren Eintrag zurueck - _default ist eine Kopie von M.
       const kz = String(kreis || window.__zzKreis || 'M');
@@ -608,7 +631,7 @@ async function enterApp(){
 }
 function pickZeile(b){
   return `<div class="pick ${b.id===betrieb.id?'on':''}" onclick="switchBetrieb('${b.id}')">
-      <div class="n">${esc(b.name)}</div><div class="o">${esc(b.inhaber||'')} · Präfix ${esc((BETRIEB_KONFIG[b.name]||{}).praefix||'—')}</div></div>`;
+      <div class="n">${esc(b.name)}</div><div class="o">${esc(b.inhaber||'')} · ${b.rechnung_eigen ? esc((b.rechnung_bezeichnung||'Rechnung')+' '+(String(b.rechnung_praefix||'').trim()||'')+'…/'+new Date().getFullYear()).replace(/\s+…/,' …') : 'Nummernkreis nach Bereich'}</div></div>`;
 }
 function openBetriebPicker(){
   if(betriebe.length<2) return;
@@ -660,6 +683,13 @@ async function switchBetrieb(id){
    (wird von nummernkreis.js teilweise ueberschrieben)                      */
 async function nummerZiehen(){
   const k = konf(), pre = String(k.praefix || '').trim();
+  if(k.eigen){
+    // Eigener Kreis des Betriebs: die Datenbank zaehlt je betrieb_id, ein leerer Praefix ist erlaubt ("20/2026").
+    const r2 = await sb.rpc('naechste_rechnungsnummer', { p_praefix: pre, p_betrieb: betrieb.id });
+    if(r2 && r2.error) throw new Error('Rechnungsnummer nicht vergeben: ' + r2.error.message);
+    if(!r2 || !r2.data) throw new Error('Rechnungsnummer nicht vergeben — bitte noch einmal versuchen.');
+    return r2.data;
+  }
   if(!pre) throw new Error('Für diesen Bereich ist kein Nummernkreis hinterlegt.');
   const r = await sb.rpc('naechste_rechnungsnummer', { p_praefix: pre });
   if(r && r.error) throw new Error('Rechnungsnummer nicht vergeben: ' + r.error.message);
@@ -669,6 +699,11 @@ async function nummerZiehen(){
 
 function naechsteNummer(){
   const k=konf(), jahr=new Date().getFullYear();
+  if(k.eigen){
+    const n = rechnungen.filter(i=>(i.art==='rechnung'||i.art==='storno') && (new Date(i.datum||i.created_at||0)).getFullYear()===jahr).length;
+    const offset = (k.startJahr===jahr) ? k.startNummer : 0;
+    return k.praefix + String(offset+n+1).padStart(2,'0') + '/' + jahr;
+  }
   const bisher = rechnungen.filter(i=>{ if(i.art==='angebot') return false;
         const istDemo = (k.praefix === 'DEMO ');
         const kz = String(i.kreis || String(i.nummer||'').trim().split(' ')[0] || 'M');
@@ -993,7 +1028,7 @@ function buildPDF(i, art){
   let yA=y0+5.5;
   (i.kunde_adresse||'').split(/\n|,\s*(?=\d{4}\b)/).filter(Boolean).forEach(z=>{ doc.text(z,L,yA); yA+=5; });
 
-  const belegwort=art==='angebot'?'Angebot':art==='storno'?'Stornorechnung':'Rechnung';
+  const belegwort=art==='angebot'?'Angebot':art==='storno'?'Stornorechnung':(konf().belegwort||'Rechnung');
   const zeilen=[[belegwort+' Nr.', i.nummer||'—'],
                 ['Datum', deDate(art==='rechnung'||art==='storno'?(i.datum||new Date()):new Date())]];
   if(art==='rechnung'){ zeilen.push(['Leistungsdatum', deDate(i.leistung_datum||i.datum||i.created_at)]);
@@ -1280,7 +1315,7 @@ function invoiceHTML(i){
     <div class="an"><b>${esc(i.kunde||'')}</b></div>
     ${(i.kunde_adresse||'').split(/\n|,\s*(?=\d{4}\b)/).filter(Boolean).map(z=>`<div class="an" style="color:var(--muted)">${esc(z)}</div>`).join('')}
     <div class="dt">${k.ausstellungsort?esc(k.ausstellungsort)+', am ':''}${deDate(i.datum||i.created_at)}</div>
-    <div class="nr">${i.art==='angebot'?'Angebot':istStorno(i)?'Stornorechnung':'Rechnung'} Nr. ${esc(i.nummer||'—')}</div>
+    <div class="nr">${i.art==='angebot'?'Angebot':istStorno(i)?'Stornorechnung':esc(k.belegwort||'Rechnung')} Nr. ${esc(i.nummer||'—')}</div>
     <div class="li"><span>${esc(i.positionstext||'')}</span><span>${eur(i.betrag)}</span></div>
     ${i.stunden?`<div class="li" style="color:var(--muted);font-size:11.5px"><span>${(''+i.stunden).replace('.',',')} h a ${eur(satz)}</span></div>`:(i.art==='angebot'?`<div class="li" style="color:var(--muted);font-size:11.5px"><span>Pauschale</span></div>`:'')}
     <div class="sum"><span>${istStorno(i)?'Gutschrift':'Gesamt'}</span><span>${eur(i.betrag)}</span></div>
@@ -1527,7 +1562,7 @@ async function finish(id,art){
 scrim.addEventListener('click',e=>{ if(e.target===scrim) scrim.classList.remove('show'); });
 el('pw').addEventListener('keydown',e=>{ if(e.key==='Enter') submitAuth(); });
 </script>
-<script src="nummernkreis.js?v=20260909"></script>
+<script src="nummernkreis.js?v=20260909b"></script>
 <script src="fotos.js?v=20260909"></script>
 <script>
 (async function(){
