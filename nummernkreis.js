@@ -111,12 +111,13 @@
           zeile +
           (j.adresse ? '<div class="row"><span class="k">Adresse</span><span class="v"><a href="' + mapsLink(j.adresse) + '" target="_blank" rel="noopener">' + esc(j.adresse) + ' ↗</a></span></div>' : '') +
         '</div>' +
-        '<div class="verlegen" onclick="openAngebot(\'' + j.id + '\')">Angebot erstellen</div><div class="verlegen" onclick="openTermin(\'' + j.id + '\')">Termin ändern</div><div class="dngr" onclick="deleteJob(\'' + j.id + '\')">Auftrag löschen</div></div>' + aktion;
+        /* Erledigt heisst erledigt: kein Angebot, kein neuer Termin mehr. */
+        '<div class="dngr" onclick="deleteJob(\'' + j.id + '\')">Auftrag löschen</div></div>' + aktion;
       return;
     }
 
     /* ---- offener Auftrag ---- */
-    var satz = betrieb ? Number(betrieb.stundensatz) : 50;
+    var satz = (betrieb && Number(betrieb.stundensatz)) || (konf().satz) || 50;
     screen.innerHTML = '<div style="padding:4px 2px"><div class="d-h">' + esc(j.kunde) + '</div>' +
       '<div class="d-s">' + esc(j.aufgabe || '') + '</div>' +
       '<div class="rows">' +
