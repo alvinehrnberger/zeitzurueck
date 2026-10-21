@@ -199,11 +199,11 @@
     ? 'So arbeitet <em>ZeitZurück</em> — von der ersten Anfrage bis zum Termin.'
     : 'So arbeitet <em>ZeitZurück</em> — von der ersten Anfrage bis zur bezahlten Rechnung.';
   document.getElementById("endeGross").textContent = kurz
-    ? "Kein Anruf. Kein Rückruf. Kein verpasster Kunde."
-    : "Von der ersten Nachricht bis zum Geld am Konto.";
+    ? "Die Anfrage ist aufgenommen, auch wenn Sie gerade nicht abheben können."
+    : "Von der ersten Nachricht bis zur Rechnung.";
   document.getElementById("endeKlein").textContent = kurz
-    ? "Sie erfahren davon, wenn Sie Zeit haben."
-    : "Und Sie waren die ganze Zeit bei der Arbeit.";
+    ? ""
+    : "";
 
   var svg = document.getElementById("leinwand");
   svg.setAttribute("viewBox", "0 0 " + B + " " + H);
